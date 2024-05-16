@@ -1,0 +1,1577 @@
+---
+title: "Temporal subsampling"
+author: "Alyssa Willson"
+date: "2024-03-29"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+load('../data/processed/mean_STEPPS.RData')
+source('../R/funs.R')
+```
+
+```{r, include = FALSE}
+# Melt to dataframes
+ash_melt <- melt_array(taxon_mat = ash, x = x, y = y, time = time,
+                       col_names = c('x', 'y', 'time', 'ash'))
+beech_melt <- melt_array(taxon_mat = beech, x = x, y = y, time = time,
+                         col_names = c('x', 'y', 'time', 'beech'))
+birch_melt <- melt_array(taxon_mat = birch, x = x, y = y, time = time,
+                         col_names = c('x', 'y', 'time', 'birch'))
+elm_melt <- melt_array(taxon_mat = elm, x = x, y = y, time = time,
+                       col_names = c('x', 'y', 'time', 'elm'))
+hemlock_melt <- melt_array(taxon_mat = hemlock, x = x, y = y, time = time,
+                           col_names = c('x', 'y', 'time', 'hemlock'))
+maple_melt <- melt_array(taxon_mat = maple, x = x, y = y, time = time,
+                         col_names = c('x', 'y', 'time', 'maple'))
+oak_melt <- melt_array(taxon_mat = oak, x = x, y = y, time = time,
+                       col_names = c('x', 'y', 'time', 'oak'))
+other_conifer_melt <- melt_array(taxon_mat = other_conifer, x = x, y = y, time = time,
+                                 col_names = c('x', 'y', 'time', 'other_conifer'))
+other_hardwood_melt <- melt_array(taxon_mat = other_hardwood, x = x, y = y, time = time,
+                                  col_names = c('x', 'y', 'time', 'other_hardwood'))
+pine_melt <- melt_array(taxon_mat = pine, x = x, y = y, time = time,
+                        col_names = c('x', 'y', 'time', 'pine'))
+spruce_melt <- melt_array(taxon_mat = spruce, x = x, y = y, time = time,
+                          col_names = c('x', 'y', 'time', 'spruce'))
+tamarack_melt <- melt_array(taxon_mat = tamarack, x = x, y = y, time = time,
+                            col_names = c('x', 'y', 'time', 'tamarack'))
+```
+
+```{r, include = FALSE}
+# Map of states in study region
+states <- map_states()
+```
+
+# Purpose
+
+PalEON's previous reconstructions of relative abundance for the last 2,000 years of the pre-Industrial Holocene leveraged the idea that physical processes related to lake sediment settling and ecological processes related to the long lifespans of trees contribute to long memory of relative abundances by borrowing strength over time. This leads to temporally smoothed estimates of relative abundances. Here, we attempt to quantify the autocorrelation of relative abundances so that we can sample a subset of time steps that are relatively independent from one another.
+
+# Understanding temporal structure
+
+Our data are spatiotemporally smoothed relative abundances of 12 taxa for 2,000 years at 100 year time steps. There are marked changes in relative abundance of some taxa at some locations over this temporal domain, as seen below.
+
+```{r, echo = FALSE}
+# Order of time steps for plotting
+time_order <- rev(c('200 YBP', '300 YBP', '400 YBP', '500 YBP', '600 YBP',
+                '700 YBP', '800 YBP', '900 YBP', '1000 YBP', '1100 YBP',
+                '1200 YBP', '1300 YBP', '1400 YBP', '1500 YBP', '1600 YBP',
+                '1700 YBP', '1800 YBP', '1900 YBP', '2000 YBP', '2100 YBP'))
+
+# Example plot of hemlock over space and time
+hemlock_melt |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '2', '200 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '20', '2000 YBP', time),
+                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+To investigate this temporal structure, I want to start by calculating autocorrelation functions for each taxon at all spatial locations (multivariate autocorrelation).
+
+```{r, echo = FALSE}
+# Pivot wide so each column is a different time series
+ash_wide <- ash_melt |>
+  # Make location variable so each unique lat/long can be identified
+  dplyr::mutate(loc = paste0(x,y)) |>
+  # Remove lat long
+  dplyr::select(-x, -y) |>
+  # Pivot so that each location is a different column
+  tidyr::pivot_wider(names_from = loc, values_from = ash) |>
+  # Remove time column but retain as row names
+  tibble::column_to_rownames(var = 'time')
+beech_wide <- beech_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = beech) |>
+  tibble::column_to_rownames(var = 'time')
+birch_wide <- birch_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = birch) |>
+  tibble::column_to_rownames(var = 'time')
+elm_wide <- elm_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = elm) |>
+  tibble::column_to_rownames(var = 'time')
+hemlock_wide <- hemlock_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = hemlock) |>
+  tibble::column_to_rownames(var = 'time')
+maple_wide <- maple_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = maple) |>
+  tibble::column_to_rownames(var = 'time')
+oak_wide <- oak_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = oak) |>
+  tibble::column_to_rownames(var = 'time')
+other_conifer_wide <- other_conifer_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = other_conifer) |>
+  tibble::column_to_rownames(var = 'time')
+other_hardwood_wide <- other_hardwood_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = other_hardwood) |>
+  tibble::column_to_rownames(var = 'time')
+pine_wide <- pine_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = pine) |>
+  tibble::column_to_rownames(var = 'time')
+spruce_wide <- spruce_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = spruce) |>
+  tibble::column_to_rownames(var = 'time')
+tamarack_wide <- tamarack_melt |>
+  dplyr::mutate(loc = paste0(x,y)) |>
+  dplyr::select(-x, -y) |>
+  tidyr::pivot_wider(names_from = loc, values_from = tamarack) |>
+  tibble::column_to_rownames(var = 'time')
+
+```
+
+```{r, echo = FALSE}
+# Make into time series type data
+ash_ts <- ts(data = ash_wide, start = 2, end = 21)
+beech_ts <- ts(data = beech_wide, start = 2, end = 21)
+birch_ts <- ts(data = birch_wide, start = 2, end = 21)
+elm_ts <- ts(data = elm_wide, start = 2, end = 21)
+hemlock_ts <- ts(data = hemlock_wide, start = 2, end = 21)
+maple_ts <- ts(data = maple_wide, start = 2, end = 21)
+oak_ts <- ts(data = oak_wide, start = 2, end = 21)
+other_conifer_ts <- ts(data = other_conifer_wide, start = 2, end = 21)
+other_hardwood_ts <- ts(data = other_hardwood_wide, start = 2, end = 21)
+pine_ts <- ts(data = pine_wide, start = 2, end = 21)
+spruce_ts <- ts(data = spruce_wide, start = 2, end = 21)
+tamarack_ts <- ts(data = tamarack_wide, start = 2, end = 21)
+```
+
+```{r, echo = FALSE}
+# Storage
+ash_acf <- matrix(, nrow = length(time), ncol = ncol(ash_ts))
+beech_acf <- matrix(, nrow = length(time), ncol = ncol(beech_ts))
+birch_acf <- matrix(, nrow = length(time), ncol = ncol(birch_ts))
+elm_acf <- matrix(, nrow = length(time), ncol = ncol(elm_ts))
+hemlock_acf <- matrix(, nrow = length(time), ncol = ncol(hemlock_ts))
+maple_acf <- matrix(, nrow = length(time), ncol = ncol(maple_ts))
+oak_acf <- matrix(, nrow = length(time), ncol = ncol(oak_ts))
+other_conifer_acf <- matrix(, nrow = length(time), ncol = ncol(other_conifer_ts))
+other_hardwood_acf <- matrix(, nrow = length(time), ncol = ncol(other_hardwood_ts))
+pine_acf <- matrix(, nrow = length(time), ncol = ncol(pine_ts))
+spruce_acf <- matrix(, nrow = length(time), ncol = ncol(spruce_ts))
+tamarack_acf <- matrix(, nrow = length(time), ncol = ncol(tamarack_ts))
+
+sig_ash_acf <- c()
+sig_beech_acf <- c()
+sig_birch_acf <- c()
+sig_elm_acf <- c()
+sig_hemlock_acf <- c()
+sig_maple_acf <- c()
+sig_oak_acf <- c()
+sig_other_conifer_acf <- c()
+sig_other_hardwood_acf <- c()
+sig_pine_acf <- c()
+sig_spruce_acf <- c()
+sig_tamarack_acf <- c()
+```
+
+```{r, echo = FALSE}
+# Calculate the autocorrelation function for each location for each taxon
+# Could combine loops but they run very fast so it shouldn't matter
+
+# Loop over each location
+for(i in 1:ncol(ash_ts)){
+  # If the time series is not all NA, do some calculations
+  # it's all NA when the location is outside our spatial domain
+  if(any(!is.na(ash_ts[,i]))){
+    # Calculate autocorrealtion function of the given location
+    ash_acf[,i] <- acf(ash_ts[,i], lag.max = 20, plot = FALSE)$acf
+    # Calculate what would be considered a significant acf at 95% CI
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(ash_ts[,i])))
+    # Which lags have significant autocorrelation functions given
+    # the calculated significance level?
+    sigs <- which(ash_acf[,i] >= sig_level)
+    # Find the maximum lag that is significant
+    sig_ash_acf[i] <- max(sigs)
+  }else{
+    # If everything is NA, keep the NAs to maintain the raster data format
+    ash_acf[,i] <- NA
+    sig_ash_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(beech_ts)){
+  if(any(!is.na(beech_ts[,i]))){
+    beech_acf[,i] <- acf(beech_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(beech_ts[,i])))
+    sigs <- which(beech_acf[,i] >= sig_level)
+    sig_beech_acf[i] <- max(sigs)
+  }else{
+    beech_acf[,i] <- NA
+    sig_beech_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(birch_ts)){
+  if(any(!is.na(birch_ts[,i]))){
+    birch_acf[,i] <- acf(birch_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(birch_ts[,i])))
+    sigs <- which(birch_acf[,i] >= sig_level)
+    sig_birch_acf[i] <- max(sigs)
+  }else{
+    birch_acf[,i] <- NA
+    sig_birch_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(elm_ts)){
+  if(any(!is.na(elm_ts[,i]))){
+    elm_acf[,i] <- acf(elm_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(elm_ts[,i])))
+    sigs <- which(elm_acf[,i] >= sig_level)
+    sig_elm_acf[i] <- max(sigs)
+  }else{
+    elm_acf[,i] <- NA
+    sig_elm_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(hemlock_ts)){
+  if(any(!is.na(hemlock_ts[,i]))){
+    hemlock_acf[,i] <- acf(hemlock_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(hemlock_ts[,i])))
+    sigs <- which(hemlock_acf[,i] >= sig_level)
+    sig_hemlock_acf[i] <- max(sigs)
+  }else{
+    hemlock_acf[,i] <- NA
+    sig_hemlock_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(maple_ts)){
+  if(any(!is.na(maple_ts[,i]))){
+    maple_acf[,i] <- acf(maple_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(maple_ts[,i])))
+    sigs <- which(maple_acf[,i] >= sig_level)
+    sig_maple_acf[i] <- max(sigs)
+  }else{
+    maple_acf[,i] <- NA
+    sig_maple_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(oak_ts)){
+  if(any(!is.na(oak_ts[,i]))){
+    oak_acf[,i] <- acf(oak_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(oak_ts[,i])))
+    sigs <- which(oak_acf[,i] >= sig_level)
+    sig_oak_acf[i] <- max(sigs)
+  }else{
+    oak_acf[,i] <- NA
+    sig_oak_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(other_conifer_ts)){
+  if(any(!is.na(other_conifer_ts[,i]))){
+    other_conifer_acf[,i] <- acf(other_conifer_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(other_conifer_ts[,i])))
+    sigs <- which(other_conifer_acf[,i] >= sig_level)
+    sig_other_conifer_acf[i] <- max(sigs)
+  }else{
+    other_conifer_acf[,i] <- NA
+    sig_other_conifer_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(other_hardwood_ts)){
+  if(any(!is.na(other_hardwood_ts[,i]))){
+    other_hardwood_acf[,i] <- acf(other_hardwood_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(other_hardwood_ts[,i])))
+    sigs <- which(other_hardwood_acf[,i] >= sig_level)
+    sig_other_hardwood_acf[i] <- max(sigs)
+  }else{
+    other_hardwood_acf[,i] <- NA
+    sig_other_hardwood_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(pine_ts)){
+  if(any(!is.na(pine_ts[,i]))){
+    pine_acf[,i] <- acf(pine_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(pine_ts[,i])))
+    sigs <- which(pine_acf[,i] >= sig_level)
+    sig_pine_acf[i] <- max(sigs)
+  }else{
+    pine_acf[,i] <- NA
+    sig_pine_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(spruce_ts)){
+  if(any(!is.na(spruce_ts[,i]))){
+    spruce_acf[,i] <- acf(spruce_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(spruce_ts[,i])))
+    sigs <- which(spruce_acf[,i] >= sig_level)
+    sig_spruce_acf[i] <- max(sigs)
+  }else{
+    spruce_acf[,i] <- NA
+    sig_spruce_acf[i] <- NA
+  }
+}
+
+for(i in 1:ncol(tamarack_ts)){
+  if(any(!is.na(tamarack_ts[,i]))){
+    tamarack_acf[,i] <- acf(tamarack_ts[,i], lag.max = 20, plot = FALSE)$acf
+    sig_level <- qnorm((1 + 0.95)/2)/sqrt(sum(!is.na(tamarack_ts[,i])))
+    sigs <- which(tamarack_acf[,i] >= sig_level)
+    sig_tamarack_acf[i] <- max(sigs)
+  }else{
+    tamarack_acf[,i] <- NA
+    sig_tamarack_acf[i] <- NA
+  }
+}
+```
+
+```{r, echo = FALSE}
+# Format the outputs of the loops
+
+# Add column names
+colnames(ash_acf) <- colnames(ash_wide)
+# Make data frame
+ash_acf <- as.data.frame(ash_acf)
+# Add lag of 0-19 time steps
+ash_acf$lag <- 0:19
+
+colnames(beech_acf) <- colnames(beech_wide)
+beech_acf <- as.data.frame(beech_acf)
+beech_acf$lag <- 0:19
+
+colnames(birch_acf) <- colnames(birch_wide)
+birch_acf <- as.data.frame(birch_acf)
+birch_acf$lag <- 0:19
+
+colnames(elm_acf) <- colnames(elm_wide)
+elm_acf <- as.data.frame(elm_acf)
+elm_acf$lag <- 0:19
+
+colnames(hemlock_acf) <- colnames(hemlock_wide)
+hemlock_acf <- as.data.frame(hemlock_acf)
+hemlock_acf$lag <- 0:19
+
+colnames(maple_acf) <- colnames(maple_wide)
+maple_acf <- as.data.frame(maple_acf)
+maple_acf$lag <- 0:19
+
+colnames(oak_acf) <- colnames(oak_wide)
+oak_acf <- as.data.frame(oak_acf)
+oak_acf$lag <- 0:19
+
+colnames(other_conifer_acf) <- colnames(other_conifer_wide)
+other_conifer_acf <- as.data.frame(other_conifer_acf)
+other_conifer_acf$lag <- 0:19
+
+colnames(other_hardwood_acf) <- colnames(other_hardwood_wide)
+other_hardwood_acf <- as.data.frame(other_hardwood_acf)
+other_hardwood_acf$lag <- 0:19
+
+colnames(pine_acf) <- colnames(pine_wide)
+pine_acf <- as.data.frame(pine_acf)
+pine_acf$lag <- 0:19
+
+colnames(spruce_acf) <- colnames(spruce_wide)
+spruce_acf <- as.data.frame(spruce_acf)
+spruce_acf$lag <- 0:19
+
+colnames(tamarack_acf) <- colnames(tamarack_wide)
+tamarack_acf <- as.data.frame(tamarack_acf)
+tamarack_acf$lag <- 0:19
+```
+
+```{r, echo = FALSE}
+# Format the significant lag vectors
+
+# Make dataframe with the same columns as the acf dataframes above
+sig_ash_acf <- as.data.frame(t(sig_ash_acf))
+# Add column names
+colnames(sig_ash_acf) <- colnames(ash_acf)[1:(ncol(ash_acf)-1)]
+
+sig_beech_acf <- as.data.frame(t(sig_beech_acf))
+colnames(sig_beech_acf) <- colnames(beech_acf)[1:(ncol(beech_acf)-1)]
+
+sig_birch_acf <- as.data.frame(t(sig_birch_acf))
+colnames(sig_birch_acf) <- colnames(birch_acf)[1:(ncol(birch_acf)-1)]
+
+sig_elm_acf <- as.data.frame(t(sig_elm_acf))
+colnames(sig_elm_acf) <- colnames(elm_acf)[1:(ncol(elm_acf)-1)]
+
+sig_hemlock_acf <- as.data.frame(t(sig_hemlock_acf))
+colnames(sig_hemlock_acf) <- colnames(hemlock_acf)[1:(ncol(hemlock_acf)-1)]
+
+sig_maple_acf <- as.data.frame(t(sig_maple_acf))
+colnames(sig_maple_acf) <- colnames(maple_acf)[1:(ncol(maple_acf)-1)]
+
+sig_oak_acf <- as.data.frame(t(sig_oak_acf))
+colnames(sig_oak_acf) <- colnames(oak_acf)[1:(ncol(oak_acf)-1)]
+
+sig_other_conifer_acf <- as.data.frame(t(sig_other_conifer_acf))
+colnames(sig_other_conifer_acf) <- colnames(other_conifer_acf)[1:(ncol(other_conifer_acf)-1)]
+
+sig_other_hardwood_acf <- as.data.frame(t(sig_other_hardwood_acf))
+colnames(sig_other_hardwood_acf) <- colnames(other_hardwood_acf)[1:(ncol(other_hardwood_acf)-1)]
+
+sig_pine_acf <- as.data.frame(t(sig_pine_acf))
+colnames(sig_pine_acf) <- colnames(pine_acf)[1:(ncol(pine_acf)-1)]
+
+sig_spruce_acf <- as.data.frame(t(sig_spruce_acf))
+colnames(sig_spruce_acf) <- colnames(spruce_acf)[1:(ncol(spruce_acf)-1)]
+
+sig_tamarack_acf <- as.data.frame(t(sig_tamarack_acf))
+colnames(sig_tamarack_acf) <- colnames(tamarack_acf)[1:(ncol(tamarack_acf)-1)]
+```
+
+```{r, echo = FALSE}
+# Pivot to long data format
+
+ash_acf <- ash_acf |>
+  # Pivot all columns except the lag column
+  tidyr::pivot_longer(cols = colnames(ash_acf)[1]:colnames(ash_acf)[(ncol(ash_acf)-1)]) |>
+  # Rename the column
+  dplyr::rename(acf = value)
+beech_acf <- beech_acf |>
+  tidyr::pivot_longer(cols = colnames(beech_acf)[1]:colnames(beech_acf)[(ncol(beech_acf)-1)]) |>
+  dplyr::rename(acf = value)
+birch_acf <- birch_acf |>
+  tidyr::pivot_longer(cols = colnames(birch_acf)[1]:colnames(birch_acf)[(ncol(birch_acf)-1)]) |>
+  dplyr::rename(acf = value)
+elm_acf <- elm_acf |>
+  tidyr::pivot_longer(cols = colnames(elm_acf)[1]:colnames(elm_acf)[(ncol(elm_acf)-1)]) |>
+  dplyr::rename(acf = value)
+hemlock_acf <- hemlock_acf |>
+  tidyr::pivot_longer(cols = colnames(hemlock_acf)[1]:colnames(hemlock_acf)[(ncol(hemlock_acf)-1)]) |>
+  dplyr::rename(acf = value)
+maple_acf <- maple_acf |>
+  tidyr::pivot_longer(cols = colnames(maple_acf)[1]:colnames(maple_acf)[(ncol(maple_acf)-1)]) |>
+  dplyr::rename(acf = value)
+oak_acf <- oak_acf |>
+  tidyr::pivot_longer(cols = colnames(oak_acf)[1]:colnames(oak_acf)[(ncol(oak_acf)-1)]) |>
+  dplyr::rename(acf = value)
+other_conifer_acf <- other_conifer_acf |>
+  tidyr::pivot_longer(cols = colnames(other_conifer_acf)[1]:colnames(other_conifer_acf)[(ncol(other_conifer_acf)-1)]) |>
+  dplyr::rename(acf = value)
+other_hardwood_acf <- other_hardwood_acf |>
+  tidyr::pivot_longer(cols = colnames(other_hardwood_acf)[1]:colnames(other_hardwood_acf)[(ncol(other_hardwood_acf)-1)]) |>
+  dplyr::rename(acf = value)
+pine_acf <- pine_acf |>
+  tidyr::pivot_longer(cols = colnames(pine_acf)[1]:colnames(pine_acf)[(ncol(pine_acf)-1)]) |>
+  dplyr::rename(acf = value)
+spruce_acf <- spruce_acf |>
+  tidyr::pivot_longer(cols = colnames(spruce_acf)[1]:colnames(spruce_acf)[(ncol(spruce_acf)-1)]) |>
+  dplyr::rename(acf = value)
+tamarack_acf <- tamarack_acf |>
+  tidyr::pivot_longer(cols = colnames(tamarack_acf)[1]:colnames(tamarack_acf)[(ncol(tamarack_acf)-1)]) |>
+  dplyr::rename(acf = value)
+
+sig_ash_acf <- sig_ash_acf |>
+  # Pivot all columns longer since we don't have a lag column
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  # Rename the column
+  dplyr::rename(max_lag = value)
+sig_beech_acf <- sig_beech_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_birch_acf <- sig_birch_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_elm_acf <- sig_elm_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_hemlock_acf <- sig_hemlock_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_maple_acf <- sig_maple_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_oak_acf <- sig_oak_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_other_conifer_acf <- sig_other_conifer_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_other_hardwood_acf <- sig_other_hardwood_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_pine_acf <- sig_pine_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_spruce_acf <- sig_spruce_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+sig_tamarack_acf <- sig_tamarack_acf |>
+  tidyr::pivot_longer(cols = tidyselect::everything()) |>
+  dplyr::rename(max_lag = value)
+```
+
+```{r, echo = FALSE}
+# Combine the acf and maximum lag dataframes with
+# the original dataframe that contains the lat/long coordinates
+
+ash_acf <- ash_melt |>
+  # Select a time
+  # We only need one because we only want to know where
+  # the acf and significant lags are in space
+  # I chose 7 because this is in the middle of the time series
+  # We just don't want like 2 because there are many fewer trees
+  dplyr::filter(time == 7) |>
+  # Make the location variable
+  dplyr::mutate(name = paste0(x,y)) |>
+  # Remove time since we only have one time step
+  dplyr::select(-time) |>
+  # Join with the acf data
+  dplyr::right_join(y = ash_acf, by = 'name') |>
+  # Join with the lags data
+  dplyr::right_join(y = sig_ash_acf, by = 'name')
+
+beech_acf <- beech_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = beech_acf, by = 'name') |>
+  dplyr::right_join(y = sig_beech_acf, by = 'name')
+
+birch_acf <- birch_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = birch_acf, by = 'name') |>
+  dplyr::right_join(y = sig_birch_acf, by = 'name')
+
+elm_acf <- elm_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = elm_acf, by = 'name') |>
+  dplyr::right_join(y = sig_elm_acf, by = 'name')
+
+hemlock_acf <- hemlock_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = hemlock_acf, by = 'name') |>
+  dplyr::right_join(y = sig_hemlock_acf, by = 'name')
+
+maple_acf <- maple_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = maple_acf, by = 'name') |>
+  dplyr::right_join(y = sig_maple_acf, by = 'name')
+
+oak_acf <- oak_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = oak_acf, by = 'name') |>
+  dplyr::right_join(y = sig_oak_acf, by = 'name')
+
+other_conifer_acf <- other_conifer_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = other_conifer_acf, by = 'name') |>
+  dplyr::right_join(y = sig_other_conifer_acf, by = 'name')
+
+other_hardwood_acf <- other_hardwood_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = other_hardwood_acf, by = 'name') |>
+  dplyr::right_join(y = sig_other_hardwood_acf, by = 'name')
+
+pine_acf <- pine_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = pine_acf, by = 'name') |>
+  dplyr::right_join(y = sig_pine_acf, by = 'name')
+
+spruce_acf <- spruce_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = spruce_acf, by = 'name') |>
+  dplyr::right_join(y = sig_spruce_acf, by = 'name')
+
+tamarack_acf <- tamarack_melt |>
+  dplyr::filter(time == 7) |>
+  dplyr::mutate(name = paste0(x,y)) |>
+  dplyr::select(-time) |>
+  dplyr::right_join(y = tamarack_acf, by = 'name') |>
+  dplyr::right_join(y = sig_tamarack_acf, by = 'name')
+```
+
+Here are some plots of the maximum lag that is considered significant at a 95\% confidence level according to the autocorrelation function analysis. The left panel in each figure is the relative abundance of the taxon and the right panel is the maximum significant lag. It is important to consider where lags are significant because we expect there to be little change over time in regions where a taxon is never present in great numbers.
+
+```{r, echo = FALSE}
+# Plot the relative abundance of ash over space
+# at the one selected time step
+p1 <- ash_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = ash)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+# Plot the maximum lag over space
+p2 <- ash_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+# Title for the two plots together
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Ash", fontface='bold')
+
+# Plot the two plots together
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+# Add the title
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- beech_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = beech)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- beech_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Beech", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- birch_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = birch)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- birch_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Birch", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- elm_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = elm)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- elm_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Elm", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- hemlock_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- hemlock_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Hemlock", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- maple_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = maple)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- maple_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Maple", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- oak_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = oak)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- oak_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Oak", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- other_conifer_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- other_conifer_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Other conifer", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- other_hardwood_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- other_hardwood_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Other hardwood", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- pine_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- pine_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Pine", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- spruce_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = spruce)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- spruce_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Spruce", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+```{r, echo = FALSE}
+p1 <- tamarack_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = tamarack)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::theme_void()
+
+p2 <- tamarack_acf |>
+  dplyr::select(-lag, -acf) |>
+  dplyr::distinct() |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = max_lag)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', na.value = 'white',
+                             name = 'Maximum\nlag') +
+  ggplot2::theme_void()
+
+title <- cowplot::ggdraw() + 
+  cowplot::draw_label("Tamarack", fontface='bold')
+
+p <- cowplot::plot_grid(p1, p2, nrow = 1) + ggplot2::theme(plot.margin = ggplot2::unit(c(-5, 0, -3, 0), 'cm'))
+
+cowplot::plot_grid(title, p, nrow = 2, rel_heights = c(0.1, 1), greedy = FALSE)
+```
+
+# Sub-sampling in time
+
+To me, this seems to indicate that we should sample every 4-5 time steps. This is what those options would look like. Remember that we will likely not have the first couple of time steps because we don't have climate reconstructions for those time steps and we also don't want to inculde the final time step, 200 YBP because we can see the effects of industrialization/logging.
+
+## Sampling every 4 time steps
+
+```{r}
+# Sample times 4 apart
+keep_times <- seq(from = 19, to = 3, by = -4)
+# Order of facets
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+# Plot
+ash_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = ash)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Ash') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+beech_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = beech)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+birch_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = birch)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+elm_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = elm)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+hemlock_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+maple_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = maple)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+oak_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = oak)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+other_conifer_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Other conifer') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+other_hardwood_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Other hardwood') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+pine_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+spruce_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = spruce)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -4)
+keep_times_order <- c('1900 YBP', '1500 YBP', '1100 YBP',
+                      '700 YBP', '300 YBP')
+
+tamarack_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = tamarack)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+## Sampling every 5 time steps
+
+```{r}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+ash_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = ash)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Ash') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+beech_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = beech)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+birch_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = birch)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+elm_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = elm)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+hemlock_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+maple_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = maple)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+oak_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = oak)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+other_conifer_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Other conifer') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+other_hardwood_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Other hardwood') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+pine_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+spruce_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = spruce)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```
+
+```{r, echo  = FALSE}
+keep_times <- seq(from = 19, to = 3, by = -5)
+keep_times_order <- c('1900 YBP', '1400 YBP',
+                      '900 YBP', '400 YBP')
+
+tamarack_melt |>
+  dplyr::filter(time %in% keep_times) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = tamarack)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = keep_times_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white', name = 'Relative\nabundance') +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+```

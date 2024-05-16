@@ -1,0 +1,1039 @@
+---
+Title: "Spatial subsampling with semivariograms"
+author: "Alyssa Willson"
+date: "2024-04-04"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+rm(list = ls())
+load('../data/processed/mean_STEPPS.RData')
+source('../R/funs.R')
+```
+
+```{r, include = FALSE}
+# Indexing by cell number
+x_ind <- seq(from = 1, to = length(x), by = 1)
+y_ind <- seq(from = 1, to = length(y), by = 1)
+
+# Melt with indices instead of distances
+ash_melt <- melt_array(taxon_mat = ash,
+                       x = x_ind, y = y_ind, time = time,
+                       col_names = c('x', 'y', 'time', 'ash'))
+beech_melt <- melt_array(taxon_mat = beech,
+                         x = x_ind, y = y_ind, time = time,
+                         col_names = c('x', 'y', 'time', 'beech'))
+birch_melt <- melt_array(taxon_mat = birch,
+                         x = x_ind, y = y_ind, time = time,
+                         col_names = c('x', 'y', 'time', 'birch'))
+elm_melt <- melt_array(taxon_mat = elm,
+                       x = x_ind, y = y_ind, time = time,
+                       col_names = c('x', 'y', 'time', 'elm'))
+hemlock_melt <- melt_array(taxon_mat = hemlock,
+                           x = x_ind, y = y_ind, time = time,
+                           col_names = c('x', 'y', 'time', 'hemlock'))
+maple_melt <- melt_array(taxon_mat = maple,
+                         x = x_ind, y = y_ind, time = time,
+                         col_names = c('x', 'y', 'time', 'maple'))
+oak_melt <- melt_array(taxon_mat = oak,
+                       x = x_ind, y = y_ind, time = time,
+                       col_names = c('x', 'y', 'time', 'oak'))
+other_conifer_melt <- melt_array(taxon_mat = other_conifer,
+                                 x = x_ind, y = y_ind, time = time,
+                                 col_names = c('x', 'y', 'time', 'other_conifer'))
+other_hardwood_melt <- melt_array(taxon_mat = other_hardwood,
+                                  x = x_ind, y = y_ind, time = time,
+                                  col_names = c('x', 'y', 'time', 'other_hardwood'))
+pine_melt <- melt_array(taxon_mat = pine,
+                        x = x_ind, y = y_ind, time = time,
+                        col_names = c('x', 'y', 'time', 'pine'))
+spruce_melt <- melt_array(taxon_mat = spruce,
+                          x = x_ind, y = y_ind, time = time,
+                          col_names = c('x', 'y', 'time', 'spruce'))
+tamarack_melt <- melt_array(taxon_mat = tamarack,
+                            x = x_ind, y = y_ind, time = time,
+                            col_names = c('x', 'y', 'time', 'tamarack'))
+
+```
+
+# Purpose
+
+This document extends the analysis of spatial autocorrelation from the document titled Testing_spatial_subsampling.Rmd to the statistical analysis of spatial correlations with semivariograms. Instead of just visually assessing the spatial autocorrelation in the reconstructions, we can fit empirical variograms to the reconstructions at each time step for each taxon.
+
+# Semivariances
+
+First, I used the `semivariogram` function from the `gstat` package to fit spherical, exponential, and Gaussian variograms to each taxon at each time period. This function returns the semivariances of the relative abundances, as well as the sill, nugget, and range parameter estimates. The range is an estimate of how far away the grid cells need to be to be considered independent. The ratio of nugget:sill is an indicator of the strength of spatial dependence in the relative abundance, with high ratio (>75%) indicative of low spatial dependence.
+
+Since I replaced the x-y distances with cell number, the distance and range can be interpreted as number of cells in the following analysis.
+
+My expectation is that of these three options, the Guassian variogram will be the best fit because this is the closest to the nugget used for model fitting, but the actual nugget is an inverse power law kernel, which I believe is the same as the powered exponential kernel.
+
+```{r}
+ash_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+ash_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+ash_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(ash_melt,
+                       time == t,
+                       !is.na(ash))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$ash,
+                                model = 'spherical')
+  ash_spherical_params[i,1] <- t
+  ash_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$ash,
+                                model = 'exponential')
+  ash_exponential_params[i,1] <- t
+  ash_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$ash,
+                                model = 'gaussian')
+  ash_gaussian_params[i,1] <- t
+  ash_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+beech_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+beech_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+beech_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(beech_melt,
+                       time == t,
+                       !is.na(beech))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$beech,
+                                model = 'spherical')
+  beech_spherical_params[i,1] <- t
+  beech_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$beech,
+                                model = 'exponential')
+  beech_exponential_params[i,1] <- t
+  beech_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$beech,
+                                model = 'gaussian')
+  beech_gaussian_params[i,1] <- t
+  beech_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+birch_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+birch_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+birch_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(birch_melt,
+                       time == t,
+                       !is.na(birch))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$birch,
+                                model = 'spherical')
+  birch_spherical_params[i,1] <- t
+  birch_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$birch,
+                                model = 'exponential')
+  birch_exponential_params[i,1] <- t
+  birch_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$birch,
+                                model = 'gaussian')
+  birch_gaussian_params[i,1] <- t
+  birch_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+elm_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+elm_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+elm_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(elm_melt,
+                       time == t,
+                       !is.na(elm))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$elm,
+                                model = 'spherical')
+  elm_spherical_params[i,1] <- t
+  elm_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$elm,
+                                model = 'exponential')
+  elm_exponential_params[i,1] <- t
+  elm_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$elm,
+                                model = 'gaussian')
+  elm_gaussian_params[i,1] <- t
+  elm_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+hemlock_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+hemlock_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+hemlock_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(hemlock_melt,
+                       time == t,
+                       !is.na(hemlock))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$hemlock,
+                                model = 'spherical')
+  hemlock_spherical_params[i,1] <- t
+  hemlock_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$hemlock,
+                                model = 'exponential')
+  hemlock_exponential_params[i,1] <- t
+  hemlock_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$hemlock,
+                                model = 'gaussian')
+  hemlock_gaussian_params[i,1] <- t
+  hemlock_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+maple_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+maple_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+maple_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(maple_melt,
+                       time == t,
+                       !is.na(maple))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$maple,
+                                model = 'spherical')
+  maple_spherical_params[i,1] <- t
+  maple_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$maple,
+                                model = 'exponential')
+  maple_exponential_params[i,1] <- t
+  maple_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$maple,
+                                model = 'gaussian')
+  maple_gaussian_params[i,1] <- t
+  maple_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+oak_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+oak_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+oak_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(oak_melt,
+                       time == t,
+                       !is.na(oak))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$oak,
+                                model = 'spherical')
+  oak_spherical_params[i,1] <- t
+  oak_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$oak,
+                                model = 'exponential')
+  oak_exponential_params[i,1] <- t
+  oak_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$oak,
+                                model = 'gaussian')
+  oak_gaussian_params[i,1] <- t
+  oak_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+other_conifer_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+other_conifer_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+other_conifer_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(other_conifer_melt,
+                       time == t,
+                       !is.na(other_conifer))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$other_conifer,
+                                model = 'spherical')
+  other_conifer_spherical_params[i,1] <- t
+  other_conifer_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$other_conifer,
+                                model = 'exponential')
+  other_conifer_exponential_params[i,1] <- t
+  other_conifer_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$other_conifer,
+                                model = 'gaussian')
+  other_conifer_gaussian_params[i,1] <- t
+  other_conifer_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+other_hardwood_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+other_hardwood_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+other_hardwood_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(other_hardwood_melt,
+                       time == t,
+                       !is.na(other_hardwood))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$other_hardwood,
+                                model = 'spherical')
+  other_hardwood_spherical_params[i,1] <- t
+  other_hardwood_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$other_hardwood,
+                                model = 'exponential')
+  other_hardwood_exponential_params[i,1] <- t
+  other_hardwood_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$other_hardwood,
+                                model = 'gaussian')
+  other_hardwood_gaussian_params[i,1] <- t
+  other_hardwood_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+pine_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+pine_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+pine_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(pine_melt,
+                       time == t,
+                       !is.na(pine))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$pine,
+                                model = 'spherical')
+  pine_spherical_params[i,1] <- t
+  pine_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$pine,
+                                model = 'exponential')
+  pine_exponential_params[i,1] <- t
+  pine_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$pine,
+                                model = 'gaussian')
+  pine_gaussian_params[i,1] <- t
+  pine_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+spruce_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+spruce_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+spruce_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(spruce_melt,
+                       time == t,
+                       !is.na(spruce))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$spruce,
+                                model = 'spherical')
+  spruce_spherical_params[i,1] <- t
+  spruce_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$spruce,
+                                model = 'exponential')
+  spruce_exponential_params[i,1] <- t
+  spruce_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$spruce,
+                                model = 'gaussian')
+  spruce_gaussian_params[i,1] <- t
+  spruce_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+tamarack_spherical_params <- matrix(, nrow = length(time), ncol = 4)
+tamarack_exponential_params <- matrix(, nrow = length(time), ncol = 4)
+tamarack_gaussian_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(tamarack_melt,
+                       time == t,
+                       !is.na(tamarack))
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$tamarack,
+                                model = 'spherical')
+  tamarack_spherical_params[i,1] <- t
+  tamarack_spherical_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$tamarack,
+                                model = 'exponential')
+  tamarack_exponential_params[i,1] <- t
+  tamarack_exponential_params[i,2:4] <- sv$snr
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$tamarack,
+                                model = 'gaussian')
+  tamarack_gaussian_params[i,1] <- t
+  tamarack_gaussian_params[i,2:4] <- sv$snr
+}
+```
+
+I performed a visual assessment for all taxa, but only Ash is shown. Based on the visual assessments, the Gaussian model is the best fit to the relative abundance reconstructions. We can now use the parameters from this model to make inference about the distance of spatial correlation and its strength.
+
+Here are the distances after which grid cells are deemed independent (in number of grid cells, the "range" parameter):
+
+```{r, echo = FALSE}
+taxa <- c('Ash', 'Beech', 'Birch',
+          'Elm', 'Hemlock', 'Maple',
+          'Oak', 'Other conifer', 'Other hardwood',
+          'Pine', 'Spruce', 'Tamarack')
+Range <- c(mean(ash_gaussian_params[,4]), mean(beech_gaussian_params[,4]),
+            mean(birch_gaussian_params[,4]), mean(elm_gaussian_params[,4]),
+            mean(hemlock_gaussian_params[,4]), mean(maple_gaussian_params[,4]),
+            mean(oak_gaussian_params[,4]), mean(other_conifer_gaussian_params[,4]),
+            mean(other_hardwood_gaussian_params[,4]), mean(pine_gaussian_params[,4]),
+            mean(spruce_gaussian_params[,4]), mean(tamarack_gaussian_params[,4]))
+Range <- round(Range, digits = 3)
+Range <- cbind(taxa, Range)
+Range <- as.data.frame(Range)
+Range <- tibble::column_to_rownames(Range, var = 'taxa')
+knitr::kable(Range)
+```
+
+Based on these models and their range parameters, we can infer that grid cells approximately 5 away from each other are likely to be independent from one another. That is, we can sample every fifth grid cell to achieve spatial independence with reasonable confidence. It is important to note that this achieves spatial independence with respect to both the ecological processes of fossil pollen sediment settling, pollen dispersal, and tree range dynamics as well as the statistical process of borrowing strength across space. Therefore, it is not necessary to achieve full spatial independence for our analysis to be interesting and useful. 
+
+Additionally, the spatial dependence in some taxa is likely to be low. We can look at this by computing the nugget:sill ratio:
+
+```{r, echo = FALSE}
+ash_NSR <- (ash_gaussian_params[,3]/ash_gaussian_params[,2])*100
+beech_NSR <- (beech_gaussian_params[,3]/beech_gaussian_params[,2])*100
+birch_NSR <- (birch_gaussian_params[,3]/birch_gaussian_params[,2])*100
+elm_NSR <- (elm_gaussian_params[,3]/elm_gaussian_params[,2])*100
+hemlock_NSR <- (hemlock_gaussian_params[,3]/hemlock_gaussian_params[,2])*100
+maple_NSR <- (maple_gaussian_params[,3]/maple_gaussian_params[,2])*100
+oak_NSR <- (oak_gaussian_params[,3]/oak_gaussian_params[,2])*100
+other_conifer_NSR <- (other_conifer_gaussian_params[,3]/other_conifer_gaussian_params[,2])*100
+other_hardwood_NSR <- (other_hardwood_gaussian_params[,3]/other_hardwood_gaussian_params[,2])*100
+pine_NSR <- (pine_gaussian_params[,3]/pine_gaussian_params[,2])*100
+spruce_NSR <- (spruce_gaussian_params[,3]/spruce_gaussian_params[,2])*100
+tamarack_NSR <- (tamarack_gaussian_params[,3]/tamarack_gaussian_params[,2])*100
+
+NSR <- c(mean(ash_NSR), mean(beech_NSR), mean(birch_NSR),
+         mean(elm_NSR), mean(hemlock_NSR), mean(maple_NSR),
+         mean(oak_NSR), mean(other_conifer_NSR), mean(other_hardwood_NSR),
+         mean(pine_NSR), mean(spruce_NSR), mean(tamarack_NSR))
+NSR <- round(NSR, digits = 3)
+NSR <- cbind(taxa, NSR)
+NSR <- as.data.frame(NSR)
+NSR <- tibble::column_to_rownames(NSR, var = 'taxa')
+knitr::kable(NSR)
+```
+
+From this, we can see that all taxa have a high degree of spatial dependence across our entire spatial domain of interest. Let's repeat this analysis, but remove the very low relative abundance of taxa that occurs outside of their range limits.
+
+Here, I am doing the exact same procedure, but also filtering for relative abundance greater than a small value (specific to each taxon) that removes grid cells where the taxon is at very low abundance.
+
+```{r, include = FALSE}
+states <- map_states()
+```
+
+```{r, include = FALSE}
+map_lon <- cbind(x_ind, x)
+map_lat <- cbind(y_ind, y)
+map_lon <- as.data.frame(map_lon)
+map_lat <- as.data.frame(map_lat)
+```
+
+```{r}
+p1 <- ash_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = ash)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Ash') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+# Abundant ash = > .25%
+p2 <- ash_melt |>
+  dplyr::filter(ash > 0.01) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = ash)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Ash') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+ash_melt_red <- dplyr::filter(ash_melt, ash > 0.01)
+
+ash_melt_red |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = ash)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void( )
+```
+
+```{r, echo = FALSE}
+p1 <- beech_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = beech)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+# Abundant beech = > 10%
+p2 <- beech_melt |>
+  dplyr::filter(beech > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = beech)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+beech_melt_red <- dplyr::filter(beech_melt, beech > 0.1)
+
+beech_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- birch_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = birch)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- birch_melt |>
+  dplyr::filter(birch > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = birch)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+birch_melt_red <- dplyr::filter(birch_melt, birch > 0.1)
+
+birch_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- elm_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = elm)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- elm_melt |>
+  dplyr::filter(elm > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = elm)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2)
+
+elm_melt_red <- dplyr::filter(elm_melt, elm > 0.1)
+
+elm_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- hemlock_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = hemlock)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- hemlock_melt |>
+  dplyr::filter(hemlock > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = hemlock)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2)
+
+hemlock_melt_red <- dplyr::filter(hemlock_melt, hemlock > 0.1)
+
+hemlock_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- maple_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = maple)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.4))
+p2 <- maple_melt |>
+  dplyr::filter(maple > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = maple)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.4))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+maple_melt_red <- dplyr::filter(maple_melt, maple > 0.1)
+
+maple_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- oak_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = oak)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- oak_melt |>
+  dplyr::filter(oak > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = oak)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+oak_melt_red <- dplyr::filter(oak_melt, oak > 0.1)
+
+oak_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- other_conifer_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = other_conifer)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Other conifer') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- other_conifer_melt |>
+  dplyr::filter(other_conifer > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = other_conifer)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Other conifer') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+other_conifer_melt_red <- dplyr::filter(other_conifer_melt, other_conifer > 0.1)
+
+other_conifer_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- other_hardwood_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = other_hardwood)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Other hardwood') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- other_hardwood_melt |>
+  dplyr::filter(other_hardwood > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = other_hardwood)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Other hardwood') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+other_hardwood_melt_red <- dplyr::filter(other_hardwood_melt, other_hardwood > 0.1)
+
+other_hardwood_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- pine_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = pine)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- pine_melt |>
+  dplyr::filter(pine > 0.2) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = pine)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+pine_melt_red <- dplyr::filter(pine_melt, pine > 0.2)
+
+pine_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- spruce_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = spruce)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- spruce_melt |>
+  dplyr::filter(spruce > 0.1) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = spruce)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+spruce_melt_red <- dplyr::filter(spruce_melt, spruce > 0.1)
+
+spruce_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, echo = FALSE}
+p1 <- tamarack_melt |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = tamarack)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+p2 <- tamarack_melt |>
+  dplyr::filter(tamarack > 0.2) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = tamarack)) +
+  ggplot2::theme_minimal() +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = 'bold', hjust = 0.5))
+cowplot::plot_grid(p1, p2, nrow = 1)
+
+tamarack_melt_red <- dplyr::filter(tamarack_melt, tamarack > 0.2)
+
+tamarack_melt_red |>
+  dplyr::filter(time == 7) |>
+  dplyr::rename(x_ind = x,
+                y_ind = y) |>
+  dplyr::left_join(y = map_lon, by = 'x_ind') |>
+  dplyr::left_join(y = map_lat, by = 'y_ind') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+```
+
+```{r, include = FALSE}
+ash_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(ash_melt_red,
+                       time == t,
+                       !is.na(ash))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$ash,
+                                model = 'gaussian', nb = 9)
+  ash_red_params[i,1] <- t
+  ash_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+beech_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(beech_melt_red,
+                       time == t,
+                       !is.na(beech))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$beech,
+                                model = 'gaussian', nb = 7)
+  beech_red_params[i,1] <- t
+  beech_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+birch_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(birch_melt_red,
+                       time == t,
+                       !is.na(birch))
+  
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$birch,
+                                model = 'gaussian', nb = 8)
+  birch_red_params[i,1] <- t
+  birch_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+elm_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(elm_melt_red,
+                       time == t,
+                       !is.na(elm))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$elm,
+                                model = 'gaussian', nb = 9)
+  elm_red_params[i,1] <- t
+  elm_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+hemlock_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(hemlock_melt_red,
+                       time == t,
+                       !is.na(hemlock))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$hemlock,
+                                model = 'gaussian', nb = 9)
+  hemlock_red_params[i,1] <- t
+  hemlock_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+maple_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(maple_melt_red,
+                       time == t,
+                       !is.na(maple))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$maple,
+                                model = 'gaussian', nb = 6)
+  maple_red_params[i,1] <- t
+  maple_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+oak_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(oak_melt_red,
+                       time == t,
+                       !is.na(oak))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$oak,
+                                model = 'gaussian', nb = 11)
+  oak_red_params[i,1] <- t
+  oak_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+other_conifer_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(other_conifer_melt_red,
+                       time == t,
+                       !is.na(other_conifer))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$other_conifer,
+                                model = 'gaussian', nb = 10)
+  other_conifer_red_params[i,1] <- t
+  other_conifer_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+other_hardwood_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(other_hardwood_melt_red,
+                       time == t,
+                       !is.na(other_hardwood))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$other_hardwood,
+                                model = 'gaussian', nb = 6)
+  other_hardwood_red_params[i,1] <- t
+  other_hardwood_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+pine_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(pine_melt_red,
+                       time == t,
+                       !is.na(pine))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$pine,
+                                model = 'gaussian', nb = 5)
+  pine_red_params[i,1] <- t
+  pine_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+spruce_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(spruce_melt_red,
+                       time == t,
+                       !is.na(spruce))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$spruce,
+                                model = 'gaussian', nb = 6)
+  spruce_red_params[i,1] <- t
+  spruce_red_params[i,2:4] <- sv$snr
+}
+```
+
+```{r, include = FALSE}
+tamarack_red_params <- matrix(, nrow = length(time), ncol = 4)
+
+for(i in 1:length(time)){
+  t <- time[i]
+  sub <- dplyr::filter(tamarack_melt_red,
+                       time == t,
+                       !is.na(tamarack))
+
+  sv <- geostats::semivariogram(x = sub$x, y = sub$y, z = sub$tamarack,
+                                model = 'gaussian', nb = 9)
+  tamarack_red_params[i,1] <- t
+  tamarack_red_params[i,2:4] <- sv$snr
+}
+```
+
+For this exercise, I individually determined a cutoff relative abundance that indicates that a taxon is meaningfully present. This cutoff was usually a relative abundance of 10% or greater, but could vary by taxon. The plots above show the density function of relative abundance for each taxon without filtering (left) and with filtering (right), as well as the geographic distribution of the taxon where it is meaningfully abundant.
+
+Then, I refit semivariograms using the gaussian covariance function, which was shown to best fit the full data of each taxon above. I tuned the number of bins evaluated for each taxon because there was much more instability at large lag distances in the reduced datasets.
+
+Here, I am reporting the range parameters when the taxon has an abundance greater than effectively zero (i.e., where the taxon is more likely to be present):
+
+```{r, echo = FALSE}
+taxa <- c('Ash', 'Beech', 'Birch',
+          'Elm', 'Hemlock', 'Maple',
+          'Oak', 'Other conifer', 'Other hardwood',
+          'Pine', 'Spruce', 'Tamarack')
+Range <- c(mean(ash_red_params[,4]), mean(beech_red_params[,4]),
+            mean(birch_red_params[,4]), mean(elm_red_params[,4]),
+            mean(hemlock_red_params[,4]), mean(maple_red_params[,4]),
+            mean(oak_red_params[,4]), mean(other_conifer_red_params[,4]),
+            mean(other_hardwood_red_params[,4]), mean(pine_red_params[,4]),
+            mean(spruce_red_params[,4]), mean(tamarack_red_params[,4]))
+Range <- round(Range, digits = 3)
+Range <- cbind(taxa, Range)
+Range <- as.data.frame(Range)
+Range <- tibble::column_to_rownames(Range, var = 'taxa')
+knitr::kable(Range)
+```
+
+Using this apporach, the average range of spatial dependence is approximately three grid cells. Based on this analysis, along with the visual inspection of spatial dependence of important taxa (pine, hemlock), I conclude that sammpling every three grid cells seems appropriate for our purpose.

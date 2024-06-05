@@ -184,7 +184,7 @@ tas6_ey.hat <- tas6$EY.hat
 tas6_e <- tas6$e
 tas6_lon <- tas6$lon
 tas6_lat <- tas6$lat
-tas6_time <- seq(from = 0, to = 2015, by = 1)
+tas6_time <- seq(from = 0, to = 2014, by = 1)
 
 keep_lon <- which(tas6_lon >= min_lon & tas6_lon <= max_lon)
 keep_lat <- which(tas6_lat >= min_lat & tas6_lat <= max_lat)
@@ -248,7 +248,7 @@ tas8_ey.hat <- tas8$EY.hat
 tas8_e <- tas8$e
 tas8_lon <- tas8$lon
 tas8_lat <- tas8$lat
-tas8_time <- seq(from = 1, to = 2014, by = 1)
+tas8_time <- seq(from = 0, to = 2014, by = 1)
 
 keep_lon <- which(tas8_lon >= min_lon & tas8_lon <= max_lon)
 keep_lat <- which(tas8_lat >= min_lat & tas8_lat <= max_lat)

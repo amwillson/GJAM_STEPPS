@@ -226,7 +226,11 @@ unbias |>
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 
+save(ey.hat, unbias, file = 'data/intermediate/clipped_clim.RData')
+
 #### Match points to STEPPS grid ####
+
+## This section must be run on VM due to memory contraints
 
 # Load PLS point level data for area of interest
 load('data/processed/PLS_point/minnesota_process.RData')
@@ -239,22 +243,26 @@ pls <- rbind(minnesota, upmichigan, wisconsin)
 # Transform so that each point has one line
 pls <- pls |>
   tidyr::pivot_wider(names_from = 'tree', values_from = 'species') |>
-  dplyr::mutate(uniqueID = paste0(y,'_',x))
+  dplyr::mutate(uniqueID = paste0(y,'_',x),
+                keep_x = x,
+                keep_y = y)
 
 # Define coordinate system
 pls <- sf::st_as_sf(pls,
                     coords = c('x', 'y'),
                     crs = 'EPSG:4326')
 
-# Convert coordinate system of states
-states <- sf::st_transform(states, crs = 'EPSG:4326')
+# Convert coordinate system (because of planar assumption)
+pls <- sf::st_transform(pls, crs = 'EPSG:3175')
 
 # Keep only what's in our study region (removes part of lower peninsula)
 pls <- sf::st_intersection(pls, states)
 # Convert back to data frame
 pls <- sfheaders::sf_to_df(pls, fill = TRUE)
 # Keep only necessary columns
-pls <- dplyr::select(pls, x, y, uniqueID)
+pls <- dplyr::select(pls, keep_x, keep_y, uniqueID)
+
+save(pls, file = 'data/intermediate/clipped_pls.RData')
 
 # Define coordinate system of climate data
 # (we haad transformed earlier)

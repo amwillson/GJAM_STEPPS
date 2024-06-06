@@ -231,7 +231,7 @@ save(ey.hat, unbias, file = 'data/intermediate/clipped_clim.RData')
 # Load if on the VM
 load('data/intermediate/clipped_clim.RData')
 
-#### Match points to STEPPS grid ####
+#### Match points to PLS points ####
 
 ## This section must be run on VM due to memory contraints
 
@@ -807,4 +807,3 @@ clim_pls |>
 
 # Save
 save(clim_pls, file = 'data/intermediate/point_matched_clim.RData')
-

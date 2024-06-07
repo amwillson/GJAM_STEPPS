@@ -269,7 +269,7 @@ load('data/intermediate/clipped_clim_50.RData')
 
 #### Match points to PLS points ####
 
-## This section must be run on VM due to memory contraints
+## This section must be run on VM due to memory constraints
 
 # Load PLS point level data for area of interest
 load('data/processed/PLS_point/minnesota_process.RData')
@@ -308,506 +308,72 @@ load('data/intermediate/clipped_pls.RData')
 
 # Define coordinate system of climate data
 # (we haad transformed earlier)
-ey.hat <- sf::st_as_sf(ey.hat,
-                       coords = c('x', 'y'),
-                       crs = 'EPSG:3175')
-unbias <- sf::st_as_sf(unbias,
-                       coords = c('x', 'y'),
-                       crs = 'EPSG:3175')
+ey.hat_50 <- sf::st_as_sf(ey.hat_50,
+                          coords = c('x', 'y'),
+                          crs = 'EPSG:3175')
+unbias_50 <- sf::st_as_sf(unbias_50,
+                          coords = c('x', 'y'),
+                          crs = 'EPSG:3175')
 # Transform back to keep things consistent across workflows
-ey.hat <- sf::st_transform(ey.hat,
-                           crs = 'EPSG:4326')
-unbias <- sf::st_transform(unbias,
-                           crs = 'EPSG:4326')
+ey.hat_50 <- sf::st_transform(ey.hat_50,
+                              crs = 'EPSG:4326')
+unbias_50 <- sf::st_transform(unbias_50,
+                              crs = 'EPSG:4326')
 # Convert back to data frame
-ey.hat <- sfheaders::sf_to_df(ey.hat, fill = TRUE)
-unbias <- sfheaders::sf_to_df(unbias, fill = TRUE)
+ey.hat_50 <- sfheaders::sf_to_df(ey.hat_50, fill = TRUE)
+unbias_50 <- sfheaders::sf_to_df(unbias_50, fill = TRUE)
 # Remove unnecessary columns
-ey.hat <- dplyr::select(ey.hat, -sfg_id, -point_id)
-unbias <- dplyr::select(unbias, -sfg_id, -point_id)
+ey.hat_50 <- dplyr::select(ey.hat_50, -sfg_id, -point_id)
+unbias_50 <- dplyr::select(unbias_50, -sfg_id, -point_id)
 
 # Change name of pls coordinates
 pls <- dplyr::rename(pls, x = keep_x, y = keep_y)
 
-# Divide pls data into sections
-pls1 <- pls[1:25000,]
-pls2 <- pls[25001:50000,]
-pls3 <- pls[50001:75000,]
-pls4 <- pls[75001:100000,]
-pls5 <- pls[100001:125000,]
-pls6 <- pls[125001:150000,]
-pls7 <- pls[150001:175000,]
-pls8 <- pls[175001:200000,]
-pls9 <- pls[200001:225000,]
-pls10 <- pls[225001:250000,]
-pls11 <- pls[250001:275000,]
-pls12 <- pls[275001:300000,]
-pls13 <- pls[300001:325000,]
-pls14 <- pls[325001:350000,]
-pls15 <- pls[350001:375000,]
-pls16 <- pls[375001:400000,]
-pls17 <- pls[400001:425000,]
-pls18 <- pls[425001:450000,]
-pls19 <- pls[450001:475000,]
-pls20 <- pls[475001:500000,]
-pls21 <- pls[500001:nrow(pls),]
+# Make two subsets of pls
+pls1 <- pls[1:253536,]
+pls2 <- pls[253537:nrow(pls),]
 
 # Select coordinates
 coords_pls1 <- dplyr::select(pls1, y, x)
 coords_pls2 <- dplyr::select(pls2, y, x)
-coords_pls3 <- dplyr::select(pls3, y, x)
-coords_pls4 <- dplyr::select(pls4, y, x)
-coords_pls5 <- dplyr::select(pls5, y, x)
-coords_pls6 <- dplyr::select(pls6, y, x)
-coords_pls7 <- dplyr::select(pls7, y, x)
-coords_pls8 <- dplyr::select(pls8, y, x)
-coords_pls9 <- dplyr::select(pls9, y, x)
-coords_pls10 <- dplyr::select(pls10, y, x)
-coords_pls11 <- dplyr::select(pls11, y, x)
-coords_pls12 <- dplyr::select(pls12, y, x)
-coords_pls13 <- dplyr::select(pls13, y, x)
-coords_pls14 <- dplyr::select(pls14, y, x)
-coords_pls15 <- dplyr::select(pls15, y, x)
-coords_pls16 <- dplyr::select(pls16, y, x)
-coords_pls17 <- dplyr::select(pls17, y, x)
-coords_pls18 <- dplyr::select(pls18, y, x)
-coords_pls19 <- dplyr::select(pls19, y, x)
-coords_pls20 <- dplyr::select(pls20, y, x)
-coords_pls21 <- dplyr::select(pls21, y, x)
-
-coords_ey.hat <- dplyr::select(ey.hat, y, x)
-coords_unbias <- dplyr::select(unbias, y, x)
+coords_ey.hat <- dplyr::select(ey.hat_50, y, x)
+coords_unbias <- dplyr::select(unbias_50, y, x)
 
 # Check that the 2 climate dataframes are identical
 identical(coords_ey.hat$y, coords_unbias$y)
 identical(coords_ey.hat$x, coords_unbias$x)
 
 ### Subset 1 ###
-# Subset coords of climate to reduce computation time
-coords_ey.hat1 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls1$x) - 0.1 & x <= max(coords_pls1$x) + 0.1 &
-                                  y >= min(coords_pls1$y) - 0.1 & y <= max(coords_pls1$y) + 0.1)
 
 # Find the distance between each pair of points in the pls (1) and climate (2) dataframes
-dists <- fields::rdist(coords_pls1, coords_ey.hat1)
+dists <- fields::rdist(coords_pls1, coords_ey.hat)
 # Find the closest climate point to each PLS point
 # (should have length = nrow(pls subset))
 closest_point <- apply(dists, 1, which.min)
 # Immediately remove dists because it's huge
 rm(dists)
 
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls1$x) - 0.1 & x <= max(coords_pls1$x) + 0.1 &
-                  y >= min(coords_pls1$y) - 0.1 & y <= max(coords_pls1$y) + 0.1) |>
-  dplyr::slice(closest_point)
+select_ey.hat <- dplyr::slice(ey.hat_50, closest_point)
 
 clim_pls <- cbind(select_ey.hat, pls1)
 
-rm(closest_point, coords_ey.hat1, coords_pls1, select_ey.hat, pls1)
+rm(closest_point, coords_pls1, select_ey.hat, pls1)
 
 ### Subset 2 ###
 
-coords_ey.hat2 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls2$x) - 0.1 & x <= max(coords_pls2$x) + 0.1 &
-                                  y >= min(coords_pls2$y) - 0.1 & y <= max(coords_pls2$y) + 0.1)
-
-
-dists <- fields::rdist(coords_pls2, coords_ey.hat2)
+dists <- fields::rdist(coords_pls2, coords_ey.hat)
 closest_point <- apply(dists, 1, which.min)
 rm(dists)
 
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls2$x) - 0.1 & x <= max(coords_pls2$x) + 0.1 &
-                  y >= min(coords_pls2$y) - 0.1 & y <= max(coords_pls2$y) + 0.1) |>
-  dplyr::slice(closest_point)
+select_ey.hat <- dplyr::slice(ey.hat_50, closest_point)
 
 temp <- cbind(select_ey.hat, pls2)
 clim_pls <- rbind(clim_pls, temp)
 
-rm(closest_point, coords_ey.hat2, coords_pls2, select_ey.hat, pls2)
-
-### Subset 3 ###
-
-coords_ey.hat3 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls3$x) - 0.1 & x <= max(coords_pls3$x) + 0.1 &
-                                  y >= min(coords_pls3$y) - 0.1 & y <= max(coords_pls3$y) + 0.1)
-
-dists <- fields::rdist(coords_pls3, coords_ey.hat3)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls3$x) - 0.1 & x <= max(coords_pls3$x) + 0.1 &
-                  y >= min(coords_pls3$y) - 0.1 & y <= max(coords_pls3$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls3)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat3, coords_pls3, select_ey.hat, pls3)
-
-### Subset 4 ###
-
-coords_ey.hat4 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls4$x) - 0.1 & x <= max(coords_pls4$x) + 0.1 &
-                                  y >= min(coords_pls4$y) - 0.1 & y <= max(coords_pls4$y) + 0.1)
-
-dists <- fields::rdist(coords_pls4, coords_ey.hat4)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls4$x) - 0.1 & x <= max(coords_pls4$x) + 0.1 &
-                  y >= min(coords_pls4$y) - 0.1 & y <= max(coords_pls4$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls4)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat4, coords_pls4, select_ey.hat, pls4)
-
-### Subset 5 ###
-
-coords_ey.hat5 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls5$x) - 0.1 & x <= max(coords_pls5$x) + 0.1 &
-                                  y >= min(coords_pls5$y) - 0.1 & y <= max(coords_pls5$y) + 0.1)
-
-dists <- fields::rdist(coords_pls5, coords_ey.hat5)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls5$x) - 0.1 & x <= max(coords_pls5$x) + 0.1 &
-                  y >= min(coords_pls5$y) - 0.1 & y <= max(coords_pls5$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls5)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat5, coords_pls5, select_ey.hat, pls5)
-
-### Subset 6 ###
-
-coords_ey.hat6 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls6$x) - 0.1 & x <= max(coords_pls6$x) + 0.1 &
-                                  y >= min(coords_pls6$y) - 0.1 & y <= max(coords_pls6$y) + 0.1)
-
-dists <- fields::rdist(coords_pls6, coords_ey.hat6)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls6$x) - 0.1 & x <= max(coords_pls6$x) + 0.1 &
-                  y >= min(coords_pls6$y) - 0.1 & y <= max(coords_pls6$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls6)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat6, coords_pls6, select_ey.hat, pls6)
-
-### Subset 7 ###
-
-coords_ey.hat7 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls7$x) - 0.1 & x <= max(coords_pls7$x) + 0.1 &
-                                  y >= min(coords_pls7$y) - 0.1 & y <= max(coords_pls7$y) + 0.1)
-
-dists <- fields::rdist(coords_pls7, coords_ey.hat7)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls7$x) - 0.1 & x <= max(coords_pls7$x) + 0.1 &
-                  y >= min(coords_pls7$y) - 0.1 & y <= max(coords_pls7$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls7)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat7, coords_pls7, select_ey.hat, pls7)
-
-### Subset 8 ###
-
-coords_ey.hat8 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls8$x) - 0.1 & x <= max(coords_pls8$x) + 0.1 &
-                                  y >= min(coords_pls8$y) - 0.1 & y <= max(coords_pls8$y) + 0.1)
-
-dists <- fields::rdist(coords_pls8, coords_ey.hat8)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls8$x) - 0.1 & x <= max(coords_pls8$x) + 0.1 &
-                  y >= min(coords_pls8$y) - 0.1 & y <= max(coords_pls8$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls8)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat8, coords_pls8, select_ey.hat, pls8)
-
-### Subset 9 ###
-
-coords_ey.hat9 <- dplyr::filter(coords_ey.hat,
-                                x >= min(coords_pls9$x) - 0.1 & x <= max(coords_pls9$x) + 0.1 &
-                                  y >= min(coords_pls9$y) - 0.1 & y <= max(coords_pls9$y) + 0.1)
-
-dists <- fields::rdist(coords_pls9, coords_ey.hat9)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls9$x) - 0.1 & x <= max(coords_pls9$x) + 0.1 &
-                  y >= min(coords_pls9$y) - 0.1 & y <= max(coords_pls9$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls9)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat9, coords_pls9, select_ey.hat, pls9)
-
-### Subset 10 ###
-
-coords_ey.hat10 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls10$x) - 0.1 & x <= max(coords_pls10$x) + 0.1 &
-                                   y >= min(coords_pls10$y) - 0.1 & y <= max(coords_pls10$y) + 0.1)
-
-dists <- fields::rdist(coords_pls10, coords_ey.hat10)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls10$x) - 0.1 & x <= max(coords_pls10$x) + 0.1 &
-                  y >= min(coords_pls10$y) - 0.1 & y <= max(coords_pls10$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls10)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat10, coords_pls10, select_ey.hat, pls10)
-
-### Subset 11 ###
-
-coords_ey.hat11 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls11$x) - 0.1 & x <= max(coords_pls11$x) + 0.1 &
-                                   y >= min(coords_pls11$y) - 0.1 & y <= max(coords_pls11$y) + 0.1)
-
-dists <- fields::rdist(coords_pls11, coords_ey.hat11)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls11$x) - 0.1 & x <= max(coords_pls11$x) + 0.1 &
-                  y >= min(coords_pls11$y) - 0.1 & y <= max(coords_pls11$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls11)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat11, coords_pls11, select_ey.hat, pls11)
-
-### Subset 12 ###
-
-coords_ey.hat12 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls12$x) - 0.1 & x <= max(coords_pls12$x) + 0.1 &
-                                   y >= min(coords_pls12$y) - 0.1 & y <= max(coords_pls12$y) + 0.1)
-
-dists <- fields::rdist(coords_pls12, coords_ey.hat12)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls12$x) - 0.1 & x <= max(coords_pls12$x) + 0.1 &
-                  y >= min(coords_pls12$y) - 0.1 & y <= max(coords_pls12$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls12)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat12, coords_pls12, select_ey.hat, pls12)
-
-### Subset 13 ###
-
-coords_ey.hat13 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls13$x) - 0.1 & x <= max(coords_pls13$x) + 0.1 &
-                                   y >= min(coords_pls13$y) - 0.1 & y <= max(coords_pls13$y) + 0.1)
-
-dists <- fields::rdist(coords_pls13, coords_ey.hat13)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls13$x) - 0.1 & x <= max(coords_pls13$x) + 0.1 &
-                  y >= min(coords_pls13$y) - 0.1 & y <= max(coords_pls13$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls13)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat13, coords_pls13, select_ey.hat, pls13)
-
-### Subset 14 ###
-
-coords_ey.hat14 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls14$x) - 0.1 & x <= max(coords_pls14$x) + 0.1 &
-                                   y >= min(coords_pls14$y) - 0.1 & y <= max(coords_pls14$y) + 0.1)
-
-dists <- fields::rdist(coords_pls14, coords_ey.hat14)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls14$x) - 0.1 & x <= max(coords_pls14$x) + 0.1 &
-                  y >= min(coords_pls14$y) - 0.1 & y <= max(coords_pls14$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls14)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat14, coords_pls14, select_ey.hat, pls14)
-
-### Subset 15 ###
-
-coords_ey.hat15 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls15$x) - 0.1 & x <= max(coords_pls15$x) + 0.1 &
-                                   y >= min(coords_pls15$y) - 0.1 & y <= max(coords_pls15$y) + 0.1)
-
-dists <- fields::rdist(coords_pls15, coords_ey.hat15)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls15$x) - 0.1 & x <= max(coords_pls15$x) + 0.1 &
-                  y >= min(coords_pls15$y) - 0.1 & y <= max(coords_pls15$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls15)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat15, coords_pls15, select_ey.hat, pls15)
-
-### Subset 16 ###
-
-coords_ey.hat16 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls16$x) - 0.1 & x <= max(coords_pls16$x) + 0.1 &
-                                   y >= min(coords_pls16$y) - 0.1 & y <= max(coords_pls16$y) + 0.1)
-
-dists <- fields::rdist(coords_pls16, coords_ey.hat16)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls16$x) - 0.1 & x <= max(coords_pls16$x) + 0.1 &
-                  y >= min(coords_pls16$y) - 0.1 & y <= max(coords_pls16$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls16)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat16, coords_pls16, select_ey.hat, pls16)
-
-### Subset 17 ###
-
-coords_ey.hat17 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls17$x) - 0.1 & x <= max(coords_pls17$x) + 0.1 &
-                                   y >= min(coords_pls17$y) - 0.1 & y <= max(coords_pls17$y) + 0.1)
-
-dists <- fields::rdist(coords_pls17, coords_ey.hat17)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls17$x) - 0.1 & x <= max(coords_pls17$x) + 0.1 &
-                  y >= min(coords_pls17$y) - 0.1 & y <= max(coords_pls17$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls17)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat17, coords_pls17, select_ey.hat, pls17)
-
-### Subset 18 ###
-
-coords_ey.hat18 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls18$x) - 0.1 & x <= max(coords_pls18$x) + 0.1 &
-                                   y >= min(coords_pls18$y) - 0.1 & y <= max(coords_pls18$y) + 0.1)
-
-dists <- fields::rdist(coords_pls18, coords_ey.hat18)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls18$x) - 0.1 & x <= max(coords_pls18$x) + 0.1 &
-                  y >= min(coords_pls18$y) - 0.1 & y <= max(coords_pls18$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls18)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat18, coords_pls18, select_ey.hat, pls18)
-
-### Subset 19 ###
-
-coords_ey.hat19 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls19$x) - 0.1 & x <= max(coords_pls19$x) + 0.1 &
-                                   y >= min(coords_pls19$y) - 0.1 & y <= max(coords_pls19$y) + 0.1)
-
-dists <- fields::rdist(coords_pls19, coords_ey.hat19)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls19$x) - 0.1 & x <= max(coords_pls19$x) + 0.1 &
-                  y >= min(coords_pls19$y) - 0.1 & y <= max(coords_pls19$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls19)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat19, coords_pls19, select_ey.hat, pls19)
-
-### Subset 20 ###
-
-coords_ey.hat20 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls20$x) - 0.1 & x <= max(coords_pls20$x) + 0.1 &
-                                   y >= min(coords_pls20$y) - 0.1 & y <= max(coords_pls20$y) + 0.1)
-
-dists <- fields::rdist(coords_pls20, coords_ey.hat20)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls20$x) - 0.1 & x <= max(coords_pls20$x) + 0.1 &
-                  y >= min(coords_pls20$y) - 0.1 & y <= max(coords_pls20$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls20)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat20, coords_pls20, select_ey.hat, pls20)
-
-### Subset 21 ###
-
-coords_ey.hat21 <- dplyr::filter(coords_ey.hat,
-                                 x >= min(coords_pls21$x) - 0.1 & x <= max(coords_pls21$x) + 0.1 &
-                                   y >= min(coords_pls21$y) - 0.1 & y <= max(coords_pls21$y) + 0.1)
-
-dists <- fields::rdist(coords_pls21, coords_ey.hat21)
-closest_point <- apply(dists, 1, which.min)
-rm(dists)
-
-select_ey.hat <- ey.hat |>
-  dplyr::filter(x >= min(coords_pls21$x) - 0.1 & x <= max(coords_pls21$x) + 0.1 &
-                  y >= min(coords_pls21$y) - 0.1 & y <= max(coords_pls21$y) + 0.1) |>
-  dplyr::slice(closest_point)
-
-temp <- cbind(select_ey.hat, pls21)
-clim_pls <- rbind(clim_pls, temp)
-
-rm(closest_point, coords_ey.hat21, coords_pls21, select_ey.hat, pls21)
+rm(closest_point, coords_pls2, select_ey.hat, pls2)
 
 # Update column names
-colnames(clim_pls) <- c('time', 'aat', 'tpr', 'tsd', 'prsd', 'clim_x', 'clim_y', 'pls_x', 'pls_y', 'uniqueID')
+colnames(clim_pls) <- c('time', 'aat', 'tpr', 'tsd', 'prsd', 'spatID', 'clim_x', 'clim_y', 'pls_x', 'pls_y', 'uniqueID')
 
 # Check that coordinates match up
 clim_pls |>

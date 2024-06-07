@@ -143,6 +143,16 @@ unbias <- aat_unbias |>
   dplyr::full_join(y = tsd_unbias, by = c('x', 'y', 'time')) |>
   dplyr::full_join(y = prsd_unbias, by = c('x', 'y', 'time'))
 
+# Add spatial ID column because of multiple time steps
+ey.hat <- dplyr::mutate(ey.hat, spatID = paste0(x, '_', y))
+unbias <- dplyr::mutate(unbias, spatID = paste0(x, '_', y))
+
+# Check that that spatIDs are the same in both dataframes
+identical(ey.hat$spatID, unbias$spatID)
+
+# Check that there are the exact same number of spatial locations in each timestep
+nrow(ey.hat) / length(unique(ey.hat$spatID)) == length(unique(ey.hat$time))
+
 ### Convert coordinate system ###
 
 ey.hat <- sf::st_as_sf(ey.hat,
@@ -159,22 +169,44 @@ unbias <- sf::st_transform(unbias,
 
 ### Clip to state extents ###
 
+# Take one time period
+# use the spatID to apply to other time periods
+ey.hat_50 <- dplyr::filter(ey.hat, time == 50)
+unbias_50 <- dplyr::filter(unbias, time == 50)
+
 # Re-convert map
 states <- sf::st_transform(states, crs = 'EPSG:3175')
 
 # Clip climate reconstructions to extent of region of interest
-ey.hat <- sf::st_intersection(ey.hat, states)
-unbias <- sf::st_intersection(unbias, states)
+ey.hat_50 <- sf::st_intersection(ey.hat_50, states)
+unbias_50 <- sf::st_intersection(unbias_50, states)
 
 # Convert back to data frame
+ey.hat_50 <- sfheaders::sf_to_df(ey.hat_50,
+                              fill = TRUE)
+unbias_50 <- sfheaders::sf_to_df(unbias_50,
+                              fill = TRUE)
+
+# Remove unnecessary columns
+ey.hat_50 <- dplyr::select(ey.hat_50, c(time:spatID, x, y))
+unbias_50 <- dplyr::select(unbias_50, c(time:spatID, x, y))
+
+# List of unique spatID
+unique_spatID <- ey.hat_50$spatID
+
+# Filter the full dataset for these spatIDs
+ey.hat <- dplyr::filter(ey.hat, spatID %in% unique_spatID)
+unbias <- dplyr::filter(unbias, spatID %in% unique_spatID)
+
+# Convert back to dataframe
 ey.hat <- sfheaders::sf_to_df(ey.hat,
                               fill = TRUE)
 unbias <- sfheaders::sf_to_df(unbias,
                               fill = TRUE)
 
 # Remove unnecessary columns
-ey.hat <- dplyr::select(ey.hat, c(time:prsd, x, y))
-unbias <- dplyr::select(unbias, c(time:prsd, x, y))
+ey.hat <- dplyr::select(ey.hat, -sfg_id, -point_id)
+unbias <- dplyr::select(unbias, -sfg_id, -point_id)
 
 # Plot again
 ey.hat |>
@@ -226,10 +258,14 @@ unbias |>
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 
-save(ey.hat, unbias, file = 'data/intermediate/clipped_clim.RData')
+# Save full climate with all time steps
+save(ey.hat, unbias, file = 'data/intermediate/clipped_clim_alltime.RData')
+
+# Save climate with one time step
+save(ey.hat_50, unbias_50, file = 'data/intermediate/clipped_clim_50.RData')
 
 # Load if on the VM
-load('data/intermediate/clipped_clim.RData')
+load('data/intermediate/clipped_clim_50.RData')
 
 #### Match points to PLS points ####
 

@@ -70,62 +70,62 @@ time <- dimnames(tas1_ey.hat)[[3]]
 # Subtract bias for each year
 for(i in 1:length(time)){
   temp <- tas1_ey.hat[,,i]
-  tas1_unbias[,,i] <- temp - tas1_e
+  tas1_unbias[,,i] <- temp + tas1_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas2_ey.hat[,,i]
-  tas2_unbias[,,i] <- temp - tas2_e
+  tas2_unbias[,,i] <- temp + tas2_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas3_ey.hat[,,i]
-  tas3_unbias[,,i] <- temp - tas3_e
+  tas3_unbias[,,i] <- temp + tas3_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas4_ey.hat[,,i]
-  tas4_unbias[,,i] <- temp - tas4_e
+  tas4_unbias[,,i] <- temp + tas4_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas5_ey.hat[,,i]
-  tas5_unbias[,,i] <- temp - tas5_e
+  tas5_unbias[,,i] <- temp + tas5_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas6_ey.hat[,,i]
-  tas6_unbias[,,i] <- temp - tas6_e
+  tas6_unbias[,,i] <- temp + tas6_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas7_ey.hat[,,i]
-  tas7_unbias[,,i] <- temp - tas7_e
+  tas7_unbias[,,i] <- temp + tas7_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas8_ey.hat[,,i]
-  tas8_unbias[,,i] <- temp - tas8_e
+  tas8_unbias[,,i] <- temp + tas8_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas9_ey.hat[,,i]
-  tas9_unbias[,,i] <- temp - tas9_e
+  tas9_unbias[,,i] <- temp + tas9_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas10_ey.hat[,,i]
-  tas10_unbias[,,i] <- temp - tas10_e
+  tas10_unbias[,,i] <- temp + tas10_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas11_ey.hat[,,i]
-  tas11_unbias[,,i] <- temp - tas11_e
+  tas11_unbias[,,i] <- temp + tas11_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- tas12_ey.hat[,,i]
-  tas12_unbias[,,i] <- temp - tas12_e
+  tas12_unbias[,,i] <- temp + tas12_e
   print(i)
 }
 
@@ -338,62 +338,62 @@ time <- dimnames(pr1_ey.hat)[[3]]
 # Subtract bias for each year
 for(i in 1:length(time)){
   temp <- pr1_ey.hat[,,i]
-  pr1_unbias[,,i] <- temp - pr1_e
+  pr1_unbias[,,i] <- temp + pr1_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr2_ey.hat[,,i]
-  pr2_unbias[,,i] <- temp - pr2_e
+  pr2_unbias[,,i] <- temp + pr2_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr3_ey.hat[,,i]
-  pr3_unbias[,,i] <- temp - pr3_e
+  pr3_unbias[,,i] <- temp + pr3_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr4_ey.hat[,,i]
-  pr4_unbias[,,i] <- temp - pr4_e
+  pr4_unbias[,,i] <- temp + pr4_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr5_ey.hat[,,i]
-  pr5_unbias[,,i] <- temp - pr5_e
+  pr5_unbias[,,i] <- temp + pr5_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr6_ey.hat[,,i]
-  pr6_unbias[,,i] <- temp - pr6_e
+  pr6_unbias[,,i] <- temp + pr6_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr7_ey.hat[,,i]
-  pr7_unbias[,,i] <- temp - pr7_e
+  pr7_unbias[,,i] <- temp + pr7_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr8_ey.hat[,,i]
-  pr8_unbias[,,i] <- temp - pr8_e
+  pr8_unbias[,,i] <- temp + pr8_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr9_ey.hat[,,i]
-  pr9_unbias[,,i] <- temp - pr9_e
+  pr9_unbias[,,i] <- temp + pr9_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr10_ey.hat[,,i]
-  pr10_unbias[,,i] <- temp - pr10_e
+  pr10_unbias[,,i] <- temp + pr10_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr11_ey.hat[,,i]
-  pr11_unbias[,,i] <- temp - pr11_e
+  pr11_unbias[,,i] <- temp + pr11_e
   print(i)
 }
 for(i in 1:length(time)){
   temp <- pr12_ey.hat[,,i]
-  pr12_unbias[,,i] <- temp - pr12_e
+  pr12_unbias[,,i] <- temp + pr12_e
   print(i)
 }
 

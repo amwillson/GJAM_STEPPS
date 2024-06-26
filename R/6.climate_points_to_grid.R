@@ -5,7 +5,12 @@
 
 ## Reads in output of step 5
 
+rm(list = ls())
+
 #### Match points to PLS points ####
+
+# Helper funs
+source('R/funs.R')
 
 # Load intermediate step
 load('data/intermediate/clipped_clim_50.RData')
@@ -33,6 +38,9 @@ pls <- sf::st_as_sf(pls,
 # Convert coordinate system (because of planar assumption)
 pls <- sf::st_transform(pls, crs = 'EPSG:3175')
 
+# Map of study region
+states <- map_states()
+
 # Keep only what's in our study region (removes part of lower peninsula)
 pls <- sf::st_intersection(pls, states)
 # Convert back to data frame
@@ -41,9 +49,6 @@ pls <- sfheaders::sf_to_df(pls, fill = TRUE)
 pls <- dplyr::select(pls, keep_x, keep_y, uniqueID)
 
 save(pls, file = 'data/intermediate/clipped_pls.RData')
-
-# Load if on the VM
-load('data/intermediate/clipped_pls.RData')
 
 # Define coordinate system of climate data
 # (we haad transformed earlier)

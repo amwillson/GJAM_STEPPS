@@ -32,6 +32,9 @@ dimnames(post) <- list(centers_veg$ind,
                        ages,
                        seq(from = 1, to = 100))
 
+x <- unique(centers_veg$x * rescale)
+y <- unique(centers_veg$y * rescale)
+
 # Save formatted posterior draws
-save(post, centers_veg,
+save(post, centers_veg, x, y,
      file = 'data/processed/post_STEPPS.RData')

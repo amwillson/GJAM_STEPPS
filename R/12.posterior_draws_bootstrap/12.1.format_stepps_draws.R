@@ -11,12 +11,6 @@ post <- readRDS(file = 'data/raw/posterior_stepps/rIts_sub.RDS')
 # Load dimension information
 load('data/raw/posterior_stepps/input.rdata')
 
-# Keep only things that are relevant
-rm(centers_pls, centers_pol, d_inter, d_knots,
-   knot_coords, lag, meta_pol, meta_pol_all, pollen_check,
-   y, y_veg, eta, gamma, idx_cores, K, N, N_cores, N_knots, N_pls,
-   phi, res, rho, sum_w_pot, T, w)
-
 # Rescale coordinates
 rescale <- 1e6
 
@@ -38,21 +32,5 @@ dimnames(post) <- list(centers_veg$ind,
                        ages,
                        seq(from = 1, to = 100))
 
-# Melt to dataframe
-post_df <- reshape2::melt(post)
-
-# Column names
-colnames(post_df) <- c('ind', 'taxon', 'time', 'draw', 'val')
-
-# Format
-post_df <- post_df |>
-  # Add coordinates
-  dplyr::full_join(y = centers_veg, by = 'ind') |>
-  # Fix coords
-  dplyr::mutate(x = x * rescale,
-                y = y * rescale) |>
-  # Remove indexing
-  dplyr::select(-ind)
-
 # Save formatted posterior draws
-save(post_df, file = 'data/processed/post_STEPPS.RData')
+save(post, file = 'data/processed/post_STEPPS.RData')

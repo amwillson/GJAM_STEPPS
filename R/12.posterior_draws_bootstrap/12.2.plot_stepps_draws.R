@@ -75,7 +75,7 @@ post_df |>
   ggplot2::ggtitle('Ash') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-# Plot minimum, median, maximum at one time point
+# Plot different quantiles at one time point
 post_df |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>

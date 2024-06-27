@@ -33,4 +33,5 @@ dimnames(post) <- list(centers_veg$ind,
                        seq(from = 1, to = 100))
 
 # Save formatted posterior draws
-save(post, file = 'data/processed/post_STEPPS.RData')
+save(post, centers_veg,
+     file = 'data/processed/post_STEPPS.RData')

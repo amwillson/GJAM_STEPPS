@@ -89,6 +89,10 @@ ydata <- taxon_insample_all |>
   dplyr::select(ash:tamarack) |>
   dplyr::rename(oc = other_conifer,
                 oh = other_hardwood) |>
+  # This is a different way of handling the inability
+  # to invert the design matrix
+  # However, it requires some finessing which
+  # makes this solution intractable for the posterior samples
   dplyr::mutate(ash = ash + runif(n = 1, min = -0.01, max = 0.01),
                 ash = dplyr::if_else(ash <= 0, 1e-4, ash))
 
@@ -97,7 +101,7 @@ ydata <- taxon_insample_all |>
 # Define variables for gjam
 niter <- 10000
 nburn <- 2000
-typeNames = 'FC'
+typeNames <- 'FC'
 
 # model list
 ml <- list(ng = niter, burnin = nburn, typeNames = typeNames)

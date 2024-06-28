@@ -2,8 +2,10 @@
 
 rm(list = ls())
 
+#### Extracting parameter estimates ####
+
 # Load model output
-load('/Volumes/FileBackup/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
+load('out/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
 
 # Number of draws
 ndraw <- length(output)
@@ -64,3 +66,113 @@ for(i in 1:ndraw){
     sgibbs <- rbind(sgibbs, temp_sgibbs)
   }
 }
+
+# Save
+# Saving as RDS to hopefully make it easier to load these things
+saveRDS(object = bFacGibbs,
+        file = 'out/post_sand_aat_tpr_prsd/bFacGibbs.RDS')
+saveRDS(object = bgibbs,
+        file = 'out/post_sand_aat_tpr_prsd/bgibbs.RDS')
+saveRDS(object = bgibbsUn,
+        file = 'out/post_sand_aat_tpr_prsd/gibbsUn.RDS')
+saveRDS(object = fSensGibbs,
+        file = 'out/post_sand_aat_tpr_prsd/fSensGibbs.RDS')
+saveRDS(object = sgibbs,
+        file = 'out/post_sand_aat_tpr_prsd/sgibbs.RDS')
+
+# Remove extra objects
+rm(out, output,
+   temp_bFacGibbs, temp_bgibbs, temp_bgibbsUn,
+   temp_fSensGibbs, temp_sgibbs)
+
+#### Parameter summaries ####
+
+## Want something smaller we can use for most plots
+
+### bFacGibbs ###
+
+summ_bFacGibbs <- bFacGibbs |>
+  tidyr::pivot_longer(cols = BEECH_sand:TAMARACK_prsd,
+                      names_to = 'taxon_var', values_to = 'estimate') |>
+  dplyr::mutate(taxon = sub(pattern = '_.*', replacement = '', x = taxon_var),
+                var = sub(pattern = '.*_', replacement = '', x = taxon_var)) |>
+  dplyr::select(-taxon_var) |>
+  dplyr::group_by(taxon, var) |>
+  dplyr::summarize(mean = mean(estimate),
+                   sd = sd(estimate),
+                   CI_2.5 = quantile(estimate, probs = 0.025),
+                   CI_25 = quantile(estimate, probs = 0.25),
+                   CI_50 = median(estimate),
+                   CI_75 = quantile(estimate, probs = 0.75),
+                   CI_97.5 = quantile(estimate, probs = 0.975))
+
+### bgibbs ###
+
+summ_bgibbs <- bgibbs |>
+  tidyr::pivot_longer(cols = BEECH_intercept:TAMARACK_prsd,
+                      names_to = 'taxon_var', values_to = 'estimate') |>
+  dplyr::mutate(taxon = sub(pattern = '_.*', replacement = '', x = taxon_var),
+                var = sub(pattern = '.*_', replacement = '', x = taxon_var)) |>
+  dplyr::select(-taxon_var) |>
+  dplyr::group_by(taxon, var) |>
+  dplyr::summarize(mean = mean(estimate),
+                   sd = sd(estimate),
+                   CI_2.5 = quantile(estimate, probs = 0.025),
+                   CI_25 = quantile(estimate, probs = 0.25),
+                   CI_50 = median(estimate),
+                   CI_75 = quantile(estimate, probs = 0.75),
+                   CI_97.5 = quantile(estimate, probs = 0.975))
+
+### bgibbsUn ###
+
+summ_bgibbsUn <- bgibbsUn |>
+  tidyr::pivot_longer(cols = BEECH_intercept:TAMARACK_prsd,
+                      names_to = 'taxon_var', values_to = 'estimate') |>
+  dplyr::mutate(taxon = sub(pattern = '_.*', replacement = '', x = taxon_var),
+                var = sub(pattern = '.*_', replacement = '', x = taxon_var)) |>
+  dplyr::select(-taxon_var) |>
+  dplyr::group_by(taxon, var) |>
+  dplyr::summarize(mean = mean(estimate),
+                   sd = sd(estimate),
+                   CI_2.5 = quantile(estimate, probs = 0.025),
+                   CI_25 = quantile(estimate, probs = 0.25),
+                   CI_50 = median(estimate),
+                   CI_75 = quantile(estimate, probs = 0.75),
+                   CI_97.5 = quantile(estimate, probs = 0.975))
+
+### fSensGibbs ###
+
+summ_fSensGibbs <- fSensGibbs |>
+  tidyr::pivot_longer(cols = sand:prsd,
+                      names_to = 'var', values_to = 'estimate') |>
+  dplyr::group_by(var) |>
+  dplyr::summarize(mean = mean(estimate),
+                   sd = sd(estimate),
+                   CI_2.5 = quantile(estimate, probs = 0.025),
+                   CI_25 = quantile(estimate, probs = 0.25),
+                   CI_50 = median(estimate),
+                   CI_75 = quantile(estimate, probs = 0.75),
+                   CI_97.5 = quantile(estimate, probs = 0.975))
+
+### sgibbs ###
+
+summ_sgibbs <- sgibbs |>
+  tidyr::pivot_longer(cols = BEECH_BEECH:TAMARACK_TAMARACK,
+                      names_to = 'taxon_taxon', values_to = 'estimate') |>
+  dplyr::mutate(taxon1 = sub(pattern = '_.*', replacement = '', x = taxon_taxon),
+                taxon2 = sub(pattern = '.*_', replacement = '', x = taxon_taxon)) |>
+  dplyr::select(-taxon_taxon) |>
+  dplyr::group_by(taxon1, taxon2) |>
+  dplyr::summarize(mean = mean(estimate),
+                   sd = sd(estimate),
+                   CI_2.5 = quantile(estimate, probs = 0.025),
+                   CI_25 = quantile(estimate, probs = 0.25),
+                   CI_50 = median(estimate),
+                   CI_75 = quantile(estimate, probs = 0.75),
+                   CI_97.5 = quantile(estimate, probs = 0.975))
+
+# Save
+save(summ_bFacGibbs, summ_bgibbs,
+     summ_bgibbsUn, summ_fSensGibbs,
+     summ_sgibbs,
+     file = 'out/post_sand_aat_tpr_prsd/parameter_summaries.RData')

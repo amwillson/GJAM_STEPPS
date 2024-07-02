@@ -1,4 +1,17 @@
-## Format climate data
+### STEP 2-1
+
+## Formatting downscaled climate reconstructions
+## Going from .mat data structure to arrays
+
+## Input: each .mat file from /Volumes/FileBackup/Climate_Downscaling_RG/
+## .mat files are stored separately because of large data volume
+## Matlab file structure with one climate variable for one month in each file
+## Files are privately archived and will be made publicly available upon publication
+
+## Output: each .RData file from /Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/
+## .RData files are stored separately because of large data volume
+## Each .RData file contains 2 arrays, one with downscaled estimate and one with bias
+## Used in 2.2.climate_temporal_summaries.R
 
 rm(list = ls())
 

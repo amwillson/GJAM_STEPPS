@@ -1,15 +1,30 @@
+### STEP 3-3
+
 ## Running GJAM for mean STEPPS data
 
 ## First perform variable selection:
-## choosing to keep silt, average annual temperature,
-## Total annual preciptiation, precipitation seasonality
+## choosing to keep silt OR sand, average annual temperature,
+## Total annual preciptiation OR temperature seasonality, 
+## precipitation seasonality
 ## Based on correlations and VIFs
 
 ## Then formatting ydata for GJAM
-## perturb most inconsequential taxon (ash) by randomly adding or
-## subtracting small amount to get around sum to 1 constraint
+## removing the ash taxon because it never is very abundant
+## and GJAM has an error related to strong multicollinearity when
+## ash is included, but not when it is removed
 
 ## Then running GJAM
+
+## Input: data/processed/mean_stepps_soil_clim.RData
+## Dataframe with co-located reconstructions of 12 taxa's relative abundances,
+## Soil variables, and climate variables
+
+## Output: out/mean/mean_sand_aat_tpr_prsd.RData
+## Output: out/mean/mean_silt_aat_tpr_prsd.RData
+## Output: out/mean/mean_sand_aat_tsd_prsd.RData
+## Output: out/mean/mean_silt_aat_tsd_prsd.RData
+## "out" object from fitting GJAM with different combinations of non-correlated covariates
+## Used in 3.4.process_out_gjam_mean.R
 
 rm(list = ls())
 
@@ -86,15 +101,15 @@ set.seed(1996)
 
 # Format ydata
 ydata <- taxon_insample_all |>
-  dplyr::select(ash:tamarack) |>
+  dplyr::select(beech:tamarack) |>
   dplyr::rename(oc = other_conifer,
-                oh = other_hardwood) |>
+                oh = other_hardwood)# |>
   # This is a different way of handling the inability
   # to invert the design matrix
   # However, it requires some finessing which
   # makes this solution intractable for the posterior samples
-  dplyr::mutate(ash = ash + runif(n = 1, min = -0.01, max = 0.01),
-                ash = dplyr::if_else(ash <= 0, 1e-4, ash))
+  #dplyr::mutate(ash = ash + runif(n = 1, min = -0.01, max = 0.01),
+  #              ash = dplyr::if_else(ash <= 0, 1e-4, ash))
 
 #### Run GJAM ####
 
@@ -106,6 +121,8 @@ typeNames <- 'FC'
 # model list
 ml <- list(ng = niter, burnin = nburn, typeNames = typeNames)
 
+### silt + aat + tpr + prsd ###
+
 # run model
 out <- gjam::gjam(formula = ~ silt + aat + tpr + prsd,
                   xdata = xdata, ydata = ydata,
@@ -115,4 +132,43 @@ out <- gjam::gjam(formula = ~ silt + aat + tpr + prsd,
 gjam::gjamPlot(out)
 
 # Save output
-save(out, file = 'out/mean_silt_aat_tpr_prsd.RData')
+save(out, file = 'out/mean/mean_silt_aat_tpr_prsd.RData')
+
+### sand + aat + tpr + prsd ###
+
+# run model
+out <- gjam::gjam(formula = ~ sand + aat + tpr + prsd,
+                  xdata = xdata, ydata = ydata,
+                  modelList = ml)
+
+# Simple plots
+gjam::gjamPlot(out)
+
+# Save output
+save(out, file = 'out/mean/mean_sand_aat_tpr_prsd.RData')
+
+### silt + aat + tsd + prsd ###
+
+# run model
+out <- gjam::gjam(formula = ~ silt + aat + tsd + prsd,
+                  xdata = xdata, ydata = ydata,
+                  modelList = ml)
+
+# Simple plots
+gjam::gjamPlot(out)
+
+# Save output
+save(out, file = 'out/mean/mean_silt_aat_tsd_prsd.RData')
+
+### sand + aat + tsd + prsd ###
+
+# run model
+out <- gjam::gjam(formula = ~ sand + aat + tsd + prsd,
+                  xdata = xdata, ydata = ydata,
+                  modelList = ml)
+
+# Simple plots
+gjam::gjamPlot(out)
+
+# Save output
+save(out, file = 'out/mean/mean_sand_aat_tsd_prsd.RData')

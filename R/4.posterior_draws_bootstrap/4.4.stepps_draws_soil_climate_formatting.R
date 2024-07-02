@@ -1,4 +1,16 @@
-## Matching posterior draws with climate and soil data
+### STEP 4-4
+
+## Adding soil and climate reconstructions to STEPPS subsampled mean relative abundances
+
+## Input: data/intermediate/stepps_post_subsampled.RData
+## Dataframe with subset of spatio-temporal locations
+
+## Input: data/processed/mean_stepps_soil_clim.RData
+## Formatted mean STEPPS relative abundances with climate and soil reconstructions
+
+## Output: data/processed/post_stepps_soil_clim.RData
+## Posterior estimates from STEPPS with co-located climate and soil covariates
+## Used in 4.5.run_gjam.R
 
 rm(list = ls())
 

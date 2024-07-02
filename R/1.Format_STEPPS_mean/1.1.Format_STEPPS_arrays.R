@@ -1,10 +1,20 @@
-## Reading in and formatting STEPPS data product
+### STEP 1-1
+
+## Reading in and formatting STEPPS mean data product
 ## Going from NCDF data structure to arrays
+
+## Input: data/input/msb-paleon-2/2Kyrs_Comp_Mean_Level2_v1.0.nc
+## netCDF file with mean relative abundances from STEPPS model
+## from https://portal.edirepository.org/nis/mapbrowse?scope=msb-paleon&identifier=22
+
+## Output: data/processed/mean_STEPPS.RData
+## coordinates, time, and relative abundances in array format
+## Used in 1.2.Plot_STEPPS.R, 3.1.subsample_stepps.R
 
 rm(list = ls())
 
 # Get raw data
-fc <- ncdf4::nc_open('data/raw/msb-paleon-2/2Kyrs_Comp_Mean_Level2_v1.0.nc')
+fc <- ncdf4::nc_open('data/input/msb-paleon-2/2Kyrs_Comp_Mean_Level2_v1.0.nc')
 
 # Extract dimensions
 x <- ncdf4::ncvar_get(nc = fc, varid = 'x')

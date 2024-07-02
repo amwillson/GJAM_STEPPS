@@ -1,4 +1,6 @@
-## Summarize temperature and precipitation over time
+### STEP 2-2
+
+## Summarize temperature and precipitation downscaled reconstructions over time
 
 ## Calculating four climate variables for 50 year windows:
 ## 1. average annual temperature
@@ -15,6 +17,22 @@
 ##    - for all years within window, take average
 
 ## Calculated on both biased and bias-corrected climate estimates
+
+## Input: each .RData file from /Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/
+## .RData files are stored separately because of large data volume
+## Each .RData file contains 2 arrays, one with downscaled estimate and one with bias
+
+## Output: data/intermediate/tas_201.113.1776.12.RData, data/intermediate/pr_201.113.1776.12.RData
+## Intermediate arrays for estimated and de-biased air temperature and total precipitation
+## with dimensions of lat x lon x year x month
+## Not used, just saved so it does not need to be recomputed
+
+## Output: data/intermediate/mean_average_annual_temperature.RData, data/intermediate/mean_temperature_seasonality.RData,
+## data/intermediate/mean_total_annual_precipitation.RData, data/intermediate/mean_precipitation_seasonality.RData
+## Intermediate arrays for estimated and de-based average annual temperature, temperature seasonality,
+## total annual precipitation, and precipitation seasonality
+## calculated by summarizing over months and then 50-year windows
+## Used in 2.3.climate_clip_spatial_extent.R
 
 rm(list = ls())
 

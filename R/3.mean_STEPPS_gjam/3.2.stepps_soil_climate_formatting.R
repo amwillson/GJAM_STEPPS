@@ -1,4 +1,36 @@
-## Adding soil and climate  data to STEPPS subsampled data
+### STEP 3-2
+
+## Adding soil and climate reconstructions to STEPPS subsampled mean relative abundances
+
+## Input: data/intermediate/stepps_subsampled.RData
+## Dataframe with subset of spatio-temporal locations
+
+## Input: data/input/8km.RData
+## Dataframe with grid ID and grid centroid lat/lon from PLS data
+## This is required because the soil variable estimates were originally
+## sampled using the PLS data
+
+## Input: data/input/gridded_soil.RData
+## Soil data that was previously processed for the PLS dataset
+## In the "input" folder because this was processed for a different project,
+## not processed for this project
+
+## Input: data/processed/gridded_climate.RData
+## Downscaled climate reconstructions
+## In the "processed" folder because this was downscaled and processed
+## for this project
+
+## Output: data/intermediate/taxon_insample_soil.RData
+## Output: data/intermediate/taxon_oos_soil.RData
+## Dataframes with STEPPS mean relative abundances and soil variables with
+## in-sample and out-of-sample data saved separately.
+## Not used, just an intermediate data step
+
+## Output: data/processed/mean_stepps_soil_clim.RData
+## Dataframes with STEPPS mean relative abundances, soil variables, and climate variables
+## in-sample and out-of-sample data saved in separate data frames
+## Used in 3.3.run_gjam.R and 4.4.stepps_draws_soil_climate_formatting.R
+
 rm(list = ls())
 
 source('R/funs.R')
@@ -9,7 +41,7 @@ source('R/funs.R')
 load('data/intermediate/stepps_subsampled.RData')
 
 # Load PLS data because that's how we matched the soil grid
-load('data/processed/8km.RData')
+load('data/input/8km.RData')
 
 # Take only coordinates and ID column
 comp_dens <- dplyr::select(comp_dens, x, y, id)
@@ -22,7 +54,7 @@ taxon_oos_id <- taxon_oos |>
   dplyr::left_join(y = comp_dens, by = c('x', 'y'))
 
 # Load soil data
-load('data/processed/gridded_soil.RData')
+load('data/input/gridded_soil.RData')
 
 # Rename coordinate columns to amke sure we're on target later
 soil_grid <- dplyr::rename(soil_grid, 

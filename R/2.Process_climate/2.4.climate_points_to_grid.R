@@ -1,11 +1,30 @@
+### STEP 2-4
+
 ## Second part of spatially matching climate to STEPPS 
+## Matches climate grid to point-level PLS data
+## NOTE: This is separate because this part must be run on VM due to memory constraints
+## Requires approximately 40 GB RAM as written
 
-## This is separate because this part must be run on VM
-## due to memory constraints
+## Input: data/intermediate/clipped_clim_50.RData
+## Climate reconstructions for one period of time, with all spatial locations
 
-## Reads in output of step 5
+## Input: .RData files in data/input/PLS_point/
+## Contain dataframes with point-level observations of taxon occurrences from the
+## Public Land Survey (PLS). The STEPPS model was calibrated on the PLS. From a previous
+## project, we have the PLS points that are in each STEPPS grid cell.
+## We can use this relationship for the climate data as follows:
+## 1. Find which PLS point each climate reconstruction is closest to
+## 2. Identify which grid cell each PLS point falls within
+## 3. Average over all climate reconstructions in the same grid cell according to which PLS point it is closest to
 
-rm(list = ls())
+## Output: data/intermediate/clipped_pls.RData
+## PLS data frame with clipped spatial extent (removes lower Michigan since it is not within our domain)
+## Only kept so that this step does not need to be run again. Not used in another step
+
+## Output: data/intermediate/point_matched_clim.RData
+## Dataframe with contents of clipped_clim_50.RData plus the coordinates of the
+## closest PLS point
+## Used in 2.5.climate_aggregate_to_grid.R
 
 #### Match points to PLS points ####
 
@@ -16,9 +35,9 @@ source('R/funs.R')
 load('data/intermediate/clipped_clim_50.RData')
 
 # Load PLS point level data for area of interest
-load('data/processed/PLS_point/minnesota_process.RData')
-load('data/processed/PLS_point/upmichigan_process.RData')
-load('data/processed/PLS_point/wisconsin_process.RData')
+load('data/input/PLS_point/minnesota_process.RData')
+load('data/input/PLS_point/upmichigan_process.RData')
+load('data/input/PLS_point/wisconsin_process.RData')
 
 # Combine all PLS data
 pls <- rbind(minnesota, upmichigan, wisconsin)
@@ -118,6 +137,8 @@ rm(closest_point, coords_pls2, select_ey.hat, pls2)
 
 # Update column names
 colnames(clim_pls) <- c('time', 'aat', 'tpr', 'tsd', 'prsd', 'spatID', 'clim_x', 'clim_y', 'pls_x', 'pls_y', 'uniqueID')
+
+#### Data checks ####
 
 # Check that coordinates match up
 clim_pls |>

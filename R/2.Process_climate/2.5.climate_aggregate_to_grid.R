@@ -1,10 +1,43 @@
-## Third part of spatially matching climate to PLS
+### STEP 2-5
 
-## This part should be run on local machine
-## Only step 6 should be run on the VM
+## Third part of spatially matching climate to PLS
+## Aggregates climate reconstructions to STEPPS grid cell size
+## Then estimates "empty" grid cells. Empty grid cells happen
+## because some grid cells have no PLS points. This is because of large
+## Native American reservations and islands. We have climate reconstructions for
+## these locations, though, so we simply find and add the climate reconstructions
+## for this subsest of locations.
+## NOTE: This part should be run on local machine
+## Only step 2-4 should be run on the VM
 ## because other steps should use the most recent version of R (4.4.0)
 
-## Loads in intermediate product from step 6
+## Input: data/intermediate/point_matched_clim.RData
+## Matching between points and grid cells in the PLS data. Tells us which
+## climate reconstruction grid cells correspond to which STEPPS grid cells
+
+## Input: data/intermediate/clipped_clim_alltime.RData
+## All climate reconstructions for the more limited spatial extent of our region
+## of interest. All time points, which means there are repeated spatial locations.
+
+## Input: data/input/total_matched.RData
+## Dataframe with the mapping from PLS points to PLS grid cells
+## Tells us which grid cell each PLS point falls within. We use this to
+## determine which STEPPS grid cell each climate grid cell falls within, based
+## on which PLS point each climate grid cell is closest to
+
+## Input: data/intermediate/matching_intermediate.RData
+## Intermediate data product with match between grid cell ID and lat/lon for PLS
+## Use this to add grid cell centroid coordinates to climate reconstruction
+## grid cells after aggregating to the STEPPS grid cell
+
+## Input: data/input/8km.RData
+## Used to identify which grid cells have no PLS points, so we can
+## manually identify climate reconstruction points that are within those grid cells
+
+## Output: data/processed/climate_gridded.RData
+## data frame with gridded climate reconstructions at the spatial and temporal
+## scales of the STEPPS data product
+## Used in 3.2.stepps_soil_climate_formatting.R
 
 rm(list = ls())
 
@@ -87,7 +120,7 @@ cowplot::plot_grid(p1, p2, nrow = 1)
 #### Aggregate points to PLS grid ####
 
 # Load point and grid matched PLS data
-load('data/raw/total_matched.RData')
+load('data/input/total_matched.RData')
 
 # Add grid ID to climate data
 ey.hat_matched <- ecosystem_matched |>
@@ -167,7 +200,7 @@ cowplot::plot_grid(grid, point, nrow = 1)
 grid <- unique(ey.hat_grid$grid_id)
 
 # Gridded PLS data products
-load('data/processed/8km.RData')
+load('data/input/8km.RData')
 
 # Make spatial object
 comp_dens <- sf::st_as_sf(comp_dens,

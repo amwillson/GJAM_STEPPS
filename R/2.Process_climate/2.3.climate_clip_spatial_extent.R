@@ -1,4 +1,25 @@
-## Spatially matching climate to STEPPS
+### STEP 2-3
+
+## Perform checks on spatio-temporal variability of downscaled climate reconstructions
+## Then clip the extent to the extent of the STEPPS vegetation reconstructions
+## Prepares climate data to be matched to PLS points in the next step
+
+## Input: data/intermediate/mean_average_annual_temperature.RData,
+## Input: data/intermediate/mean_total_annual_precipitation.RData
+## Input: data/intermediate/mean_temperature_seasonality.RData
+## Input: data/intermediate/mean_precipitation_seasonality.RData
+## Climate summaries in array format from previous step
+
+## Output: data/intermediate/clipped_clim_50.RData
+## Output: data/intermediate/clipped_clim_alltime.RData
+## Dataframes with coordinates, time, and climate reconstructions for narrower spatial
+## extent and coarser temporal resolution that matches STEPPS data product
+## clipped_clim_50 contains data only from the 50 CE timestep. This is useful because
+## all spatial locations are represented once.
+## clipped_clim_alltime contains data from all time steps and spatial locations are
+## repeated at each time step
+## clipped_clim_50 used in 2.4.climate_points_to_grid.R
+## clipped_clim_alltime used in 2.5.climate_aggregate_to_grid.R
 
 rm(list = ls())
 
@@ -153,7 +174,7 @@ identical(ey.hat$spatID, unbias$spatID)
 # Check that there are the exact same number of spatial locations in each timestep
 nrow(ey.hat) / length(unique(ey.hat$spatID)) == length(unique(ey.hat$time))
 
-### Convert coordinate system ###
+#### Convert coordinate system ####
 
 ey.hat <- sf::st_as_sf(ey.hat,
                        coords = c('x', 'y'),
@@ -167,7 +188,7 @@ ey.hat <- sf::st_transform(ey.hat,
 unbias <- sf::st_transform(unbias,
                            crs = 'EPSG:3175')
 
-### Clip to state extents ###
+#### Clip to state extents ####
 
 # Take one time period
 # use the spatID to apply to other time periods

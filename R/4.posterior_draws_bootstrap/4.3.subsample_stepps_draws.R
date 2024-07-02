@@ -817,6 +817,8 @@ post_oos <- post_filter |>
   dplyr::select(-keep, -loc) |>
   dplyr::filter(time == keep_times[5])
 
+#### Plotting temporal subsample ####
+
 # Order for  facets
 facet_order <- c('1900 YBP', '1500 YBP',
                  '1100 YBP', '700 YBP')

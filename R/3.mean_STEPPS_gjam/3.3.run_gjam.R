@@ -38,7 +38,8 @@ xdata <- dplyr::select(taxon_insample_all, clay:prsd)
 
 # Check correlations between covariates
 xdata_cor <- cor(xdata)
-corrplot::corrplot(xdata_cor, type = 'upper', diag = FALSE)
+corrplot::corrplot(xdata_cor, type = 'upper', diag = FALSE,
+                   tl.col = 'black', tl.cex = 1.4)
 
 ## Check VIFs ##
 # Pivot longer to make abundance one response

@@ -20,7 +20,7 @@ rm(list = ls())
 # sand_aat_tpr_prsd
 # silt_aat_tsd_prsd
 # sand_aat_tsd_prsd
-form <- 'silt_aat_tpr_prsd'
+form <- 'sand_aat_tsd_prsd'
 
 # Load formatted data
 load(paste0('out/mean/processed_', form, '.RData'))
@@ -468,11 +468,26 @@ bgibbsUn |>
   ggplot2::theme_minimal() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-## PINE
+## OTHER HARDWOOD
 
 bgibbsUn |>
   dplyr::select(c(colnames(bgibbsUn)[36:40], iter)) |>
   tidyr::pivot_longer(colnames(bgibbsUn)[36:40],
+                      names_to = 'beta', values_to = 'estimate') |>
+  dplyr::mutate(covar = sub(pattern = '.*_', '', beta)) |>
+  ggplot2::ggplot(ggplot2::aes(x = iter, y = estimate)) +
+  ggplot2::geom_line(show.legend = FALSE) +
+  ggplot2::facet_wrap(~covar, scales = 'free') +
+  ggplot2::xlab('Iteration') + ggplot2::ylab('Coefficient Estimate') +
+  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+## PINE
+
+bgibbsUn |>
+  dplyr::select(c(colnames(bgibbsUn)[41:45], iter)) |>
+  tidyr::pivot_longer(colnames(bgibbsUn)[41:45],
                       names_to = 'beta', values_to = 'estimate') |>
   dplyr::mutate(covar = sub(pattern = '.*_', '', beta)) |>
   ggplot2::ggplot(ggplot2::aes(x = iter, y = estimate)) +
@@ -486,8 +501,8 @@ bgibbsUn |>
 ## SPRUCE
 
 bgibbsUn |>
-  dplyr::select(c(colnames(bgibbsUn)[41:45], iter)) |>
-  tidyr::pivot_longer(colnames(bgibbsUn)[41:45],
+  dplyr::select(c(colnames(bgibbsUn)[46:50], iter)) |>
+  tidyr::pivot_longer(colnames(bgibbsUn)[46:50],
                       names_to = 'beta', values_to = 'estimate') |>
   dplyr::mutate(covar = sub(pattern = '.*_', '', beta)) |>
   ggplot2::ggplot(ggplot2::aes(x = iter, y = estimate)) +
@@ -501,8 +516,8 @@ bgibbsUn |>
 ## TAMARACK
 
 bgibbsUn |>
-  dplyr::select(c(colnames(bgibbsUn)[46:50], iter)) |>
-  tidyr::pivot_longer(colnames(bgibbsUn)[46:50],
+  dplyr::select(c(colnames(bgibbsUn)[51:55], iter)) |>
+  tidyr::pivot_longer(colnames(bgibbsUn)[51:55],
                       names_to = 'beta', values_to = 'estimate') |>
   dplyr::mutate(covar = sub(pattern = '.*_', '', beta)) |>
   ggplot2::ggplot(ggplot2::aes(x = iter, y = estimate)) +
@@ -802,11 +817,14 @@ sens |>
   ggplot2::ggplot() +
   ggplot2::geom_boxplot(ggplot2::aes(x = reorder(covar, mean, decreasing = FALSE),
                                      ymin = lower, lower = mean - sd, middle = mean, upper = mean + sd, ymax = upper,
-                                     color = reorder(covar, mean, decreasing = TRUE)), stat = 'identity', show.legend = FALSE) +
+                                     color = reorder(covar, mean, decreasing = TRUE),
+                                     fill = reorder(covar, mean, decreasing = TRUE)), 
+                        stat = 'identity', show.legend = FALSE, alpha = 0.5, linewidth = 1) +
   ggplot2::coord_flip() +
   ggplot2::xlab('') + ggplot2::ylab(expression(paste('Sensitivity (', hat(F), ')'))) +
   ggplot2::theme_minimal() +
   ggplot2::scale_color_viridis_d(option = 'D', end = 0.9) +
+  ggplot2::scale_fill_viridis_d(option = 'D', end = 0.9) +
   ggplot2::scale_x_discrete(labels = c('aat' = 'Average annual temperature',
                                        'prsd' = 'Precipitation seasonality',
                                        'tpr' = 'Total precipitation',
@@ -822,11 +840,14 @@ fSensGibbs |>
   ggplot2::ggplot() +
   ggplot2::geom_violin(ggplot2::aes(x = reorder(covariate, val, decreasing = FALSE),
                                     y = val,
-                                    color = reorder(covariate, val, decreasing = TRUE)), show.legend = FALSE) +
+                                    color = reorder(covariate, val, decreasing = TRUE),
+                                    fill = reorder(covariate, val, decreasing = TRUE)), 
+                       show.legend = FALSE, alpha = 0.5) +
   ggplot2::coord_flip() +
   ggplot2::xlab('') + ggplot2::ylab(expression(paste('Sensitivity (', hat(F), ')'))) +
   ggplot2::theme_minimal() +
   ggplot2::scale_color_viridis_d(option = 'D', end = 0.9) +
+  ggplot2::scale_fill_viridis_d(option = 'D', end = 0.9) +
   ggplot2::scale_x_discrete(labels = c('aat' = 'Average annual temperature',
                                        'prsd' = 'Precipitation seasonality',
                                        'tpr' = 'Total precipitation',
@@ -884,9 +905,10 @@ upp_mat <- stats::cov2cor(upp_mat)
 colnames(upp_mat) <- rownames(upp_mat) <- colnames(corr_mat)
 
 dev.off()
-# Plot with uncertainty
-corrplot::corrplot(corr_mat, lowCI.mat = low_mat, uppCI.mat = upp_mat, plotCI = 'circle',
-                   diag = FALSE, type = 'upper', col = pal, tl.col = 'black', tl.cex = 1.4)
 
 # Without uncertainty
 corrplot::corrplot(corr_mat, diag = FALSE, type = 'upper', col = pal, tl.col = 'black', tl.cex = 1.4)
+
+# Plot with uncertainty
+corrplot::corrplot(corr_mat, lowCI.mat = low_mat, uppCI.mat = upp_mat, plotCI = 'circle',
+                   diag = FALSE, type = 'upper', col = pal, tl.col = 'black', tl.cex = 1.4)

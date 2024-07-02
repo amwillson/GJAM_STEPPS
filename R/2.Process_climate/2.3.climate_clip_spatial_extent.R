@@ -59,55 +59,108 @@ states <- map_states()
 
 states <- sf::st_transform(states, crs = 'EPSG:4326')
 
+# Order of facets
+time_order <- c('50 CE', '150 CE', '250 CE', '350 CE', '450 CE', '550 CE',
+                '650 CE', '750 CE', '850 CE', '950 CE', '1050 CE', '1150 CE',
+                '1250 CE', '1350 CE', '1450 CE', '1550 CE', '1650 CE', '1750 CE')
+
 # Initial plots to check things out
 aat_ey.hat |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = aat)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'A', name = 'Average annual\ntemperature') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Original model estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 aat_unbias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = aat)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'A', name = 'Average annual\ntemperature') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Debiased estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 tpr_ey.hat |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = tpr)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'G', name = 'Total annual\nprecipitation') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Original model estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 tpr_unbias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = tpr)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'G', name = 'Total annual\nprecipitation') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Debiased estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 tsd_ey.hat |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = tsd)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'D', name = 'Temperature\nseasonality') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Original model estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 tsd_unbias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = tsd)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'D', name = 'Temperature\nseasonality') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Debiased estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 prsd_ey.hat |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = prsd)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'E', name = 'Precipitation\nseasonality') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Original model estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 prsd_unbias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = prsd)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'E', name = 'Precipitation\nseasonality') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Debiased estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 # Check magnitude of bias
 bias <- aat_ey.hat_mean - aat_unbias_mean
@@ -115,44 +168,64 @@ bias <- reshape2::melt(bias)
 colnames(bias) <- c('x', 'y', 'time', 'bias')
 
 bias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = bias)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Bias in average annual temperature') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 bias <- tpr_ey.hat_mean - tpr_unbias_mean
 bias <- reshape2::melt(bias)
 colnames(bias) <- c('x', 'y', 'time', 'bias')
 
 bias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = bias)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Bias in total annual precipitation') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 bias <- tsd_ey.hat_mean - tsd_unbias_mean
 bias <- reshape2::melt(bias)
 colnames(bias) <- c('x', 'y', 'time', 'bias')
 
 bias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = bias)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Bias in temperature seasonality') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 bias <- prsd_ey.hat_mean - prsd_unbias_mean
 bias <- reshape2::melt(bias)
 colnames(bias) <- c('x', 'y', 'time', 'bias')
 
 bias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
   ggplot2::ggplot() +
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = bias)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Bias in precipitation seasonality') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 # Combine variables
 ey.hat <- aat_ey.hat |>

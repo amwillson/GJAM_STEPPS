@@ -1,4 +1,9 @@
-## Processing output from posterior draws model runs
+### STEP 4-6
+
+## Processing output from GJAM model fit with STEPPS relative abundance posterior draws
+## This step must be run on a VM because of memory constraints
+## 
+## Input: 
 
 rm(list = ls())
 

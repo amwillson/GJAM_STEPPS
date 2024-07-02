@@ -2,15 +2,67 @@
 
 ## Processing output from GJAM model fit with STEPPS relative abundance posterior draws
 ## This step must be run on a VM because of memory constraints
-## 
-## Input: 
+## Requires ~ 40 GB RAM
+## NOTE that this step is the only one that requires you to change the file path according to what
+## machine you're working on
+## This is because on a local machine, the files must be saved to an external drive because
+## of storage constraints, but on the VM, the files cannot be on an external drive and must
+## be saved somewhere accessible.
+## On local machine, I saved the files at /Volumes/FileBackup/
+## On VM, I saved/loaded the files at out/posteriors/
+## You must change the file path according to what type of machine you're working on
+
+## Input: out/posteriors/silt_aat_tpr_prsd/GJAM_STEPPS_post_silt_aat_tpr_prsd.RData
+## Input: out/posteriors/sand_aat_tpr_prsd/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData
+## Input: out/posteriors/silt_aat_tsd_prsd/GJAM_STEPPS_post_silt_aat_tsd_prsd.RData
+## Input: out/posteriors/sand_aat_tsd_prsd/GJAM_STEPPS_post_sand_aat_tsd_prsd.RData
+## Depending on which model format, you load one of these files, which has the posterior
+## estimates for a given configuration of GJAM
+
+## Output: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/bFacGibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/bgibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd_post_silt_aat_tpr_prsd/bgibbsUn.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/fSensGibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/sgibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bFacGibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bgibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bgibbsUn.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/fSensGibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/sgibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bFacGibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bgibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bgibbsUn.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/fSensGibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/sgibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bFacGibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bgibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bgibbsUn.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/fSensGibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/sgibbs.RDS
+## Each parameter type for each model run is saved separately in data frame format
+## to faciliate easy loading/manipulation of the full chains
+
+## Output: out/posteriors/silt_aat_tpr_prsd/parameter_summaries.RData
+## Output: out/posteriors/sand_aat_tpr_prsd/parameter_summaries.RData
+## Output: out/posteriors/silt_aat_tsd_prsd/parameter_summaries.RData
+## Output: out/posteriors/sand_aat_tsd_prsd/parameter_summaries.RData
+## Summary statistics over full chains for each model type. All parameter
+## types are saved together in different data frames
 
 rm(list = ls())
 
 #### Extracting parameter estimates ####
 
+# Which model format?
+# Options:
+# silt_aat_tpr_prsd
+# sand_aat_tpr_prsd
+# silt_aat_tsd_prsd
+# sand_aat_tsd_prsd
+form <- 'sand_aat_tsd_prsd'
+
 # Load model output
-load('out/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
+load(paste0('out/posteriors/', form, '/GJAM_STEPPS_post_', form, '.RData'))
 
 # Number of draws
 ndraw <- length(output)
@@ -70,20 +122,21 @@ for(i in 1:ndraw){
     fSensGibbs <- rbind(fSensGibbs, temp_fSensGibbs)
     sgibbs <- rbind(sgibbs, temp_sgibbs)
   }
+  print(i)
 }
 
 # Save
 # Saving as RDS to hopefully make it easier to load these things
 saveRDS(object = bFacGibbs,
-        file = 'out/post_sand_aat_tpr_prsd/bFacGibbs.RDS')
+        file = paste0('out/posteriors/', form, '/bFacGibbs.RDS'))
 saveRDS(object = bgibbs,
-        file = 'out/post_sand_aat_tpr_prsd/bgibbs.RDS')
+        file = paste0('out/posteriors/', form, '/bgibbs.RDS'))
 saveRDS(object = bgibbsUn,
-        file = 'out/post_sand_aat_tpr_prsd/gibbsUn.RDS')
+        file = paste0('out/posteriors/', form, '/bgibbsUn.RDS'))
 saveRDS(object = fSensGibbs,
-        file = 'out/post_sand_aat_tpr_prsd/fSensGibbs.RDS')
+        file = paste0('out/posteriors/', form, '/fSensGibbs.RDS'))
 saveRDS(object = sgibbs,
-        file = 'out/post_sand_aat_tpr_prsd/sgibbs.RDS')
+        file = paste0('out/posteriors/', form, '/sgibbs.RDS'))
 
 # Remove extra objects
 rm(out, output,
@@ -97,7 +150,7 @@ rm(out, output,
 ### bFacGibbs ###
 
 summ_bFacGibbs <- bFacGibbs |>
-  tidyr::pivot_longer(cols = BEECH_sand:TAMARACK_prsd,
+  tidyr::pivot_longer(cols = colnames(bFacGibbs)[1:44],
                       names_to = 'taxon_var', values_to = 'estimate') |>
   dplyr::mutate(taxon = sub(pattern = '_.*', replacement = '', x = taxon_var),
                 var = sub(pattern = '.*_', replacement = '', x = taxon_var)) |>
@@ -114,7 +167,7 @@ summ_bFacGibbs <- bFacGibbs |>
 ### bgibbs ###
 
 summ_bgibbs <- bgibbs |>
-  tidyr::pivot_longer(cols = BEECH_intercept:TAMARACK_prsd,
+  tidyr::pivot_longer(cols = colnames(bgibbs)[1:55],
                       names_to = 'taxon_var', values_to = 'estimate') |>
   dplyr::mutate(taxon = sub(pattern = '_.*', replacement = '', x = taxon_var),
                 var = sub(pattern = '.*_', replacement = '', x = taxon_var)) |>
@@ -131,7 +184,7 @@ summ_bgibbs <- bgibbs |>
 ### bgibbsUn ###
 
 summ_bgibbsUn <- bgibbsUn |>
-  tidyr::pivot_longer(cols = BEECH_intercept:TAMARACK_prsd,
+  tidyr::pivot_longer(cols = colnames(bgibbsUn)[1:55],
                       names_to = 'taxon_var', values_to = 'estimate') |>
   dplyr::mutate(taxon = sub(pattern = '_.*', replacement = '', x = taxon_var),
                 var = sub(pattern = '.*_', replacement = '', x = taxon_var)) |>
@@ -148,7 +201,7 @@ summ_bgibbsUn <- bgibbsUn |>
 ### fSensGibbs ###
 
 summ_fSensGibbs <- fSensGibbs |>
-  tidyr::pivot_longer(cols = sand:prsd,
+  tidyr::pivot_longer(cols = colnames(fSensGibbs)[1:4],
                       names_to = 'var', values_to = 'estimate') |>
   dplyr::group_by(var) |>
   dplyr::summarize(mean = mean(estimate),
@@ -162,7 +215,7 @@ summ_fSensGibbs <- fSensGibbs |>
 ### sgibbs ###
 
 summ_sgibbs <- sgibbs |>
-  tidyr::pivot_longer(cols = BEECH_BEECH:TAMARACK_TAMARACK,
+  tidyr::pivot_longer(cols = colnames(sgibbs)[1:66],
                       names_to = 'taxon_taxon', values_to = 'estimate') |>
   dplyr::mutate(taxon1 = sub(pattern = '_.*', replacement = '', x = taxon_taxon),
                 taxon2 = sub(pattern = '.*_', replacement = '', x = taxon_taxon)) |>
@@ -180,4 +233,4 @@ summ_sgibbs <- sgibbs |>
 save(summ_bFacGibbs, summ_bgibbs,
      summ_bgibbsUn, summ_fSensGibbs,
      summ_sgibbs,
-     file = 'out/post_sand_aat_tpr_prsd/parameter_summaries.RData')
+     file = paste0('out/posteriors/', form, '/parameter_summaries.RData'))

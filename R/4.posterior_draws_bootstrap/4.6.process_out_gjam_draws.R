@@ -48,6 +48,7 @@
 ## Output: out/posteriors/sand_aat_tsd_prsd/parameter_summaries.RData
 ## Summary statistics over full chains for each model type. All parameter
 ## types are saved together in different data frames
+## Used in 4.7.gjam_draws_figures.R
 
 rm(list = ls())
 

@@ -37,6 +37,7 @@
 ## Summary statistics over full chains for each model type. All parameter
 ## types are saved together in different data frames
 ## Used for parameter inference figures
+## Currently not used but could easily be used instead of full chains
 ## Included in repo
 
 ## Output: none
@@ -49,7 +50,7 @@ rm(list = ls())
 # sand_aat_tpr_prsd
 # silt_aat_tsd_prsd
 # sand_aat_tsd_prsd
-form <- 'silt_aat_tpr_prsd'
+form <- 'sand_aat_tsd_prsd'
 
 #### Trace plots ####
 
@@ -564,7 +565,7 @@ bgibbsUn |>
 ### fSensGibbs ###
 
 fSensGibbs |>
-  tidyr::pivot_longer(cols = sand:prsd,
+  tidyr::pivot_longer(cols = colnames(fSensGibbs)[1:4],
                       names_to = 'param', values_to = 'estimate') |>
   ggplot2::ggplot() +
   ggplot2::geom_line(ggplot2::aes(x = iter, y = estimate, color = draw)) +
@@ -749,7 +750,7 @@ cols <- ncol(bFacGibbs)
 # Format for distributions
 bFacGibbs_long <- bFacGibbs |>
   dplyr::select(-iter, -draw) |>
-  tidyr::pivot_longer(BEECH_sand:TAMARACK_prsd,
+  tidyr::pivot_longer(dplyr::everything(),
                       names_to = 'var', values_to = 'val') |>
   dplyr::mutate(taxon = sub(pattern = '_.*', replacement = '', x = var),
                 covariate = sub(pattern = '.*_', replacement = '', x = var))
@@ -790,7 +791,9 @@ for_plotting <- corr |>
 my_labeller <- ggplot2::as_labeller(x = c(aat = '`Average annual temperature`',
                                           tpr = '`Total annual precipitation`',
                                           sand = '`Soil % sand`',
-                                          prsd = '`Precipitation seasonality`'),
+                                          prsd = '`Precipitation seasonality`',
+                                          silt = '`Soil % silt`',
+                                          tsd = '`Temperature seasonality`'),
                                     default = ggplot2::label_parsed)
 
 bFacGibbs_long |>
@@ -863,35 +866,43 @@ sens |>
   ggplot2::geom_boxplot(ggplot2::aes(x = reorder(covar, mean, decreasing = FALSE),
                                      ymin = lower, lower = mean - sd, middle = mean,
                                      upper = mean + sd, ymax = upper,
-                                     color = reorder(covar, mean, decreasing = TRUE)),
-                        stat = 'identity', show.legend = FALSE) +
+                                     color = reorder(covar, mean, decreasing = TRUE),
+                                     fill = reorder(covar, mean, decreasing = TRUE)),
+                        stat = 'identity', show.legend = FALSE, alpha = 0.5) +
   ggplot2::coord_flip() +
   ggplot2::xlab('') + ggplot2::ylab(expression(paste('Sensitivity (', hat(F), ')'))) +
   ggplot2::theme_minimal() +
   ggplot2::scale_color_viridis_d(option = 'D', end = 0.9) +
+  ggplot2::scale_fill_viridis_d(option = 'D', end = 0.9) +
   ggplot2::scale_x_discrete(labels = c('aat' = 'Average annual temperature',
                                        'prsd' = 'Precipitation seasonality',
                                        'tpr' = 'Total precipitation',
-                                       'sand' = 'Soil % sand')) +
+                                       'sand' = 'Soil % sand',
+                                       'silt' = 'Soil % silt',
+                                       'tsd' = 'Temperature seasonality')) +
   ggplot2::theme(axis.title = ggplot2::element_text(size = 14),
                  axis.text = ggplot2::element_text(size = 12))
 
 fSensGibbs |>
   dplyr::select(-iter, -draw) |>
-  tidyr::pivot_longer(sand:prsd, names_to = 'covariate', values_to = 'val') |>
+  tidyr::pivot_longer(dplyr::everything(), names_to = 'covariate', values_to = 'val') |>
   ggplot2::ggplot() +
   ggplot2::geom_violin(ggplot2::aes(x = reorder(covariate, val, decreasing = FALSE),
                                     y = val,
-                                    color = reorder(covariate, val, decreasing = TRUE)),
-                       show.legend = FALSE) +
+                                    color = reorder(covariate, val, decreasing = TRUE),
+                                    fill = reorder(covariate, val, decreasing = TRUE)),
+                       show.legend = FALSE, alpha = 0.5) +
   ggplot2::coord_flip() +
   ggplot2::xlab('') + ggplot2::ylab(expression(paste('Sensitivity (', hat(F), ')'))) +
   ggplot2::theme_minimal() +
   ggplot2::scale_color_viridis_d(option = 'D', end = 0.9) +
+  ggplot2::scale_fill_viridis_d(option = 'D', end = 0.9) +
   ggplot2::scale_x_discrete(labels = c('aat' = 'Average annual temperature',
                                        'prsd' = 'Precipitation seasonality',
                                        'tpr' = 'Total precipitation',
-                                       'sand' = 'Soil % sand')) +
+                                       'sand' = 'Soil % sand',
+                                       'silt' = 'Soil % silt',
+                                       'tsd', 'Temperature seasonality')) +
   ggplot2::theme(axis.title = ggplot2::element_text(size = 14),
                  axis.text = ggplot2::element_text(size = 12))
 

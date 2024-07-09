@@ -24,7 +24,7 @@
 ## Output: out/mean/mean_sand_aat_tsd_prsd.RData
 ## Output: out/mean/mean_silt_aat_tsd_prsd.RData
 ## "out" object from fitting GJAM with different combinations of non-correlated covariates
-## Used in 3.4.process_out_gjam_mean.R
+## Used in 3.4.process_out_gjam_mean.R and 3.6.oos_prediction.R
 
 rm(list = ls())
 

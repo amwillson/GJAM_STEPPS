@@ -140,13 +140,15 @@ ey.hat_grid <- ey.hat_matched |>
   dplyr::summarize(aat = mean(aat),
                    tpr = mean(tpr),
                    tsd = mean(tsd),
-                   prsd = mean(prsd))
+                   prsd = mean(prsd),
+                   prcv = mean(prcv))
 unbias_grid <- unbias_matched |>
   dplyr::group_by(time, grid_id) |>
   dplyr::summarize(aat = mean(aat),
                    tpr = mean(tpr),
                    tsd = mean(tsd),
-                   prsd = mean(prsd))
+                   prsd = mean(prsd),
+                   prcv = mean(prcv))
 
 # Load intermediate grid matching
 load('data/intermediate/matching_intermediate.RData')
@@ -250,13 +252,15 @@ for(i in 1:nrow(nopoints)){
     dplyr::summarize(aat = mean(aat),
                      tpr = mean(tpr),
                      tsd = mean(tsd),
-                     prsd = mean(prsd))
+                     prsd = mean(prsd),
+                     prcv = mean(prcv))
   summ_unbias <- sub_unbias |>
     dplyr::group_by(time) |>
     dplyr::summarize(aat = mean(aat),
                      tpr = mean(tpr),
                      tsd = mean(tsd),
-                     prsd = mean(prsd))
+                     prsd = mean(prsd),
+                     prcv = mean(prcv))
   
   # Save
   if(i == 1){
@@ -286,7 +290,7 @@ for(i in 1:nrow(nopoints)){
 }
 
 # Change column names
-colnames(summ_xy_ey.hat) <- c('x', 'y', 'id', 'time', 'aat', 'tpr', 'tsd', 'prsd')
+colnames(summ_xy_ey.hat) <- c('x', 'y', 'id', 'time', 'aat', 'tpr', 'tsd', 'prsd', 'prcv')
 colnames(summ_xy_unbias) <- colnames(summ_xy_ey.hat)
 
 # Identify grid cells still missing
@@ -331,13 +335,13 @@ for(i in 1:nrow(nopoints)){
   temp_ey.hat <- cbind(rep(p$x, times = nrow(closest_ey.hat)),
                        rep(p$y, times = nrow(closest_ey.hat)),
                        rep(p$id, times = nrow(closest_ey.hat)),
-                       dplyr::select(closest_ey.hat, time:prsd))
+                       dplyr::select(closest_ey.hat, time:prcv))
   temp_unbias <- cbind(rep(p$x, times = nrow(closest_unbias)),
                        rep(p$y, times = nrow(closest_unbias)),
                        rep(p$id, times = nrow(closest_unbias)),
-                       dplyr::select(closest_unbias, time:prsd))
+                       dplyr::select(closest_unbias, time:prcv))
 
-  colnames(temp_ey.hat) <- c('x', 'y', 'id', 'time', 'aat', 'tpr', 'tsd', 'prsd')
+  colnames(temp_ey.hat) <- c('x', 'y', 'id', 'time', 'aat', 'tpr', 'tsd', 'prsd', 'prcv')
   colnames(temp_unbias) <- colnames(temp_ey.hat)
   
   # Combine with previous data frames

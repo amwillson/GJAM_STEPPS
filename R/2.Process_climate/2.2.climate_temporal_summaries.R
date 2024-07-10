@@ -536,17 +536,31 @@ save(tpr_ey.hat_mean, tpr_unbias_mean,
 prsd_ey.hat <- apply(pr_ey.hat, 1:3, sd)
 prsd_unbias <- apply(pr_unbias, 1:3, sd)
 
+# Mean precipitation across year
+prmean_ey.hat <- apply(pr_ey.hat, 1:3, mean)
+prmean_unbias <- apply(pr_unbias, 1:3, mean)
+
+# Coefficient of variation
+prcv_ey.hat <- prsd_ey.hat / prmean_ey.hat
+prcv_unbias <- prsd_unbias / prmean_unbias
+
 # Dim names
 dimnames(prsd_ey.hat) <- dimnames(tpr_ey.hat)
 dimnames(prsd_unbias) <- dimnames(tpr_unbias)
+dimnames(prcv_ey.hat) <- dimnames(tpr_ey.hat)
+dimnames(prcv_unbias) <- dimnames(tpr_unbias)
 
 # Average over 50-year intervals
 prsd_ey.hat_mean <- array(, dim = dim(tpr_ey.hat_mean))
 prsd_unbias_mean <- array(, dim = dim(tpr_unbias_mean))
+prcv_ey.hat_mean <- array(, dim = dim(tpr_ey.hat_mean))
+prcv_unbias_mean <- array(, dim = dim(tpr_unbias_mean))
 
 # Dim names
 dimnames(prsd_ey.hat_mean) <- dimnames(tpr_ey.hat_mean)
 dimnames(prsd_unbias_mean) <- dimnames(tpr_unbias_mean)
+dimnames(prcv_ey.hat_mean) <- dimnames(tpr_ey.hat_mean)
+dimnames(prcv_unbias_mean) <- dimnames(tpr_unbias_mean)
 
 # Loop over time intervals
 for(i in 1:nrow(time_intervals)){
@@ -563,9 +577,17 @@ for(i in 1:nrow(time_intervals)){
   temp <- prsd_unbias[,,dimnames(prsd_unbias)[[3]] %in% tt]
   prsd_unbias_mean[,,i] <- apply(temp, 1:2, mean)
   
+  # repeat for cv
+  temp <- prcv_ey.hat[,,dimnames(prcv_ey.hat)[[3]] %in% tt]
+  prcv_ey.hat_mean[,,i] <- apply(temp, 1:2, mean)
+  
+  temp <- prcv_unbias[,,dimnames(prcv_unbias)[[3]] %in% tt]
+  prcv_unbias_mean[,,i] <- apply(temp, 1:2, mean)
+  
   print(i)
 }
 
 # Save
 save(prsd_ey.hat_mean, prsd_unbias_mean,
+     prcv_ey.hat_mean, prcv_unbias_mean,
      file = 'data/intermediate/mean_precipitation_seasonality.RData')

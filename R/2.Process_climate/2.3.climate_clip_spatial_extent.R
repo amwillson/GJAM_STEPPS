@@ -43,6 +43,8 @@ tsd_ey.hat <- reshape2::melt(tsd_ey.hat_mean)
 tsd_unbias <- reshape2::melt(tsd_unbias_mean)
 prsd_ey.hat <- reshape2::melt(prsd_ey.hat_mean)
 prsd_unbias <- reshape2::melt(prsd_unbias_mean)
+prcv_ey.hat <- reshape2::melt(prcv_ey.hat_mean)
+prcv_unbias <- reshape2::melt(prcv_unbias_mean)
 
 # Add column names
 colnames(aat_ey.hat) <- c('x', 'y', 'time', 'aat')
@@ -53,6 +55,8 @@ colnames(tsd_ey.hat) <- c('x', 'y', 'time', 'tsd')
 colnames(tsd_unbias) <- c('x', 'y', 'time', 'tsd')
 colnames(prsd_ey.hat) <- c('x', 'y', 'time', 'prsd')
 colnames(prsd_unbias) <- c('x', 'y', 'time', 'prsd')
+colnames(prcv_ey.hat) <- c('x', 'y', 'time', 'prcv')
+colnames(prcv_unbias) <- c('x', 'y', 'time', 'prcv')
 
 # Make map of study region
 states <- map_states()
@@ -162,6 +166,32 @@ prsd_unbias |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 12))
 
+prcv_ey.hat |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = prcv)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'E', name = 'Precipitation\nseasonality') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Original model estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
+
+prcv_unbias |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, ' CE')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = prcv)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_viridis_c(option = 'E', name = 'Precipitation\nseasonality') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Debiased estimate') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
+
 # Check magnitude of bias
 bias <- aat_ey.hat_mean - aat_unbias_mean
 bias <- reshape2::melt(bias)
@@ -231,11 +261,13 @@ bias |>
 ey.hat <- aat_ey.hat |>
   dplyr::full_join(y = tpr_ey.hat, by = c('x', 'y', 'time')) |>
   dplyr::full_join(y = tsd_ey.hat, by = c('x', 'y', 'time')) |>
-  dplyr::full_join(y = prsd_ey.hat, by = c('x', 'y', 'time'))
+  dplyr::full_join(y = prsd_ey.hat, by = c('x', 'y', 'time')) |>
+  dplyr::full_join(y = prcv_ey.hat, by = c('x', 'y', 'time'))
 unbias <- aat_unbias |>
   dplyr::full_join(y = tpr_unbias, by = c('x', 'y', 'time')) |>
   dplyr::full_join(y = tsd_unbias, by = c('x', 'y', 'time')) |>
-  dplyr::full_join(y = prsd_unbias, by = c('x', 'y', 'time'))
+  dplyr::full_join(y = prsd_unbias, by = c('x', 'y', 'time')) |>
+  dplyr::full_join(y = prcv_unbias, by = c('x', 'y', 'time'))
 
 # Add spatial ID column because of multiple time steps
 ey.hat <- dplyr::mutate(ey.hat, spatID = paste0(x, '_', y))
@@ -348,6 +380,18 @@ ey.hat |>
 unbias |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = prsd)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~time) +
+  ggplot2::theme_void()
+ey.hat |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = prcv)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~time) +
+  ggplot2::theme_void()
+unbias |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = prcv)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()

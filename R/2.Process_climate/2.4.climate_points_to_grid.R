@@ -26,6 +26,8 @@
 ## closest PLS point
 ## Used in 2.5.climate_aggregate_to_grid.R
 
+rm(list = ls())
+
 #### Match points to PLS points ####
 
 # Helper funs
@@ -136,7 +138,7 @@ clim_pls <- rbind(clim_pls, temp)
 rm(closest_point, coords_pls2, select_ey.hat, pls2)
 
 # Update column names
-colnames(clim_pls) <- c('time', 'aat', 'tpr', 'tsd', 'prsd', 'spatID', 'clim_x', 'clim_y', 'pls_x', 'pls_y', 'uniqueID')
+colnames(clim_pls) <- c('time', 'aat', 'tpr', 'tsd', 'prsd', 'prcv', 'spatID', 'clim_x', 'clim_y', 'pls_x', 'pls_y', 'uniqueID')
 
 #### Data checks ####
 
@@ -170,6 +172,11 @@ clim_pls |>
 clim_pls |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = pls_x, y = pls_y, color = prsd)) +
+  ggplot2::facet_wrap(~time)
+
+clim_pls |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = pls_x, y = pls_y, color = prcv)) +
   ggplot2::facet_wrap(~time)
 
 # Save

@@ -1,6 +1,17 @@
 ### STEP 3-7
 
 ## Plotting out-of-sample predictions in time
+## Out-of-sample prediction of 300 YBP for same spatial locations as
+## used to fit the model
+
+## Input: out/mean/oos_prediciton_time.RData
+## OOS predictions for 300 YBP using non-conditional, conditional, and
+## conditional on only oak methods
+
+## Input: data/processed/mean_stepps_soil_clim.RData
+## OOS data
+
+## Output: none
 
 rm(list = ls())
 

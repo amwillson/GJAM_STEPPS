@@ -17,6 +17,7 @@
 ##    - for all years within window, take average
 
 ## Calculated on both biased and bias-corrected climate estimates
+## https://pubs.usgs.gov/ds/691/ds691.pdf <- seasonality estimates
 
 ## Input: each .RData file from /Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/
 ## .RData files are stored separately because of large data volume

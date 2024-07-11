@@ -34,7 +34,7 @@ rm(list = ls())
 load('data/processed/mean_stepps_soil_clim.RData')
 
 # Format xdata
-xdata <- dplyr::select(taxon_insample_all, clay:prsd)
+xdata <- dplyr::select(taxon_insample_all, clay:prcv)
 
 # Check correlations between covariates
 xdata_cor <- cor(xdata)

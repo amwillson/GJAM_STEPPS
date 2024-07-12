@@ -189,7 +189,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -202,7 +202,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -215,7 +215,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -228,7 +228,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -241,7 +241,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -254,7 +254,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -267,7 +267,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -280,7 +280,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -293,7 +293,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -306,7 +306,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -319,7 +319,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -492,7 +492,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -505,7 +505,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -518,7 +518,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -531,7 +531,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -544,7 +544,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -557,7 +557,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -570,7 +570,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -583,7 +583,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -596,7 +596,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -609,7 +609,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -622,7 +622,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -778,7 +778,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -791,7 +791,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -804,7 +804,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -817,7 +817,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -830,7 +830,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -843,7 +843,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -856,7 +856,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -869,7 +869,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -882,7 +882,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -895,7 +895,7 @@ diff |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_gradient2(low = 'red', 
                                  high = 'darkblue', 
-                                 name = 'Relative\nabundance') +
+                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))

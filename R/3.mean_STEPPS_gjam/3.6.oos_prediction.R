@@ -13,7 +13,7 @@
 ## Out of sample predictions for non-conditional, conditional, and conditional only on
 ## oak predictions
 ## Out of sample predictions are made for the 300 YBP time period across the same
-## spatial locatiosn as used to fit the model
+## spatial locations as used to fit the model
 
 rm(list = ls())
 

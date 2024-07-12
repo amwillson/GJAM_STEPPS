@@ -3,7 +3,7 @@
 ## Processing output from GJAM model fit with STEPPS relative abundance posterior draws
 ## This step must be run on a VM because of memory constraints
 ## Requires ~ 40 GB RAM
-## NOTE that this step is the only one that requires you to change the file path according to what
+## NOTE that this step requires you to change the file path according to what
 ## machine you're working on
 ## This is because on a local machine, the files must be saved to an external drive because
 ## of storage constraints, but on the VM, the files cannot be on an external drive and must

@@ -3,6 +3,18 @@
 ## Out-of-sample prediction in time (using last time step)
 ## Using mean STEPPS relative abundances
 
+## Input: out/mean/mean_sand_aat_tpr_prsd.RData
+## Output from GJAM with sand, aat, tpr, prsd covariates with mean relative abundance
+
+## Input: data/processed/mean_stepps_soil_clim.RData
+## OOS data
+
+## Output: out/mean/oos_prediction_time.RData
+## Out of sample predictions for non-conditional, conditional, and conditional only on
+## oak predictions
+## Out of sample predictions are made for the 300 YBP time period across the same
+## spatial locatiosn as used to fit the model
+
 rm(list = ls())
 
 # Load fitted model

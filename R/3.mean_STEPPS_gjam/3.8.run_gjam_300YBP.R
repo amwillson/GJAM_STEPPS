@@ -17,7 +17,7 @@
 
 ## Output: out/mean/mean_sand_aat_tpr_prsd_300YBP.RData
 ## "out" object from fitting GJAM with 300 YBP data
-## Used in 3.9.plot_output_mean_300YBP.R and 3.10.oos_prediction_all.R
+## Used in 3.9.process_out_gjam_300YBP.R and 3.11.oos_prediction_all.R
 
 rm(list = ls())
 

@@ -14,21 +14,18 @@
 ## Dataframe with co-located reconstructions of 12 taxa's relative abundances,
 ## Soil variables, and climate variables
 
-## Output: /Volumes/FileBackup/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData
-## Output: /Volumes/FileBackup/GJAM_STEPPS_post_silt_aat_tpr_prsd.RData
-## Output: /Volumes/FileBackup/GJAM_STEPPS_post_sand_aat_tsd_prsd.RData
-## Output: /Volumes/FileBackup/GJAM_STEPPS_post_silt_aat_tsd_prsd.RData
+## Output: /Volumes/FileBackup/GJAM_STEPPS_output/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData
+## Output: /Volumes/FileBackup/GJAM_STEPPS_output/GJAM_STEPPS_post_silt_aat_tpr_prsd.RData
+## Output: /Volumes/FileBackup/GJAM_STEPPS_output/GJAM_STEPPS_post_sand_aat_tsd_prsd.RData
+## Output: /Volumes/FileBackup/GJAM_STEPPS_output/GJAM_STEPPS_post_silt_aat_tsd_prsd.RData
 ## The model is run with 4 different sets of uncorrelated covariates
 ## Each configuration is saved separately
-## Used in 4.6.process_out_gjam_draws.R
+## Used in 4.6.process_out_gjam_draws.R and 4.8.oos_prediction_draws.R
 
 rm(list = ls())
 
 # Load data
 load('data/processed/post_stepps_soil_clim.RData')
-
-# Set seed
-set.seed(1996)
 
 # Define variables for GJAM
 niter <- 10000
@@ -86,7 +83,7 @@ for(i in 1:ndraw){
 # Save
 # Should be saved to output directory but it's really big
 # so I'm saving to an external drive
-save(output, file = '/Volumes/FileBackup/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
+save(output, file = '/Volumes/FileBackup/GJAM_STEPPS_output/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
 
 #### silt + aat + tpr + prsd ####
 

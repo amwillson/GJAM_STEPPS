@@ -8,7 +8,7 @@
 ## This is because on a local machine, the files must be saved to an external drive because
 ## of storage constraints, but on the VM, the files cannot be on an external drive and must
 ## be saved somewhere accessible.
-## On local machine, I saved the files at /Volumes/FileBackup/
+## On local machine, I saved the files at /Volumes/FileBackup/GJAM_STEPPS_output/
 ## On VM, I saved/loaded the files at out/posteriors/
 ## You must change the file path according to what type of machine you're working on
 
@@ -19,28 +19,29 @@
 ## Depending on which model format, you load one of these files, which has the posterior
 ## estimates for a given configuration of GJAM
 
-## Output: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/bFacGibbs.RDS
-## Output: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/bgibbs.RDS
-## Output: out/posteriors/silt_aat_tpr_prsd_post_silt_aat_tpr_prsd/bgibbsUn.RDS
-## Output: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/fSensGibbs.RDS
-## Output: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/sgibbs.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bFacGibbs.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bgibbs.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bgibbsUn.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/fSensGibbs.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/sgibbs.RDS
-## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bFacGibbs.RDS
-## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bgibbs.RDS
-## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bgibbsUn.RDS
-## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/fSensGibbs.RDS
-## Output: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/sgibbs.RDS
-## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bFacGibbs.RDS
-## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bgibbs.RDS
-## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bgibbsUn.RDS
-## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/fSensGibbs.RDS
-## Output: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/sgibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/bFacGibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/bgibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/bgibbsUn.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/fSensGibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/sgibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/bFacGibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/bgibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/bgibbsUn.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/fSensGibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/sgibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/bFacGibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/bgibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/bgibbsUn.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/fSensGibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/sgibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/bFacGibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/bgibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/bgibbsUn.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/fSensGibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/sgibbs.RDS
 ## Each parameter type for each model run is saved separately in data frame format
 ## to faciliate easy loading/manipulation of the full chains
+## Used in 4.7.gjam_draws_figures.R
 
 ## Output: out/posteriors/silt_aat_tpr_prsd/parameter_summaries.RData
 ## Output: out/posteriors/sand_aat_tpr_prsd/parameter_summaries.RData
@@ -48,7 +49,7 @@
 ## Output: out/posteriors/sand_aat_tsd_prsd/parameter_summaries.RData
 ## Summary statistics over full chains for each model type. All parameter
 ## types are saved together in different data frames
-## Used in 4.7.gjam_draws_figures.R
+## Currently not used but could be used for plotting
 
 rm(list = ls())
 

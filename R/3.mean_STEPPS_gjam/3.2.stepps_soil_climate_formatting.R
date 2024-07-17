@@ -37,7 +37,7 @@ source('R/funs.R')
 
 #### Soils ####
 
-# Load STEPPS subsampled data from step 8
+# Load STEPPS subsampled data from step 3-1
 load('data/intermediate/stepps_subsampled.RData')
 
 # Load PLS data because that's how we matched the soil grid

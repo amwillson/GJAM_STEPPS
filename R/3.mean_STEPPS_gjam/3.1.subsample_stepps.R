@@ -12,7 +12,7 @@
 ## Output: data/intermediate/stepps_subsampled.RData
 ## mean estimates of STEPPS relative abundances, but for a subset of
 ## spatio-temporal locations
-## Used in 3.2.stepps_soil_climate_formatting.R
+## Used in 3.2.stepps_soil_climate_formatting.R and 3.11.format_final_oos.R
 
 rm(list = ls())
 

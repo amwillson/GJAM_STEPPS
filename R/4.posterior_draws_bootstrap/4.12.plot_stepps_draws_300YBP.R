@@ -1,41 +1,25 @@
-### STEP 4-7
+### STEP 4-12
 
 ## Plotting posterior parameter estimates from STEPPS posterior samples
+## with 300 YBP used to fit the model
+## Identical to step 4-7 but using 300 YBP time step
 ## 1. Trace plots
 ## 2. Environment-vegetation relationships
 ## 3. Vegetation-vegetation correlations
 
-## Input: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/bFacGibbs.RDS
-## Input: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/bgibbs.RDS
-## Input: out/posteriors/silt_aat_tpr_prsd_post_silt_aat_tpr_prsd/bgibbsUn.RDS
-## Input: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/fSensGibbs.RDS
-## Input: out/posteriors/silt_aat_tpr_prsd/post_silt_aat_tpr_prsd/sgibbs.RDS
-## Input: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bFacGibbs.RDS
-## Input: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bgibbs.RDS
-## Input: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/bgibbsUn.RDS
-## Input: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/fSensGibbs.RDS
-## Input: out/posteriors/sand_aat_tpr_prsd/post_sand_aat_tpr_prsd/sgibbs.RDS
-## Input: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bFacGibbs.RDS
-## Input: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bgibbs.RDS
-## Input: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/bgibbsUn.RDS
-## Input: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/fSensGibbs.RDS
-## Input: out/posteriors/silt_aat_tsd_prsd/post_silt_aat_tsd_prsd/sgibbs.RDS
-## Input: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bFacGibbs.RDS
-## Input: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bgibbs.RDS
-## Input: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/bgibbsUn.RDS
-## Input: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/fSensGibbs.RDS
-## Input: out/posteriors/sand_aat_tsd_prsd/post_sand_aat_tsd_prsd/sgibbs.RDS
-## Each parameter type for each model run is loaded separately in data frame format
+## Input: out/posteriors/sand_aat_tpr_prsd_300YBP/bFacGibbs.RDS
+## Input: out/posteriors/sand_aat_tpr_prsd_300YBP/bgibbs.RDS
+## Input: out/posteriors/sand_aat_tpr_prsd_300YBP/bgibbsUn.RDS
+## Input: out/posteriors/sand_aat_tpr_prsd_300YBP/fSensGibbs.RDS
+## Input: out/posteriors/sand_aat_tpr_prsd_300YBP/sgibbs.RDS
+## Each parameter type is loaded separately in data frame format
 ## to facilitate easy loading/manipulation of the full chains
 ## Used for making trace plots
 ## These must be manually copied from VM because they are too large for Github
 
-## Input: out/posteriors/silt_aat_tpr_prsd/parameter_summaries.RData
-## Input: out/posteriors/sand_aat_tpr_prsd/parameter_summaries.RData
-## Input: out/posteriors/silt_aat_tsd_prsd/parameter_summaries.RData
-## Input: out/posteriors/sand_aat_tsd_prsd/parameter_summaries.RData
-## Summary statistics over full chains for each model type. All parameter
-## types are saved together in different data frames
+## Input: out/posteriors/sand_aat_tpr_prsd_300YBP/parameter_summaries.RData
+## Summary statistics over full chains. All parameter types are saved together
+## in different data frames
 ## Currently not used but could easily be used instead of full chains
 ## Included in repo
 
@@ -43,22 +27,14 @@
 
 rm(list = ls())
 
-# Which model format?
-# Options:
-# silt_aat_tpr_prsd
-# sand_aat_tpr_prsd
-# silt_aat_tsd_prsd
-# sand_aat_tsd_prsd
-form <- 'sand_aat_tsd_prsd'
-
 #### Trace plots ####
 
 # Load gibbs samples
-bFacGibbs <- readRDS(file = paste0('out/posteriors/', form, '/bFacGibbs.RDS'))
-bgibbs <- readRDS(file = paste0('out/posteriors/', form, '/bgibbs.RDS'))
-bgibbsUn <- readRDS(file = paste0('out/posteriors/', form, '/bgibbsUn.RDS'))
-fSensGibbs <- readRDS(file = paste0('out/posteriors/', form, '/fSensGibbs.RDS'))
-sgibbs <- readRDS(file = paste0('out/posteriors/', form, '/sgibbs.RDS'))
+bFacGibbs <- readRDS(file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/bFacGibbs.RDS')
+bgibbs <- readRDS(file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/bgibbs.RDS')
+bgibbsUn <- readRDS(file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/bgibbsUn.RDS')
+fSensGibbs <- readRDS(file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/fSensGibbs.RDS')
+sgibbs <- readRDS(file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/sgibbs.RDS')
 
 ### bFacGibbs ###
 

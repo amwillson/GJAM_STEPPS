@@ -9,7 +9,7 @@
 ## This is because on a local machine, the files must be saved to an external drive because
 ## of storage constraints, but on the VM, the files cannot be on an external drive and must
 ## be saved somewhere accessible.
-## On local machine, I saved the files at /Volumes/FileBackup/
+## On local machine, I saved the files at /Volumes/FileBackup/GJAM_STEPPS_output/
 ## On VM, I saved/loaded the files at out/posteriors/
 ## You must change the file path according to what type of machine you're working on
 
@@ -21,7 +21,7 @@
 
 ## Output: out/posteriors/oos_prediction_time.RData
 ## Out of sample predictions for non-conditional, conditional, and conditional only on
-## oak predictions
+## oak relative abundances
 ## Out of sample predictions are made for the 300 YBP time period across the same
 ## spatial locations as used to fit the model
 

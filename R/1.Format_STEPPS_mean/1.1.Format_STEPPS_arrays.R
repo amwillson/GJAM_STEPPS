@@ -9,7 +9,7 @@
 
 ## Output: data/processed/mean_STEPPS.RData
 ## coordinates, time, and relative abundances in array format
-## Used in 1.2.Plot_STEPPS.R, 3.1.subsample_stepps.R
+## Used in 1.2.Plot_STEPPS.R, 3.1.subsample_stepps.R, and 3.11.format_final_oos.R
 
 rm(list = ls())
 

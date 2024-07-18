@@ -153,7 +153,7 @@ unbias_grid <- unbias_matched |>
 # Load intermediate grid matching
 load('data/intermediate/matching_intermediate.RData')
 
-# Keep only the grid ID numberes and their coordinates
+# Keep only the grid ID numbers and their coordinates
 grid_coords <- point_grid_match |>
   dplyr::select(grid_x, grid_y, grid_id) |>
   dplyr::distinct()
@@ -220,6 +220,7 @@ comp_dens <- dplyr::select(comp_dens, id, x, y)
 
 # Which grid cells have no points in them?
 nopoints <- comp_dens[!comp_dens$id %in% grid,]
+nopoints <- dplyr::distinct(nopoints)
 
 # Plot locations of grid cells with no points
 nopoints |>

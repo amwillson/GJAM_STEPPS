@@ -97,20 +97,11 @@ vifs # does not work
 
 #### Format ydata ####
 
-# Set seed
-set.seed(1996)
-
 # Format ydata
 ydata <- taxon_insample_all |>
   dplyr::select(beech:tamarack) |>
   dplyr::rename(oc = other_conifer,
-                oh = other_hardwood)# |>
-  # This is a different way of handling the inability
-  # to invert the design matrix
-  # However, it requires some finessing which
-  # makes this solution intractable for the posterior samples
-  #dplyr::mutate(ash = ash + runif(n = 1, min = -0.01, max = 0.01),
-  #              ash = dplyr::if_else(ash <= 0, 1e-4, ash))
+                oh = other_hardwood)
 
 #### Run GJAM ####
 

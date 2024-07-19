@@ -1,7 +1,6 @@
 ## Helper functions for various steps in data preparation
 ## Each function described below
 
-## Used in 2.Visualize_data.R
 # Melts array to dataframe and adds column names
 # to data frame
 melt_array <- function(taxon_mat, x, y, time, col_names){
@@ -15,7 +14,6 @@ melt_array <- function(taxon_mat, x, y, time, col_names){
   return(melted)
 }
 
-## Used in 2.Visualize_data.R and 4.Visualize_residuals.R
 # Combines pre-defined maps of Minnesota and Wisconsin
 # and county maps of Upper Michigan to produce a continuous
 # map of only minnesota, wisconsin, and upper michigan
@@ -93,108 +91,4 @@ map_states <- function(){
   states <- sf::st_union(x = mnwi, y = mi_join)
   states <- sf::st_transform(x = states, crs = 'EPSG:3175')
   return(states)
-}
-
-## Used in: 3.Detrend_abundance.R
-# Finds the four (or fewer) "rook" adjacent cells to a given cell
-# then averages relative abundance over those cells at each
-# time point
-average_adjacent_cells <- function(taxon_mat, ncell, x, y, time){
-  # Convert the input array to a raster
-  rr <- terra::rast(taxon_mat)
-  
-  # Storage array
-  # Dimensions are the same as the array for a given taxon
-  # because we are simply defining what the relative abundance
-  # of surrounding cells is for each cell at each time point
-  adj_arr <- array(, dim = c(length(x), length(y), length(time)))
-  # Add dimension names to allow for easier comparison between
-  # original array and adjacent array
-  dimnames(adj_arr) <- list(x, y, time)
-  
-  # Way to match indexing because the way rasters work requires cells
-  # to be indexed in one dimension but for our arrays we need to index
-  # in two dimensions
-  ij_cell <- matrix(data = 1:ncell, nrow = length(x), ncol = length(y), byrow = TRUE)
-  
-  # Loop over x and y dimensions
-  for(i in 1:length(x)){
-    for(j in 1:length(y)){
-      # The current location
-      loc <- rr[i,j,]
-      # If the relative abundance at a given location is NA at all
-      # time periods, then this cell doesn't exist (it's outside our)
-      # spatial domain of interest.
-      # For these locations, we don't have to estimate adjacent relative
-      # abundance
-      if(all(is.na(loc))){
-        adj_arr[i,j,] <- NA
-      }else{
-        # For all cells within our domain, we find which cells are
-        # adjacent to the given cell in the four rook directions
-        adj_cell <- terra::adjacent(rr, cells = ij_cell[i,j], directions = 'rook')
-        # Find values corresponding to the adjacent cells
-        adj_val <- rr[adj_cell[1,]]
-        # Find mean for each time step and remove any NAs
-        # NAs occur when there are not four adjacent cells that are
-        # within our domain
-        adj_val <- colMeans(adj_val, na.rm = TRUE)
-        # Add the mean for each time period to the storage array
-        adj_arr[i,j,] <- adj_val
-      }
-    }
-  }
-  return(adj_arr)
-}
-
-## Used in: 3.Detrend_abundance.R
-# Takes the original array for each taxon and matches it 
-# with the array with adjacent locations averaged
-# The end product is a melted dataframe with the relative
-# abundance of a given location at a given time period 
-# and the average relative abundance of the surrounding
-# grid cells at the same point in time that can be used in
-# linear modeling
-melt_join <- function(taxon_mat, adj_mat){
-  # Melt to dataframe
-  taxon_mat_melt <- reshape2::melt(taxon_mat)
-  # Add column names
-  colnames(taxon_mat_melt) <- c('x', 'y', 'time', 'abundance')
-  # Melt adjacent array to dataframe
-  adj_mat_melt <- reshape2::melt(adj_mat)
-  # Add column names
-  colnames(adj_mat_melt) <- c('x', 'y', 'time', 'adjacent_abundance')
-  # Join by location and time step
-  joined <- dplyr::left_join(x = taxon_mat_melt, y = adj_mat_melt, by = c('x', 'y', 'time'))
-  return(joined)
-}
-
-define_quadrants <- function(xmin, xmax, ymin, ymax){
-  xhalf <- (xmax - xmin) / 2
-  yhalf <- (ymax - ymin) / 2
-  
-  xmin1 <- xmin
-  xmax1 <- xmin1 + xhalf
-  ymin1 <- ymin + yhalf
-  ymax1 <- ymax
-  
-  xmin2 <- xmax1 - 0.0001
-  xmax2 <- xmax
-  ymin2 <- ymin1
-  ymax2 <- ymax1
-  
-  xmin3 <- xmin1
-  xmax3 <- xmax1
-  ymin3 <- ymin
-  ymax3 <- ymin1 -0.0001
-  
-  xmin4 <- xmin2
-  xmax4 <- xmax2
-  ymin4 <- ymin3
-  ymax4 <- ymax3
-  
-  return(list(c(xmin1, xmax1, ymin1, ymax1),
-              c(xmin2, xmax2, ymin2, ymax2),
-              c(xmin3, xmax3, ymin3, ymax3),
-              c(xmin4, xmax4, ymin4, ymax4)))
 }

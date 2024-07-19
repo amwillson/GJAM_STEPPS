@@ -8,7 +8,7 @@
 ## Input: data/input/posterior_stepps/rIts_sub.RDS
 ## Array with relative abundance estimates for 100 posterior samples from STEPPS model
 ## Dimensions: 704 spatial locations x 12 taxa x 20 time steps x 100 posterior samples
-## Currently available privately, but will be made publicly available upon publication
+## Currently available privately, but will be made publicly available upon request
 
 ## Input: data/input/posterior_stepps/input.rdata
 ## Associated indexing data for the posterior draws

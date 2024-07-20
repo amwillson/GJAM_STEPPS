@@ -214,6 +214,7 @@ summ_fSensGibbs <- fSensGibbs |>
                    CI_75 = quantile(estimate, probs = 0.75),
                    CI_97.5 = quantile(estimate, probs = 0.975))
 
+ 
 ### sgibbs ###
 
 summ_sgibbs <- sgibbs |>

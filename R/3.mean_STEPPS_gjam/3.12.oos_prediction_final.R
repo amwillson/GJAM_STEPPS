@@ -3,9 +3,17 @@
 ## Out-of-sample prediction in space and time (using all spatiotemporal
 ## locations not used to fit the model)
 
-## Input: 
+## Input: out/mean/mean_sand_aat_tpr_prsd_300YBP.RData
+## Output from GJAM fitted with 300 YBP
 
-## Output:
+## Input: data/processed/mean_stepps_full_oos.RData
+## Dataframe with climate and soil data for all OOS
+## locations in space and time
+
+## Output: out/mean/oos_prediction_all.RData
+## GJAM output for non-conditional, full conditional,
+## and conditional on oak predictions for all
+## withheld spatiotemporal locations
 
 rm(list = ls())
 

@@ -12,6 +12,11 @@
 ## Posterior draws of relative abundances, but for a subset of spatio-
 ## temporal locations
 
+## Output: data/processed/post_stepps_full_oos.RData
+## Dataframe with posterior draws from STEPPS for all out-of-sample
+## spatiotemporal locations, as well as corresponding climate and soil
+## reconstructions
+
 rm(list = ls())
 
 source('R/funs.R')
@@ -74,102 +79,738 @@ post_oos <- post_insample |>
   # remove insample indexing column
   dplyr::select(-insample)
 
-#### Soil data ####
+#### Combine data ####
 
-# Load PLS data because that's how we matched the soil grid
-load('data/input/8km.RData')
+# Load formatted mean with climate and soil data
+load('data/processed/mean_stepps_full_oos.RData')
 
-# Take only coordinates and ID column
-comp_dens <- dplyr::select(comp_dens, x, y, id)
+soil_clim_oos <- dplyr::select(taxon_oos_all, c(stepps_x:time, clay:prsd))
 
-# Add ID column from PLS dat to STEPPS data
-# We can then join the soil and STEPPS data by the PLS grid ID
-post_oos_id <- post_oos |>
+# Remove mean dfs
+rm(taxon_oos_all)
+
+# Combine by time and coordinates
+post_oos_all <- post_oos |>
   dplyr::mutate(x = as.integer(x),
                 y = as.integer(y)) |>
-  dplyr::left_join(y = comp_dens, by = c('x', 'y'))
-
-# Load soil data
-load('data/input/gridded_soil.RData')
-
-# Rename coordinate columns to make sure we're on target later
-soil_grid <- dplyr::rename(soil_grid,
-                           soil_x = x,
-                           soil_y = y)
-
-# Join
-post_oos_soil <- post_oos_id |>
-  dplyr::rename(grid_id = id,
-                stepps_x = x,
+  dplyr::rename(stepps_x = x,
                 stepps_y = y) |>
-  dplyr::left_join(y = soil_grid, by = 'grid_id') |>
-  # drop NAs in southwest corner of Minnesota
-  tidyr::drop_na()
-
-# Map of states
-states <- map_states()
-
-# Transform state map
-states2 <- sf::st_transform(states, crs = 'EPSG:4326')
-
-# Check and make sure the plots look the same regardless of coordinate system
-p1 <- post_oos_soil |>
-  dplyr::group_by(stepps_x, stepps_y, time) |>
-  dplyr::summarize(sand = mean(sand)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = sand)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
-p1
-
-p2 <- post_oos_soil |>
-  dplyr::group_by(soil_x, soil_y, time) |>
-  dplyr::summarize(sand = mean(sand)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = soil_x, y = soil_y, color = sand)) +
-  ggplot2::geom_sf(data = states2, color = 'black', fill = NA) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
-p2
-
-cowplot::plot_grid(p1, p2)
-
-# Now convert one set of coordinate sand make sure it still matches up
-post_oos_soil <- sf::st_as_sf(post_oos_soil, coords = c('soil_x', 'soil_y'), crs = 'EPSG:4326')
-post_oos_soil <- sf::st_transform(post_oos_soil, crs = 'EPSG:3175')
-post_oos_soil <- sfheaders::sf_to_df(post_oos_soil, fill = TRUE)
-post_oos_soil <- post_oos_soil |>
-  dplyr::rename(soil_x = x,
-                soil_y = y) |>
-  dplyr::select(-sfg_id, -point_id)
-
-# Plot x against x
-post_oos_soil |>
-  ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = soil_x, y = stepps_x)) +
-  ggplot2::geom_abline()
-
-# same with y
-post_oos_soil |>
-  ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = soil_y, y = stepps_y)) +
-  ggplot2::geom_abline()
-
-#### Climate data ####
-
-# Load climate data
-load('data/processed/gridded_climate.RData')
-
-unbias_grid <- unbias_grid |> 
-  dplyr::rename(clim_x = grid_x,
-                clim_y = grid_y) |>
-  dplyr::mutate(time = 1950 - time,
-                time = time / 100)
-
-# Join
-post_oos_all <- post_oos_soil |>
+  dplyr::full_join(y = soil_clim_oos,
+                   by = c('stepps_x', 'stepps_y', 'time')) |>
+  dplyr::rename(x = stepps_x,
+                y = stepps_y) |>
   # remove time steps where we don't have climate data
   # and where we know there is anthropogenic influence
-  dplyr::filter(!(time %in% c(20:21, 2))) |>
-  dplyr::left_join(y = unbias_grid, by = c('grid_id', 'time'))
+  dplyr::filter(!(time %in% c(20:21, 2)))
+
+#### Plotting checks ####
+
+# Map of study region
+states <- map_states()
+
+# Order of facets
+time_order <- c('1900 YBP', '1800 YBP', '1700 YBP', '1600 YBP',
+                '1500 YBP', '1400 YBP', '1300 YBP', '1200 YBP',
+                '1100 YBP', '1000 YBP', '900 YBP', '800 YBP',
+                '700 YBP', '600 YBP', '500 YBP', '400 YBP', '300 YBP')
+
+## Plot covariates
+
+### CLAY ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(clay = median(clay)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = clay)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% clay',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Soil Clay Content') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### SAND ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(sand = median(sand)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = sand)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% sand',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Sand Clay Content') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### SILT ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(silt = median(silt)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = silt)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% silt',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Silt Clay Content') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### CACO3 ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(caco3 = median(caco3)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = caco3)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '[CaCO3]',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Soil [CaCO3]') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### AWC ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(awc = median(awc)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = awc)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Available water\ncontent',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Available Water Content') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### AAT ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(aat = median(aat)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = aat)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Temperature (°C)',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Average Annual Temperature') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### TPR ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(tpr = median(tpr)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tpr)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Precipitation (mm)',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Total Annual Precipitation') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### TSD ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(tsd = median(tsd)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tsd)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Temperature\nseasonality (°C)',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Temperature Seasonality (Standard Deviation)') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### PRSD ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(prsd = median(prsd)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = prsd)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Precipitation\nseasonality (mm)',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Precipitation Seasonality (Standard Deviation)') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+## Plot abundances
+
+### ASH ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(ash = median(ASH)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Ash') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### BEECH ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(beech = median(BEECH)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### BIRCH ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(birch = median(BIRCH)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### ELM ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(elm = median(ELM)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### HEMLOCK ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(hemlock = median(HEMLOCK)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### MAPLE ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(maple = median(MAPLE)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### OAK ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(oak = median(OAK)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### OTHER CONIFER ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(other_conifer = median(OTHER.CONIFER)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Other Conifer') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### OTHER HARDWOOD ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(other_hardwood = median(OTHER.HARDWOOD)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### PINE ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(pine = median(PINE)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### SPRUCE ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(spruce = median(SPRUCE)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### TAMARACK ###
+
+post_oos_all |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(tamarack = median(TAMARACK)) |>
+  dplyr::mutate(time = as.character(time),
+                time = dplyr::if_else(time == '19', '1900 YBP', time),
+                time = dplyr::if_else(time == '18', '1800 YBP', time),
+                time = dplyr::if_else(time == '17', '1700 YBP', time),
+                time = dplyr::if_else(time == '16', '1600 YBP', time),
+                time = dplyr::if_else(time == '15', '1500 YBP', time),
+                time = dplyr::if_else(time == '14', '1400 YBP', time),
+                time = dplyr::if_else(time == '13', '1300 YBP', time),
+                time = dplyr::if_else(time == '12', '1200 YBP', time),
+                time = dplyr::if_else(time == '11', '1100 YBP', time),
+                time = dplyr::if_else(time == '10', '1000 YBP', time),
+                time = dplyr::if_else(time == '9', '900 YBP', time),
+                time = dplyr::if_else(time == '8', '800 YBP', time),
+                time = dplyr::if_else(time == '7', '700 YBP', time),
+                time = dplyr::if_else(time == '6', '600 YBP', time),
+                time = dplyr::if_else(time == '5', '500 YBP', time),
+                time = dplyr::if_else(time == '4', '400 YBP', time),
+                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+# Save
+save(post_oos_all,
+     file = 'data/processed/post_stepps_full_oos.RData')

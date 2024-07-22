@@ -101,7 +101,9 @@ post_oos_all <- post_oos |>
                 y = stepps_y) |>
   # remove time steps where we don't have climate data
   # and where we know there is anthropogenic influence
-  dplyr::filter(!(time %in% c(20:21, 2)))
+  dplyr::filter(!(time %in% c(20:21, 2))) |>
+  # drop NAs in southwest corner of Minnesota
+  tidyr::drop_na()
 
 #### Plotting checks ####
 

@@ -14,6 +14,7 @@
 ## GJAM output for non-conditional, full conditional,
 ## and conditional on oak predictions for all
 ## withheld spatiotemporal locations
+## Used in 3.13.plot_oos_prediction.R
 
 rm(list = ls())
 

@@ -1,4 +1,4 @@
-### STEP 4-1
+### STEP 1-3
 
 ## Formatting STEPPS posterior draws
 ## Posterior draws are already in array format
@@ -17,7 +17,8 @@
 
 ## Output: data/processed/post_STEPPS.RData
 ## array with dimension names and formatting
-## Used in 4.2.plot_stepps_draws.R and 4.3.subsample_stepps_draws.R
+## Used in 1.4.plot_stepps_draws.R, 4.1.subsample_stepps_draws.R, 
+## and 4.11.format_final_oos_draws.R
 
 rm(list = ls())
 

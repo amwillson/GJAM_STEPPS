@@ -6,7 +6,7 @@
 ## Input: each .mat file from /Volumes/FileBackup/Climate_Downscaling_RG/
 ## .mat files are stored separately because of large data volume
 ## Matlab file structure with one climate variable for one month in each file
-## Files are privately archived and will be made publicly available upon publication
+## Files are privately archived and will be made publicly available upon publication of the data product
 
 ## Output: each .RData file from /Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/
 ## .RData files are stored separately because of large data volume

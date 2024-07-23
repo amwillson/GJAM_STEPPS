@@ -22,7 +22,7 @@
 ## In the "input" folder because this was processed for a different project,
 ## not processed for this project
 
-## Input: data/processed_gridded_climate.RData
+## Input: data/processed/gridded_climate.RData
 ## Downscaled climate reconstructions
 ## In the "processed" folder because this was downscaled and processed
 ## for this project

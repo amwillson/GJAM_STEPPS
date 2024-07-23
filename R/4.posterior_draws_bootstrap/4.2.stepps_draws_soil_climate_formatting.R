@@ -1,6 +1,6 @@
-### STEP 4-4
+### STEP 4-2
 
-## Adding soil and climate reconstructions to STEPPS subsampled mean relative abundances
+## Adding soil and climate reconstructions to STEPPS subsampled relative abundance draws
 
 ## Input: data/intermediate/stepps_post_subsampled.RData
 ## Dataframe with subset of spatio-temporal locations
@@ -10,7 +10,8 @@
 
 ## Output: data/processed/post_stepps_soil_clim.RData
 ## Posterior estimates from STEPPS with co-located climate and soil covariates
-## Used in 4.5.run_gjam.R
+## Used in 4.3.run_gjam.R, 4.6.oos_prediction_draws.R, 
+## 4.7.plot_oos_prediction_draws.R, and 4.8.run_gjam_300YBP.R
 
 rm(list = ls())
 

@@ -29,7 +29,7 @@
 ## Output: data/processed/mean_stepps_soil_clim.RData
 ## Dataframes with STEPPS mean relative abundances, soil variables, and climate variables
 ## in-sample and out-of-sample data saved in separate data frames
-## Used in 3.3.run_gjam.R, 3.6.oos_prediction, and 4.4.stepps_draws_soil_climate_formatting.R
+## Used in 3.3.run_gjam.R, 3.6.oos_prediction.R, and 4.2.stepps_draws_soil_climate_formatting.R
 
 rm(list = ls())
 

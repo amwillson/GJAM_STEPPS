@@ -1,4 +1,4 @@
-### 4-13
+### STEP 4-11
 
 ## Formatting final out-of-sample data with STEPPS posterior draws
 ## Taking full spatiotemporal extent of STEPPS posterior draws, soil, and
@@ -12,10 +12,15 @@
 ## Posterior draws of relative abundances, but for a subset of spatio-
 ## temporal locations
 
+## Input: data/processed/mean_stepps_full_oos.RData
+## Dataframe with climate and soil data for full spatiotemporal domain
+## from doing the same procedure with the mean relative abundances
+
 ## Output: data/processed/post_stepps_full_oos.RData
 ## Dataframe with posterior draws from STEPPS for all out-of-sample
 ## spatiotemporal locations, as well as corresponding climate and soil
 ## reconstructions
+## Used in 4.12.oos_prediction_draws_final.R and 4.13.plot_oos_prediction_draws_final.R
 
 rm(list = ls())
 

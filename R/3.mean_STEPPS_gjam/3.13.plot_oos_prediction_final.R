@@ -8,7 +8,7 @@
 ## non-conditional, conditional, and conditional only on oak methods
 
 ## Input: data/processed/mean_stepps_full_oos.RData
-## OOS predictions for all spatiotemporal locations not used for model fitting
+## OOS data for all spatiotemporal locations not used for model fitting
 
 ## Output: none
 

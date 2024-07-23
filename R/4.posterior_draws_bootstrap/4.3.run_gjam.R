@@ -1,4 +1,4 @@
-### STEP 4-5
+### STEP 4-3
 
 ## Running GJAM for STEPPS posterior draws
 
@@ -20,7 +20,7 @@
 ## Output: /Volumes/FileBackup/GJAM_STEPPS_output/GJAM_STEPPS_post_silt_aat_tsd_prsd.RData
 ## The model is run with 4 different sets of uncorrelated covariates
 ## Each configuration is saved separately
-## Used in 4.6.process_out_gjam_draws.R and 4.8.oos_prediction_draws.R
+## Used in 4.4.process_out_gjam_draws.R and 4.6.oos_prediction_draws.R
 
 rm(list = ls())
 

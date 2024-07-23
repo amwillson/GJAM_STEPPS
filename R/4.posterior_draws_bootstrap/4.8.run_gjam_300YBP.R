@@ -1,4 +1,4 @@
-### STEP 4-10
+### STEP 4-8
 
 ## Running GJAM for STEPPS posterior draws INCLUDING 300 YBP
 
@@ -21,7 +21,7 @@
 
 ## Output: /Volumes/FileBackup/GJAM_STEPPS_output/GJAM_STEPPS_post_sand_aat_tpr_prsd_300YBP.RData
 ## Output from fitting GJAM with 300 YBP data
-## Used in 4.11.process_out_gjam_draws_300YBP.R and 4.13.oos_prediction_draws_final.R
+## Used in 4.9.process_out_gjam_draws_300YBP.R and 4.12.oos_prediction_draws_final.R
 
 rm(list = ls())
 

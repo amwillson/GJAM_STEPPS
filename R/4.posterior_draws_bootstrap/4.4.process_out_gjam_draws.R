@@ -1,12 +1,6 @@
-### STEP 4-11
+### STEP 4-4
 
-## Processing output from GJAM model fit with STEPPs relative abundance poterior draws
-## including 300 YBP time step
-## Identical to step 4-6 but including 300 YBP
-## Also only including the model with sand, aat, tpr, prsd
-## covariates because this was determined to be the most ecologically relevant
-## model in steps 3-3 to 3-7 and 4-5 to 4-7
-
+## Processing output from GJAM model fit with STEPPS relative abundance posterior draws
 ## This step must be run on a VM because of memory constraints
 ## Requires ~ 40 GB RAM
 ## NOTE that this step requires you to change the file path according to what
@@ -18,29 +12,59 @@
 ## On VM, I saved/loaded the files at out/posteriors/
 ## You must change the file path according to what type of machine you're working on
 
-## Input: out/posteriors/sand_aat_tpr_prsd_300YBP/GJAM_STEPPS_post_sand_aat_tpr_prsd_300YBP.RData
-## Posterior estimates for GJAM with posterior draws
+## Input: out/posteriors/silt_aat_tpr_prsd/GJAM_STEPPS_post_silt_aat_tpr_prsd.RData
+## Input: out/posteriors/sand_aat_tpr_prsd/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData
+## Input: out/posteriors/silt_aat_tsd_prsd/GJAM_STEPPS_post_silt_aat_tsd_prsd.RData
+## Input: out/posteriors/sand_aat_tsd_prsd/GJAM_STEPPS_post_sand_aat_tsd_prsd.RData
+## Depending on which model format, you load one of these files, which has the posterior
+## estimates for a given configuration of GJAM
 
-## Output: out/posteriors/sand_aat_tpr_prsd_300YBP/bFacGibbs.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd_300YBP/bgibbs.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd_300YBP/bgibbsUn.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd_300YBP/fSensGibbs.RDS
-## Output: out/posteriors/sand_aat_tpr_prsd_300YBP/sgibbs.RDS
-## Each parameter type for the model run is saved separately in data frame format
+## Output: out/posteriors/silt_aat_tpr_prsd/bFacGibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/bgibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/bgibbsUn.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/fSensGibbs.RDS
+## Output: out/posteriors/silt_aat_tpr_prsd/sgibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/bFacGibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/bgibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/bgibbsUn.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/fSensGibbs.RDS
+## Output: out/posteriors/sand_aat_tpr_prsd/sgibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/bFacGibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/bgibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/bgibbsUn.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/fSensGibbs.RDS
+## Output: out/posteriors/silt_aat_tsd_prsd/sgibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/bFacGibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/bgibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/bgibbsUn.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/fSensGibbs.RDS
+## Output: out/posteriors/sand_aat_tsd_prsd/sgibbs.RDS
+## Each parameter type for each model run is saved separately in data frame format
 ## to faciliate easy loading/manipulation of the full chains
-## Used in 4.12.gjam_draws_300YBP_figures.R
+## Used in 4.5.gjam_draws_figures.R
 
-## Output: out/posteriors/sand_aat_tpr_prsd_300YBP/parameter_summaries.RData
-## Summary statistics over full chains. All parameter types are  saved
-## together in different data frames
+## Output: out/posteriors/silt_aat_tpr_prsd/parameter_summaries.RData
+## Output: out/posteriors/sand_aat_tpr_prsd/parameter_summaries.RData
+## Output: out/posteriors/silt_aat_tsd_prsd/parameter_summaries.RData
+## Output: out/posteriors/sand_aat_tsd_prsd/parameter_summaries.RData
+## Summary statistics over full chains for each model type. All parameter
+## types are saved together in different data frames
 ## Currently not used but could be used for plotting
 
 rm(list = ls())
 
 #### Extracting parameter estimates ####
 
+# Which model format?
+# Options:
+# silt_aat_tpr_prsd
+# sand_aat_tpr_prsd
+# silt_aat_tsd_prsd
+# sand_aat_tsd_prsd
+form <- 'sand_aat_tsd_prsd'
+
 # Load model output
-load('out/posteriors/sand_aat_tpr_prsd_300YBP/GJAM_STEPPS_post_sand_aat_tpr_prsd_300YBP.RData')
+load(paste0('out/posteriors/', form, '/GJAM_STEPPS_post_', form, '.RData'))
 
 # Number of draws
 ndraw <- length(output)
@@ -70,7 +94,7 @@ for(i in 1:ndraw){
   
   # Add iteration index to dataframes
   temp_bFacGibbs$iter <- temp_bgibbs$iter <- temp_bgibbsUn$iter <-
-    temp_fSensGibbs$iter <- temp_sgibbs$iter <-
+    temp_fSensGibbs$iter <- temp_sgibbs$iter <- 
     seq(from = 1, to = niter, by = 1)
   
   # Add posterior draw number to dataframes
@@ -92,7 +116,7 @@ for(i in 1:ndraw){
     bgibbsUn <- temp_bgibbsUn
     fSensGibbs <- temp_fSensGibbs
     sgibbs <- temp_sgibbs
-    # Or add to the other draws
+    # or add to the other draws
   }else{
     bFacGibbs <- rbind(bFacGibbs, temp_bFacGibbs)
     bgibbs <- rbind(bgibbs, temp_bgibbs)
@@ -106,15 +130,15 @@ for(i in 1:ndraw){
 # Save
 # Saving as RDS to hopefully make it easier to load these things
 saveRDS(object = bFacGibbs,
-        file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/bFacGibbs.RDS')
+        file = paste0('out/posteriors/', form, '/bFacGibbs.RDS'))
 saveRDS(object = bgibbs,
-        file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/bgibbs.RDS')
+        file = paste0('out/posteriors/', form, '/bgibbs.RDS'))
 saveRDS(object = bgibbsUn,
-        file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/bgibbsUn.RDS')
+        file = paste0('out/posteriors/', form, '/bgibbsUn.RDS'))
 saveRDS(object = fSensGibbs,
-        file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/fSensGibbs.RDS')
+        file = paste0('out/posteriors/', form, '/fSensGibbs.RDS'))
 saveRDS(object = sgibbs,
-        file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/sgibbs.RDS')
+        file = paste0('out/posteriors/', form, '/sgibbs.RDS'))
 
 # Remove extra objects
 rm(out, output,
@@ -183,13 +207,14 @@ summ_fSensGibbs <- fSensGibbs |>
                       names_to = 'var', values_to = 'estimate') |>
   dplyr::group_by(var) |>
   dplyr::summarize(mean = mean(estimate),
-                  sd = sd(estimate),
-                  CI_2.5 = quantile(estimate, probs = 0.025),
-                  CI_25 = quantile(estimate, probs = 0.25),
-                  CI_50 = median(estimate),
-                  CI_75 = quantile(estimate, probs = 0.75),
-                  CI_97.5 = quantile(estimate, probs = 0.975))
+                   sd = sd(estimate),
+                   CI_2.5 = quantile(estimate, probs = 0.025),
+                   CI_25 = quantile(estimate, probs = 0.25),
+                   CI_50 = median(estimate),
+                   CI_75 = quantile(estimate, probs = 0.75),
+                   CI_97.5 = quantile(estimate, probs = 0.975))
 
+ 
 ### sgibbs ###
 
 summ_sgibbs <- sgibbs |>
@@ -211,4 +236,4 @@ summ_sgibbs <- sgibbs |>
 save(summ_bFacGibbs, summ_bgibbs,
      summ_bgibbsUn, summ_fSensGibbs,
      summ_sgibbs,
-     file = 'out/posteriors/sand_aat_tpr_prsd_300YBP/parameter_summaries.RData')
+     file = paste0('out/posteriors/', form, '/parameter_summaries.RData'))

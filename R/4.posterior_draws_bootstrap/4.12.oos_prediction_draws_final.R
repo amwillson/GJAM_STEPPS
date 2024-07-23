@@ -1,9 +1,9 @@
-### STEP 4-13
+### STEP 4-12
 
 ## Out of sample prediction in space and time (using all spatiotemporal
 ## locations not used to fit the model)
 ## This step must be run on VM because of memory constraints
-## Requires ~40 GB RAM
+## Requires ~50 GB RAM
 ## NOTE that this step requires you to change the file path according to what
 ## machine you're working on
 ## This is because on a local machine, the files must be saved to an external drive because
@@ -24,6 +24,7 @@
 ## oak relative abundances
 ## Out of sample predictions are made for all spatiotemporal locations not used
 ## to fit the model
+## Used in 4.13.plot_oos_prediction_final.R
 
 rm(list = ls())
 

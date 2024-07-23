@@ -1,4 +1,4 @@
-### STEP 4-8
+### STEP 4-6
 
 ## Out of sample prediction in time (using last time step)
 ## Using STEPPS posterior draws
@@ -19,11 +19,13 @@
 ## Input: data/processed/mean_stepps_soil_clim.RData
 ## OOS data
 
-## Output: out/posteriors/oos_prediction_time.RData
-## Out of sample predictions for non-conditional, conditional, and conditional only on
+## Output: out/posteriors/oos_prediction_nonconditional_time.RData
+## Output: out/posteriors/oos_prediction_conditionaloak_time.RData
+## Out of sample predictions for non-conditional and conditional only on
 ## oak relative abundances
 ## Out of sample predictions are made for the 300 YBP time period across the same
 ## spatial locations as used to fit the model
+## Used in 4.7.plot_oos_prediction_draws.R
 
 rm(list = ls())
 

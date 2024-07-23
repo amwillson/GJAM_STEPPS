@@ -1,8 +1,8 @@
-### STEP 4-12
+### STEP 4-10
 
 ## Plotting posterior parameter estimates from STEPPS posterior samples
 ## with 300 YBP used to fit the model
-## Identical to step 4-7 but using 300 YBP time step
+## Identical to step 4-5 but using 300 YBP time step
 ## 1. Trace plots
 ## 2. Environment-vegetation relationships
 ## 3. Vegetation-vegetation correlations
@@ -16,12 +16,6 @@
 ## to facilitate easy loading/manipulation of the full chains
 ## Used for making trace plots
 ## These must be manually copied from VM because they are too large for Github
-
-## Input: out/posteriors/sand_aat_tpr_prsd_300YBP/parameter_summaries.RData
-## Summary statistics over full chains. All parameter types are saved together
-## in different data frames
-## Currently not used but could easily be used instead of full chains
-## Included in repo
 
 ## Output: none
 

@@ -1,4 +1,4 @@
-### STEP 4-9
+### STEP 4-7
 
 ## Plotting out-of-sample predictions in time
 ## Out-of-sample prediction of 300 YBP for same spatial locations as
@@ -14,6 +14,8 @@
 ## Input: /Volumes/FileBackup/GJAM_STEPPS_output/oos_prediction_conditionoak_time.RData
 ## OOS predictions for 300 YBP using conditional on oak method
 ## Saved on external drive because of large file size (8 GB)
+
+## Output: none
 
 rm(list = ls())
 

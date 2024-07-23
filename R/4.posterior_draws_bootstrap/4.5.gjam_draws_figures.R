@@ -1,4 +1,4 @@
-### STEP 4-7
+### STEP 4-5
 
 ## Plotting posterior parameter estimates from STEPPS posterior samples
 ## 1. Trace plots
@@ -29,15 +29,6 @@
 ## to facilitate easy loading/manipulation of the full chains
 ## Used for making trace plots
 ## These must be manually copied from VM because they are too large for Github
-
-## Input: out/posteriors/silt_aat_tpr_prsd/parameter_summaries.RData
-## Input: out/posteriors/sand_aat_tpr_prsd/parameter_summaries.RData
-## Input: out/posteriors/silt_aat_tsd_prsd/parameter_summaries.RData
-## Input: out/posteriors/sand_aat_tsd_prsd/parameter_summaries.RData
-## Summary statistics over full chains for each model type. All parameter
-## types are saved together in different data frames
-## Currently not used but could easily be used instead of full chains
-## Included in repo
 
 ## Output: none
 

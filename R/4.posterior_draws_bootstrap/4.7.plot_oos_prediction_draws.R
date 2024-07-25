@@ -4,7 +4,7 @@
 ## Out-of-sample prediction of 300 YBP for same spatial locations as
 ## Used to fit the model
 
-## Input: data/processed/mean_stepps_soil_clim.RData
+## Input: data/processed/post_stepps_soil_clim.RData
 ## OOS data
 
 ## Input: /Volumes/FileBackup/GJAM_STEPPS_output/oos_prediction_nonconditional_time.RData

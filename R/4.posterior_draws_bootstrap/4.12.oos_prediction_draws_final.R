@@ -1,4 +1,4 @@
-### STEP 4-13
+### STEP 4-12
 
 ## Out of sample prediction in space and time (using all spatiotemporal
 ## locations not used to fit the model)

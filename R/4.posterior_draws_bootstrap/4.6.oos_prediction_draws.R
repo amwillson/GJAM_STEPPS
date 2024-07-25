@@ -16,7 +16,7 @@
 ## Input: out/posteriors/sand_aat_tpr_prsd/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData
 ## Output from GJAM with sand, aat, tpr, prsd covariates with posterior draws
 
-## Input: data/processed/mean_stepps_soil_clim.RData
+## Input: data/processed/post_stepps_soil_clim.RData
 ## OOS data
 
 ## Output: out/posteriors/oos_prediction_nonconditional_time.RData
@@ -33,29 +33,27 @@ rm(list = ls())
 load('out/posteriors/sand_aat_tpr_prsd/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
 
 # Load out-of-sample data
-load('data/processed/mean_stepps_soil_clim.RData')
-
-# Format ydata
-new_ydata <- taxon_oos_all |>
-  dplyr::select(beech:tamarack) |>
-  dplyr::rename(oc = other_conifer,
-                oh = other_hardwood)
-
-# Format xdata (keep all columns to match format from step 4-5)
-xdata <- dplyr::select(taxon_oos_all, clay:prsd)
+load('data/processed/post_stepps_soil_clim.RData')
 
 #### Non conditional ####
-
-# New data list
-new_datalist <- list(xdata = xdata,
-                     nsim = 10000)
 
 # Storage
 pred <- list()
 
 # Loop over posterior draws
 for(i in 1:100){
+  # Subset for one posterior draw
+  sub <- dplyr::filter(post_oos_all, draw == i)
+  # Subset for one GJAM Fit
   out <- output[[i]]
+  
+  # Format xdata (keep all columns to match format from step 4-3)
+  xdata <- dplyr::select(sub, clay:prsd)
+  
+  # New data list
+  new_datalist <- list(xdata = xdata,
+                       nsim = 10000)
+  
   pred[[i]] <- gjam::gjamPredict(output = out,
                                  newdata = new_datalist)
   print(i)
@@ -69,19 +67,22 @@ save(pred,
 
 rm(pred)
 
-ydata_cond <- new_ydata |>
-  dplyr::select(oak) |>
-  dplyr::rename(OAK = oak)
-
-new_datalist <- list(ydataCond = ydata_cond,
-                     xdata = xdata,
-                     nsim = 10000)
-
 oak_cond_pred <- list()
 
 # Loop over posterior draws
 for(i in 1:100){
+  sub <- dplyr::filter(post_oos_all, draw == i)
   out <- output[[i]]
+  
+  xdata <- dplyr::select(sub, clay:prsd)
+  
+  ydata_cond <- dplyr::select(sub, OAK)
+  
+  # nsim must be lower to get the model to run
+  new_datalist <- list(ydataCond = ydata_cond,
+                       xdata = xdata,
+                       nsim = 1000)
+  
   oak_cond_pred[[i]] <- gjam::gjamPredict(output = out,
                                           newdata = new_datalist)
   print(i)

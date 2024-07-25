@@ -25,6 +25,7 @@
 ## oak relative abundances
 ## Out of sample predictions are made for all spatiotemporal locations not used
 ## to fit the model
+## Used in 4.13.plot_oos_prediction_draws_final.R
 
 rm(list = ls())
 

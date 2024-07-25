@@ -22,7 +22,7 @@ rm(list = ls())
 source('R/funs.R')
 
 # Load out-of-sample data
-load('data/processed/mean_stepps_soil_clim.RData')
+load('data/processed/post_stepps_soil_clim.RData')
 
 #### Non-conditional prediction ####
 
@@ -36,6 +36,9 @@ states <- map_states()
 for(i in 1:length(pred)){
   # Extract one output for one posterior draw
   temp <- pred[[i]]
+  # Extract oos data for one posterior draw
+  oos <- dplyr::filter(post_oos_all, draw == i)
+  
   # If it's the first one
   if(i == 1){
     # Store prediction mean
@@ -43,18 +46,18 @@ for(i in 1:length(pred)){
     # Format
     pred_mean <- as.data.frame(pred_mean)
     # Add coordinates
-    pred_mean$x <- taxon_oos_all$stepps_x
-    pred_mean$y <- taxon_oos_all$stepps_y
+    pred_mean$x <- oos$x
+    pred_mean$y <- oos$y
     # Add draw index
-    pred_mean$draw <- rep(i, times = nrow(taxon_oos_all))
+    pred_mean$draw <- rep(i, times = nrow(oos))
     # Otherwise add to previous draw
   }else{
     # Same steps but temporary storage
     temp2 <- temp$sdList$yMu
     temp2 <- as.data.frame(temp2)
-    temp2$x <- taxon_oos_all$stepps_x
-    temp2$y <- taxon_oos_all$stepps_y
-    temp2$draw <- rep(i, times = nrow(taxon_oos_all))
+    temp2$x <- oos$x
+    temp2$y <- oos$y
+    temp2$draw <- rep(i, times = nrow(oos))
     # Add to previous draw
     pred_mean <- rbind(pred_mean, temp2)
   }
@@ -294,23 +297,25 @@ pred_mean |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
-### Difference between observed and predicted ###
+### Difference between observed and predicted: each draw individually ###
 
 # Loop over each draw
 for(i in 1:max(pred_mean$draw)){
   temp <- dplyr::filter(pred_mean, draw == i)
+  oos <- dplyr::filter(post_oos_all, draw == i)
   if(i == 1){
-    diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(temp, BEECH:TAMARACK)
+    diff <- dplyr::select(oos, BEECH:TAMARACK) - dplyr::select(temp, BEECH:TAMARACK)
     diff$x <- temp$x
     diff$y <- temp$y
-    diff$draw <- rep(i, times = nrow(taxon_oos_all))
+    diff$draw <- rep(i, times = nrow(oos))
   }else{
-    temp2 <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(temp, BEECH:TAMARACK)
+    temp2 <- dplyr::select(oos, BEECH:TAMARACK) - dplyr::select(temp, BEECH:TAMARACK)
     temp2$x <- temp$x
     temp2$y <- temp$y
-    temp2$draw <- rep(i, times = nrow(taxon_oos_all))
+    temp2$draw <- rep(i, times = nrow(oos))
     diff <- rbind(diff, temp2)
   }
+  print(i)
 }
 
 # Plot
@@ -319,18 +324,19 @@ for(i in 1:max(pred_mean$draw)){
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(beech),
-                   low = quantile(beech, probs = 0.25),
-                   high = quantile(beech, probs = 0.75)) |>
+  dplyr::summarize(median = median(BEECH),
+                   low = quantile(BEECH, probs = 0.025),
+                   high = quantile(BEECH, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -341,18 +347,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(birch),
-                   low = quantile(birch, probs = 0.25),
-                   high = quantile(birch, probs = 0.75)) |>
+  dplyr::summarize(median = median(BIRCH),
+                   low = quantile(BIRCH, probs = 0.025),
+                   high = quantile(BIRCH, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -363,18 +370,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(elm),
-                   low = quantile(elm, probs = 0.25),
-                   high = quantile(elm, probs = 0.75)) |>
+  dplyr::summarize(median = median(ELM),
+                   low = quantile(ELM, probs = 0.025),
+                   high = quantile(ELM, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -385,18 +393,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(hemlock),
-                   low = quantile(hemlock, probs = 0.25),
-                   high = quantile(hemlock, probs = 0.75)) |>
+  dplyr::summarize(median = median(HEMLOCK),
+                   low = quantile(HEMLOCK, probs = 0.025),
+                   high = quantile(HEMLOCK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -407,18 +416,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(maple),
-                   low = quantile(maple, probs = 0.25),
-                   high = quantile(maple, probs = 0.75)) |>
+  dplyr::summarize(median = median(MAPLE),
+                   low = quantile(MAPLE, probs = 0.025),
+                   high = quantile(MAPLE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -429,18 +439,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(oak),
-                   low = quantile(oak, probs = 0.25),
-                   high = quantile(oak, probs = 0.75)) |>
+  dplyr::summarize(median = median(OAK),
+                   low = quantile(OAK, probs = 0.025),
+                   high = quantile(OAK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -451,18 +462,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(other_conifer),
-                   low = quantile(other_conifer, probs = 0.25),
-                   high = quantile(other_conifer, probs = 0.75)) |>
+  dplyr::summarize(median = median(OTHER.CONIFER),
+                   low = quantile(OTHER.CONIFER, probs = 0.025),
+                   high = quantile(OTHER.CONIFER, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -473,18 +485,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(other_hardwood),
-                   low = quantile(other_hardwood, probs = 0.25),
-                   high = quantile(other_hardwood, probs = 0.75)) |>
+  dplyr::summarize(median = median(OTHER.HARDWOOD),
+                   low = quantile(OTHER.HARDWOOD, probs = 0.025),
+                   high = quantile(OTHER.HARDWOOD, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -495,18 +508,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(pine),
-                   low = quantile(pine, probs = 0.25),
-                   high = quantile(pine, probs = 0.75)) |>
+  dplyr::summarize(median = median(PINE),
+                   low = quantile(PINE, probs = 0.025),
+                   high = quantile(PINE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -517,18 +531,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(spruce),
-                   low = quantile(spruce, probs = 0.25),
-                   high = quantile(spruce, probs = 0.75)) |>
+  dplyr::summarize(median = median(SPRUCE),
+                   low = quantile(SPRUCE, probs = 0.025),
+                   high = quantile(SPRUCE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -539,18 +554,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(tamarack),
-                   low = quantile(tamarack, probs = 0.25),
-                   high = quantile(tamarack, probs = 0.75)) |>
+  dplyr::summarize(median = median(TAMARACK),
+                   low = quantile(TAMARACK, probs = 0.025),
+                   high = quantile(TAMARACK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -568,6 +584,9 @@ load('/Volumes/FileBackup/GJAM_STEPPS_output/oos_prediction_conditionoak_time.RD
 for(i in 1:length(oak_cond_pred)){
   # Extract one output for one posterior draw
   temp <- oak_cond_pred[[i]]
+  # Extract oos data for one posterior draw
+  oos <- dplyr::filter(post_oos_all, draw == i)
+  
   # If it's the first one
   if(i == 1){
     # Store prediction mean
@@ -575,18 +594,18 @@ for(i in 1:length(oak_cond_pred)){
     # Format
     pred_mean <- as.data.frame(pred_mean)
     # Add coordinates
-    pred_mean$x <- taxon_oos_all$stepps_x
-    pred_mean$y <- taxon_oos_all$stepps_y
+    pred_mean$x <- oos$x
+    pred_mean$y <- oos$y
     # Add draw index
-    pred_mean$draw <- rep(i, times = nrow(taxon_oos_all))
+    pred_mean$draw <- rep(i, times = nrow(oos))
     # Otherwise add to previous draw
   }else{
     # Same steps but temporary storage
     temp2 <- temp$sdList$yMu
     temp2 <- as.data.frame(temp2)
-    temp2$x <- taxon_oos_all$stepps_x
-    temp2$y <- taxon_oos_all$stepps_y
-    temp2$draw <- rep(i, times = nrow(taxon_oos_all))
+    temp2$x <- oos$x
+    temp2$y <- oos$y
+    temp2$draw <- rep(i, times = nrow(oos))
     # Add to previous draw
     pred_mean <- rbind(pred_mean, temp2)
   }
@@ -805,23 +824,25 @@ pred_mean |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
-### Difference between observed and predicted ###
+### Difference between observed and predicted: each draw individually ###
 
 # Loop over each draw
 for(i in 1:max(pred_mean$draw)){
   temp <- dplyr::filter(pred_mean, draw == i)
+  oos <- dplyr::filter(post_oos_all, draw == i)
   if(i == 1){
-    diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(temp, BEECH:TAMARACK)
+    diff <- dplyr::select(oos, BEECH:TAMARACK) - dplyr::select(temp, BEECH:TAMARACK)
     diff$x <- temp$x
     diff$y <- temp$y
-    diff$draw <- rep(i, times = nrow(taxon_oos_all))
+    diff$draw <- rep(i, times = nrow(oos))
   }else{
-    temp2 <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(temp, BEECH:TAMARACK)
+    temp2 <- dplyr::select(oos, BEECH:TAMARACK) - dplyr::select(temp, BEECH:TAMARACK)
     temp2$x <- temp$x
     temp2$y <- temp$y
-    temp2$draw <- rep(i, times = nrow(taxon_oos_all))
+    temp2$draw <- rep(i, times = nrow(oos))
     diff <- rbind(diff, temp2)
   }
+  print(i)
 }
 
 # Plot
@@ -830,18 +851,19 @@ for(i in 1:max(pred_mean$draw)){
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(beech),
-                   low = quantile(beech, probs = 0.25),
-                   high = quantile(beech, probs = 0.75)) |>
+  dplyr::summarize(median = median(BEECH),
+                   low = quantile(BEECH, probs = 0.025),
+                   high = quantile(BEECH, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -852,18 +874,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(birch),
-                   low = quantile(birch, probs = 0.25),
-                   high = quantile(birch, probs = 0.75)) |>
+  dplyr::summarize(median = median(BIRCH),
+                   low = quantile(BIRCH, probs = 0.025),
+                   high = quantile(BIRCH, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -874,18 +897,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(elm),
-                   low = quantile(elm, probs = 0.25),
-                   high = quantile(elm, probs = 0.75)) |>
+  dplyr::summarize(median = median(ELM),
+                   low = quantile(ELM, probs = 0.025),
+                   high = quantile(ELM, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -896,18 +920,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(hemlock),
-                   low = quantile(hemlock, probs = 0.25),
-                   high = quantile(hemlock, probs = 0.75)) |>
+  dplyr::summarize(median = median(HEMLOCK),
+                   low = quantile(HEMLOCK, probs = 0.025),
+                   high = quantile(HEMLOCK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -918,18 +943,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(maple),
-                   low = quantile(maple, probs = 0.25),
-                   high = quantile(maple, probs = 0.75)) |>
+  dplyr::summarize(median = median(MAPLE),
+                   low = quantile(MAPLE, probs = 0.025),
+                   high = quantile(MAPLE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -940,18 +966,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(other_conifer),
-                   low = quantile(other_conifer, probs = 0.25),
-                   high = quantile(other_conifer, probs = 0.75)) |>
+  dplyr::summarize(median = median(OTHER.CONIFER),
+                   low = quantile(OTHER.CONIFER, probs = 0.025),
+                   high = quantile(OTHER.CONIFER, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -962,18 +989,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(other_hardwood),
-                   low = quantile(other_hardwood, probs = 0.25),
-                   high = quantile(other_hardwood, probs = 0.75)) |>
+  dplyr::summarize(median = median(OTHER.HARDWOOD),
+                   low = quantile(OTHER.HARDWOOD, probs = 0.025),
+                   high = quantile(OTHER.HARDWOOD, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -984,18 +1012,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(pine),
-                   low = quantile(pine, probs = 0.25),
-                   high = quantile(pine, probs = 0.75)) |>
+  dplyr::summarize(median = median(PINE),
+                   low = quantile(PINE, probs = 0.025),
+                   high = quantile(PINE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -1006,18 +1035,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(spruce),
-                   low = quantile(spruce, probs = 0.25),
-                   high = quantile(spruce, probs = 0.75)) |>
+  dplyr::summarize(median = median(SPRUCE),
+                   low = quantile(SPRUCE, probs = 0.025),
+                   high = quantile(SPRUCE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -1028,18 +1058,19 @@ diff |>
 
 diff |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(median = median(tamarack),
-                   low = quantile(tamarack, probs = 0.25),
-                   high = quantile(tamarack, probs = 0.75)) |>
+  dplyr::summarize(median = median(TAMARACK),
+                   low = quantile(TAMARACK, probs = 0.025),
+                   high = quantile(TAMARACK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
-                              labels = c('25%', '50%', '75%'))) +
-  ggplot2::scale_color_gradient2(low = 'red',
-                                 high = 'darkblue',
+                              labels = c('2.5%', '50%', '97.5%'))) +
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 limits = c(-1, 1),
+                                 direction = 1,
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +

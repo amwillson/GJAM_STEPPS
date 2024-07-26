@@ -42,7 +42,8 @@ pred_mean$y <- taxon_oos_all$stepps_y
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -185,10 +186,12 @@ diff$y <- pred_mean$y
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -198,10 +201,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -211,10 +216,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -224,10 +231,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -237,10 +246,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -250,10 +261,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -263,10 +276,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -276,10 +291,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -289,10 +306,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -302,10 +321,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -315,10 +336,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -345,7 +368,8 @@ pred_cond$y <- pred_mean$y
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -357,7 +381,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -369,7 +394,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -381,7 +407,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -393,7 +420,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -405,7 +433,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -417,7 +446,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oc), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oc), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -429,7 +459,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oh), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oh), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -441,7 +472,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -453,7 +485,8 @@ pred_cond |>
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -461,11 +494,12 @@ pred_cond |>
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-## MAPLE
+## TAMARACK
 
 pred_cond |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -488,10 +522,12 @@ diff$y <- pred_mean$y
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -501,10 +537,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -514,10 +552,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -527,10 +567,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -540,10 +582,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -553,10 +597,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -566,10 +612,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -579,10 +627,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -592,10 +642,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -605,10 +657,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -618,10 +672,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -643,7 +699,8 @@ pred_mean$y <- taxon_oos_all$stepps_y
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -655,7 +712,8 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -667,7 +725,8 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -679,7 +738,8 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -691,7 +751,8 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -703,7 +764,8 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oc), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oc), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -715,7 +777,8 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oh), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oh), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -727,7 +790,8 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -739,7 +803,7 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -751,7 +815,8 @@ pred_mean |>
 
 pred_mean |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
                                  name = 'Relative\nabundance') +
@@ -774,10 +839,12 @@ diff$y <- pred_mean$y
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -787,10 +854,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -800,10 +869,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -813,10 +884,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -826,10 +899,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -839,10 +914,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -852,10 +929,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -865,10 +944,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -878,10 +959,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -891,10 +974,12 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
+                      shape = 15, size = 10) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_gradient2(low = 'red', 
-                                 high = 'darkblue', 
+  ggplot2::scale_color_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
                                  name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +

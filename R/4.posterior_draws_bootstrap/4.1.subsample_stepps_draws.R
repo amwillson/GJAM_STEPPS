@@ -836,9 +836,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = ash), 
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -859,9 +860,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -882,9 +884,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -905,9 +908,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -928,9 +932,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -951,9 +956,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -974,9 +980,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -997,9 +1004,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -1020,9 +1028,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -1043,9 +1052,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -1066,9 +1076,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +
@@ -1089,9 +1100,10 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
+  ggplot2::scale_color_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
                                 na.value = 'white') +

@@ -70,10 +70,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = clay)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = clay),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% clay',
+  ggplot2::scale_color_distiller(palette = 'Oranges', name = '% clay',
                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Soil Clay Content') +
@@ -90,10 +91,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = sand)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = sand),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% sand',
+  ggplot2::scale_color_distiller(palette = 'Oranges', name = '% sand',
                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Soil Sand Content') +
@@ -110,10 +112,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = silt)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = silt),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% silt',
+  ggplot2::scale_color_distiller(palette = 'Oranges', name = '% silt',
                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Soil Silt Content') +
@@ -130,10 +133,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = caco3)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = caco3),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '[CaCO3]',
+  ggplot2::scale_color_distiller(palette = 'Oranges', name = '[CaCO3]',
                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Soil [CaCO3]') +
@@ -150,10 +154,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = awc)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = awc),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Available water\ncontent',
+  ggplot2::scale_color_distiller(palette = 'Oranges', name = 'Available water\ncontent',
                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Available Water Content') +
@@ -170,11 +175,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = aat)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = aat),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Temperature (°C)',
-                                direction = 1) +
+  ggplot2::scale_color_viridis_c(option = 'F', name = 'AAT') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Average Annual Temperature') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -190,11 +195,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tpr)) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tpr),
+                      shape = 15, size = 6) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Precipitation (mm)',
-                                direction = 1) +
+  ggplot2::scale_color_viridis_c(option = 'G', name = 'TPR') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Total Annual Precipitation') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -210,11 +215,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tsd)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tsd),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Temperature\nseasonality (°C)',
-                                direction = 1) +
+  ggplot2::scale_color_viridis_c(option = 'D', name = 'TSD') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Temperature Seasonality (Standard Deviation)') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -230,11 +235,11 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = prsd)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = prsd),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Precipitation\nseasonality (mm)',
-                                direction = 1) +
+  ggplot2::scale_color_viridis_c(option = 'E', name = 'PRSD') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Precipitation Seasonality (Standard Deviation)') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -252,11 +257,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = ash),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Ash') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(ASH, probs = 0.025),
+                   `25%` = quantile(ASH, probs = 0.25),
+                   `50%` = median(ASH),
+                   `75%` = quantile(ASH, probs = 0.75),
+                   `97.5%` = quantile(ASH, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -272,11 +299,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(BEECH, probs = 0.025),
+                   `25%` = quantile(BEECH, probs = 0.25),
+                   `50%` = median(BEECH),
+                   `75%` = quantile(BEECH, probs = 0.75),
+                   `97.5%` = quantile(BEECH, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -292,11 +341,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(BIRCH, probs = 0.025),
+                   `25%` = quantile(BIRCH, probs = 0.25),
+                   `50%` = median(BIRCH),
+                   `75%` = quantile(BIRCH, probs = 0.75),
+                   `97.5%` = quantile(BIRCH, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -312,11 +383,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(ELM, probs = 0.025),
+                   `25%` = quantile(ELM, probs = 0.25),
+                   `50%` = median(ELM),
+                   `75%` = quantile(ELM, probs = 0.75),
+                   `97.5%` = quantile(ELM, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -332,11 +425,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(HEMLOCK, probs = 0.025),
+                   `25%` = quantile(HEMLOCK, probs = 0.25),
+                   `50%` = median(HEMLOCK),
+                   `75%` = quantile(HEMLOCK, probs = 0.75),
+                   `97.5%` = quantile(HEMLOCK, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -352,11 +467,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(MAPLE, probs = 0.025),
+                   `25%` = quantile(MAPLE, probs = 0.25),
+                   `50%` = median(MAPLE),
+                   `75%` = quantile(MAPLE, probs = 0.75),
+                   `97.5%` = quantile(MAPLE, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -372,11 +509,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(OAK, probs = 0.025),
+                   `25%` = quantile(OAK, probs = 0.25),
+                   `50%` = median(OAK),
+                   `75%` = quantile(OAK, probs = 0.75),
+                   `97.5%` = quantile(OAK, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -392,11 +551,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Other Conifer') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(OTHER.CONIFER, probs = 0.025),
+                   `25%` = quantile(OTHER.CONIFER, probs = 0.25),
+                   `50%` = median(OTHER.CONIFER),
+                   `75%` = quantile(OTHER.CONIFER, probs = 0.75),
+                   `97.5%` = quantile(OTHER.CONIFER, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -412,11 +593,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(OTHER.HARDWOOD, probs = 0.025),
+                   `25%` = quantile(OTHER.HARDWOOD, probs = 0.25),
+                   `50%` = median(OTHER.HARDWOOD),
+                   `75%` = quantile(OTHER.HARDWOOD, probs = 0.75),
+                   `97.5%` = quantile(OTHER.HARDWOOD, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -432,11 +635,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(PINE, probs = 0.025),
+                   `25%` = quantile(PINE, probs = 0.25),
+                   `50%` = median(PINE),
+                   `75%` = quantile(PINE, probs = 0.75),
+                   `97.5%` = quantile(PINE, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -452,11 +677,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(SPRUCE, probs = 0.025),
+                   `25%` = quantile(SPRUCE, probs = 0.25),
+                   `50%` = median(SPRUCE),
+                   `75%` = quantile(SPRUCE, probs = 0.75),
+                   `97.5%` = quantile(SPRUCE, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -472,11 +719,33 @@ post_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack),
+                      shape = 15, size = 6) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
                                 direction = 1) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+post_insample_all |>
+  dplyr::filter(time == 7) |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(`2.5%` = quantile(TAMARACK, probs = 0.025),
+                   `25%` = quantile(TAMARACK, probs = 0.25),
+                   `50%` = median(TAMARACK),
+                   `75%` = quantile(TAMARACK, probs = 0.75),
+                   `97.5%` = quantile(TAMARACK, probs = 0.975)) |>
+  tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
+                      names_to = 'quantile', values_to = 'value') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~quantile) +
+  ggplot2::scale_color_distiller(palette = 'Greens', name = 'Relative\nabundance',
+                                 direction = 1) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))

@@ -422,8 +422,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -454,8 +455,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -486,8 +488,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -518,8 +521,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -550,8 +554,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -582,8 +587,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -614,8 +620,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -646,8 +653,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -678,8 +686,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -710,8 +719,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -742,8 +752,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1146,8 +1157,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1178,8 +1190,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1210,8 +1223,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1242,8 +1256,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1274,8 +1289,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1306,8 +1322,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1338,8 +1355,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1370,8 +1388,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1402,8 +1421,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1434,8 +1454,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1466,8 +1487,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1834,8 +1856,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1866,8 +1889,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1898,8 +1922,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1930,8 +1955,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1962,8 +1988,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1994,9 +2021,10 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
-                                name = 'Observed-\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                 direction = 1,
+                                 limits = c(-1, 1),
+                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -2026,8 +2054,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -2058,8 +2087,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -2090,8 +2120,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -2122,8 +2153,9 @@ diff |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_gradient2(low = 'red',
-                                high = 'darkblue',
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
                                 name = 'Observed-\nPredicted') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +

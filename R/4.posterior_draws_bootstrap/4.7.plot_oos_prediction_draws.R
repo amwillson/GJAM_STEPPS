@@ -75,7 +75,8 @@ pred_mean |>
                    high = quantile(BEECH, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -96,7 +97,8 @@ pred_mean |>
                    high = quantile(BIRCH, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -117,7 +119,8 @@ pred_mean |>
                    high = quantile(ELM, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -138,7 +141,8 @@ pred_mean |>
                    high = quantile(HEMLOCK, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -159,7 +163,8 @@ pred_mean |>
                    high = quantile(MAPLE, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -180,7 +185,8 @@ pred_mean |>
                    high = quantile(OAK, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -201,7 +207,8 @@ pred_mean |>
                    high = quantile(OC, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -222,7 +229,8 @@ pred_mean |>
                    high = quantile(OH, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -243,7 +251,8 @@ pred_mean |>
                    high = quantile(PINE, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -264,7 +273,8 @@ pred_mean |>
                    high = quantile(SPRUCE, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -285,7 +295,8 @@ pred_mean |>
                    high = quantile(TAMARACK, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile, 
                               levels = c('low', 'median', 'high'),
@@ -329,7 +340,8 @@ diff |>
                    high = quantile(BEECH, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -352,7 +364,8 @@ diff |>
                    high = quantile(BIRCH, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -375,7 +388,8 @@ diff |>
                    high = quantile(ELM, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -398,7 +412,8 @@ diff |>
                    high = quantile(HEMLOCK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -421,7 +436,8 @@ diff |>
                    high = quantile(MAPLE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -444,7 +460,8 @@ diff |>
                    high = quantile(OAK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -467,7 +484,8 @@ diff |>
                    high = quantile(OTHER.CONIFER, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -490,7 +508,8 @@ diff |>
                    high = quantile(OTHER.HARDWOOD, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -513,7 +532,8 @@ diff |>
                    high = quantile(PINE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -536,7 +556,8 @@ diff |>
                    high = quantile(SPRUCE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -559,7 +580,8 @@ diff |>
                    high = quantile(TAMARACK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -623,7 +645,8 @@ pred_mean |>
                    high = quantile(BEECH, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -644,7 +667,8 @@ pred_mean |>
                    high = quantile(BIRCH, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -665,7 +689,8 @@ pred_mean |>
                    high = quantile(ELM, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -686,7 +711,8 @@ pred_mean |>
                    high = quantile(HEMLOCK, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -707,7 +733,8 @@ pred_mean |>
                    high = quantile(MAPLE, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -728,7 +755,8 @@ pred_mean |>
                    high = quantile(OC, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -749,7 +777,8 @@ pred_mean |>
                    high = quantile(OH, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -770,7 +799,8 @@ pred_mean |>
                    high = quantile(PINE, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -791,7 +821,8 @@ pred_mean |>
                    high = quantile(SPRUCE, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -812,7 +843,8 @@ pred_mean |>
                    high = quantile(TAMARACK, probs = 0.75)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -856,7 +888,8 @@ diff |>
                    high = quantile(BEECH, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -879,7 +912,8 @@ diff |>
                    high = quantile(BIRCH, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -902,7 +936,8 @@ diff |>
                    high = quantile(ELM, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -925,7 +960,8 @@ diff |>
                    high = quantile(HEMLOCK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -948,7 +984,8 @@ diff |>
                    high = quantile(MAPLE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -971,7 +1008,8 @@ diff |>
                    high = quantile(OTHER.CONIFER, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -994,7 +1032,8 @@ diff |>
                    high = quantile(OTHER.HARDWOOD, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -1017,7 +1056,8 @@ diff |>
                    high = quantile(PINE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -1040,7 +1080,8 @@ diff |>
                    high = quantile(SPRUCE, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),
@@ -1063,7 +1104,8 @@ diff |>
                    high = quantile(TAMARACK, probs = 0.975)) |>
   tidyr::pivot_longer(cols = median:high, names_to = 'quantile', values_to = 'value') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), shape = 15, size = 6) +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = value), 
+                      shape = 15, size = 5) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(quantile,
                               levels = c('low', 'median', 'high'),

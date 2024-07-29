@@ -385,6 +385,47 @@ pred_mean |>
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+### Plot observed vs predicted irrespective of space/time ###
+
+pred_mean_long <- pred_mean |>
+  # pivot predictions longer
+  tidyr::pivot_longer(cols = beech:tamarack,
+                      names_to = 'taxon',
+                      values_to = 'Predicted') |>
+  # rename other conifer and other hardwood
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'oc', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'oh', 'other hardwood', taxon)) |>
+  # format
+  dplyr::mutate(taxon = stringr::str_to_title(taxon))
+
+obs_long <- taxon_oos_all |>
+  # Select relevant columns
+  dplyr::select(stepps_x:tamarack) |>
+  # remove ash taxon
+  dplyr::select(-ash) |>
+  # pivot observations longer
+  tidyr::pivot_longer(cols = beech:tamarack,
+                      names_to = 'taxon',
+                      values_to = 'Observed') |>
+  # format
+  dplyr::mutate(taxon = sub(pattern = '_', replacement = ' ', x = taxon),
+                taxon = stringr::str_to_title(taxon)) |>
+  dplyr::rename(x = stepps_x,
+                y = stepps_y)
+
+# Combine
+pred_obs_long <- pred_mean_long |>
+  dplyr::full_join(y = obs_long,
+                   by = c('x', 'y', 'time', 'taxon'))
+
+pred_obs_long |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::facet_wrap(~taxon, scales = 'free') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
 ### Difference between observed and predicted ###
 
 # Difference (observed - predicted)
@@ -396,7 +437,7 @@ diff$y <- pred_mean$y
 # Assign time
 diff$time <- pred_mean$time
 
-# Plot
+# Plot difference over space and time
 
 ## BEECH
 
@@ -1120,6 +1161,32 @@ pred_cond |>
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+### Plot observed vs predicted irrespective of space/time ###
+
+pred_cond_long <- pred_cond |>
+  # pivot predictions longer
+  tidyr::pivot_longer(cols = beech:tamarack,
+                      names_to = 'taxon',
+                      values_to = 'Predicted') |>
+  # rename other conifer and other hardwood
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'oc', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'oh', 'other hardwood', taxon)) |>
+  # format
+  dplyr::mutate(taxon = stringr::str_to_title(taxon))
+
+# Combine
+pred_obs_long <- pred_cond_long |>
+  dplyr::full_join(y = obs_long,
+                   by = c('x', 'y', 'time', 'taxon'))
+
+pred_obs_long |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::facet_wrap(~taxon, scales = 'free') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
 ### Difference between observed and predicted ###
 
 # Difference (observed - predicted)
@@ -1818,6 +1885,33 @@ pred_mean |>
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### Plot observed vs predicted irrespective of space/time ###
+
+pred_mean_long <- pred_mean |>
+  # pivot predictions longer
+  tidyr::pivot_longer(cols = beech:tamarack,
+                      names_to = 'taxon',
+                      values_to = 'Predicted') |>
+  # rename other conifer and other hardwood
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'oc', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'oh', 'other hardwood', taxon)) |>
+  # format
+  dplyr::mutate(taxon = stringr::str_to_title(taxon))
+
+# Combine
+pred_obs_long <- pred_mean_long |>
+  dplyr::full_join(y = obs_long,
+                   by = c('x', 'y', 'time', 'taxon'))
+
+pred_obs_long |>
+  dplyr::filter(taxon != 'Oak') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::facet_wrap(~taxon, scales = 'free') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
 
 ### Difference between observed and predicted ###
 

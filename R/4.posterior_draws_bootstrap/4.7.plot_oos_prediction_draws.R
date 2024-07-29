@@ -11,7 +11,7 @@
 ## OOS predictions for 300 YBP using non-conditional method
 ## Saved on external drive because of large file size (8 GB)
 
-## Input: /Volumes/FileBackup/GJAM_STEPPS_output/oos_prediction_conditionoak_time.RData
+## Input: /Volumes/FileBackup/GJAM_STEPPS_output/posteriors/oos_prediction_conditionoak_time.RData
 ## OOS predictions for 300 YBP using conditional on oak method
 ## Saved on external drive because of large file size (8 GB)
 
@@ -27,7 +27,7 @@ load('data/processed/post_stepps_soil_clim.RData')
 #### Non-conditional prediction ####
 
 # Load out-of-sample predictions
-load('/Volumes/FileBackup/GJAM_STEPPS_output/oos_prediction_nonconditional_time.RData')
+load('/Volumes/FileBackup/GJAM_STEPPS_output/posteriors/oos_prediction_nonconditional_time.RData')
 
 # Map of study region
 states <- map_states()
@@ -63,6 +63,25 @@ for(i in 1:length(pred)){
   }
   print(i)
 }
+
+### Check how close we get to sum to 1 ###
+
+pred_mean_sum <- pred_mean |>
+  dplyr::mutate(sum = rowSums(dplyr::across(BEECH:TAMARACK)))
+
+pred_mean_sum |>
+  dplyr::group_by(x, y) |>
+  dplyr::summarize(low = min(sum),
+                   mean = mean(sum),
+                   high = max(sum)) |>
+  tidyr::pivot_longer(cols = low:high,
+                      names_to = 'summary', values_to = 'total') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = total),
+                      shape = 15, size = 5) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(summary, levels = c('low', 'mean', 'high'))) +
+  ggplot2::theme_void()
 
 ### Plot each taxon's predictive mean over space ###
 

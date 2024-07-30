@@ -422,7 +422,8 @@ pred_obs_long |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
   ggplot2::geom_abline(color = 'blue') +
-  ggplot2::facet_wrap(~taxon, scales = 'free') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
   ggplot2::theme_minimal() +
   ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
 
@@ -1183,7 +1184,8 @@ pred_obs_long |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
   ggplot2::geom_abline(color = 'blue') +
-  ggplot2::facet_wrap(~taxon, scales = 'free') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
   ggplot2::theme_minimal() +
   ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
 
@@ -1909,7 +1911,8 @@ pred_obs_long |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
   ggplot2::geom_abline(color = 'blue') +
-  ggplot2::facet_wrap(~taxon, scales = 'free') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
   ggplot2::theme_minimal() +
   ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
 

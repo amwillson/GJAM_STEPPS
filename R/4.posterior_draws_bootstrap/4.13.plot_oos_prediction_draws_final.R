@@ -24,7 +24,7 @@ load('data/processed/post_stepps_full_oos.RData')
 #### Non-conditional prediction ####
 
 # Load out-of-sample predictions
-load('/Volumes/FileBackup/GJAM_STEPPS_output/oos_prediction_nonconditional_final.RData')
+load('/Volumes/FileBackup/GJAM_STEPPS_output/posteriors/oos_prediction_nonconditional_final.RData')
 
 # Map of study region
 states <- map_states()
@@ -1214,6 +1214,530 @@ pred_mean |>
   ggplot2::ggtitle('Tamarack, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
+
+### Plot observed vs predicted irrespective of space/time ###
+
+pred_mean_long <- pred_mean |>
+  # pivot predictions longer
+  tidyr::pivot_longer(cols = BEECH:TAMARACK,
+                      names_to = 'taxon',
+                      values_to = 'Predicted') |>
+  # rename other conifer and other hardwood
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'OC', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'OH', 'other hardwood', taxon)) |>
+  # format
+  dplyr::mutate(taxon = stringr::str_to_title(taxon)) |>
+  # group for summarizing
+  dplyr::group_by(x, y, time, taxon) |>
+  # summarize over draws
+  dplyr::summarize(predicted_mean = mean(Predicted),
+                   predicted_sd = sd(Predicted),
+                   predicted_quant_2.5 = quantile(Predicted, probs = 0.025),
+                   predicted_quant_25 = quantile(Predicted, probs = 0.25),
+                   predicted_quant_75 = quantile(Predicted, probs = 0.75),
+                   predicted_quant_975 = quantile(Predicted, probs = 0.975))
+
+obs_long <- post_oos_all |>
+  # select relevant columns
+  dplyr::select(x:TAMARACK) |>
+  # remove ash taxon
+  dplyr::select(-ASH) |>
+  # pivot observations longer
+  tidyr::pivot_longer(cols = BEECH:TAMARACK,
+                      names_to = 'taxon',
+                      values_to = 'Observed') |>
+  # format
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'OTHER.CONIFER', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'OTHER.HARDWOOD', 'other hardwood', taxon)) |>
+  dplyr::mutate(taxon = stringr::str_to_title(taxon)) |>
+  # group for summarizing
+  dplyr::group_by(x, y, time, taxon) |>
+  # summarize over draws
+  dplyr::summarize(observed_mean = mean(Observed),
+                   observed_sd = sd(Observed),
+                   observed_quant_2.5 = quantile(Observed, probs = 0.025),
+                   observed_quant_25 = quantile(Observed, probs = 0.25),
+                   observed_quant_75 = quantile(Observed, probs = 0.75),
+                   observed_quant_975 = quantile(Observed, probs = 0.975))
+
+# Combine
+pred_obs_long <- pred_mean_long |>
+  dplyr::full_join(y = obs_long,
+                   by = c('x', 'y', 'time', 'taxon'))
+
+## BEECH - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Beech') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlim(c(0, 0.7)) + ggplot2::ylim(c(0, 0.7)) +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## BIRCH - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Birch') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlim(c(0, 0.5)) + ggplot2::ylim(c(0, 0.5)) +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## ELM - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Elm') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.65)) + ggplot2::ylim(c(0, 0.65)) +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## HEMLOCK - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Hemlock') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.7)) + ggplot2::ylim(c(0, 0.7)) +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## MAPLE - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Maple') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.4)) + ggplot2::ylim(c(0, 0.4)) +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OAK - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Oak') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OTHER CONIFER - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Other Conifer') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.6)) + ggplot2::ylim(c(0, 0.6)) +
+  ggplot2::ggtitle('Other Conifer') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OTHER HARDWOOD - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Other Hardwood') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.5)) + ggplot2::ylim(c(0, 0.5)) +
+  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## PINE - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Pine') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## SPRUCE - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Spruce') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.5)) + ggplot2::ylim(c(0, 0.5)) +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## TAMARACK - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Tamarack') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## ALL - mean +/- sd
+
+pred_obs_long |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd)) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd)) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## BEECH - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Beech') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## BIRCH  - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Birch') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.65)) + ggplot2::ylim(c(0, 0.65)) +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## ELM  - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Elm') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## HEMLOCK  - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Hemlock') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## MAPLE - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Maple') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.6)) + ggplot2::ylim(c(0, 0.6)) +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OAK - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Oak') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OTHER CONIFER - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Other Conifer') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Other Conifer') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OTHER HARDWOOD - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Other Hardwood') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.6)) + ggplot2::ylim(c(0, 0.6)) +
+  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## PINE - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Pine') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## SPRUCE - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Spruce') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.65)) + ggplot2::ylim(c(0, 0.65)) +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## TAMARACK - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Tamarack') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## ALL - mean [95% CI]
+
+pred_obs_long |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
 
 ### Difference between observed and predicted: each draw individually ###
 
@@ -2455,7 +2979,7 @@ diff |>
 rm(pred)
 
 # Load predictions
-load('/Volumes/FileBackup/GJAM_STEPPS_output/oos_prediction_conditionaloak_final.RData')
+load('/Volumes/FileBackup/GJAM_STEPPS_output/posteriors/oos_prediction_conditionoak_final.RData')
 
 # Loop over posterior draws
 for(i in 1:length(oak_cond_pred)){
@@ -3637,6 +4161,468 @@ pred_mean |>
   ggplot2::ggtitle('Tamarack, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
+
+### Plot observed vs predicted irrespective of space/time ###
+
+pred_mean_long <- pred_mean |>
+  # pivot predictions longer
+  tidyr::pivot_longer(cols = BEECH:TAMARACK,
+                      names_to = 'taxon',
+                      values_to = 'Predicted') |>
+  # rename other conifer and other hardwood
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'OC', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'OH', 'other hardwood', taxon)) |>
+  # format
+  dplyr::mutate(taxon = stringr::str_to_title(taxon)) |>
+  # group for summarizing
+  dplyr::group_by(x, y, time, taxon) |>
+  # summarize over draws
+  dplyr::summarize(predicted_mean = mean(Predicted),
+                   predicted_sd = sd(Predicted),
+                   predicted_quant_2.5 = quantile(Predicted, probs = 0.025),
+                   predicted_quant_25 = quantile(Predicted, probs = 0.25),
+                   predicted_quant_75 = quantile(Predicted, probs = 0.75),
+                   predicted_quant_975 = quantile(Predicted, probs = 0.975))
+
+# Combine
+pred_obs_long <- pred_mean_long |>
+  dplyr::full_join(y = obs_long,
+                   by = c('x', 'y', 'time', 'taxon'))
+
+## BEECH - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Beech') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlim(c(-0.01, 0.7)) + ggplot2::ylim(c(-0.01, 0.7)) +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## BIRCH - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Birch') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlim(c(-0.01, 0.5)) + ggplot2::ylim(c(-0.01, 0.5)) +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## ELM - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Elm') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(-0.01, 0.65)) + ggplot2::ylim(c(-0.01, 0.65)) +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## HEMLOCK - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Hemlock') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(-0.01, 0.7)) + ggplot2::ylim(c(-0.01, 0.7)) +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## MAPLE - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Maple') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(-0.01, 0.4)) + ggplot2::ylim(c(-0.01, 0.4)) +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OTHER CONIFER - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Other Conifer') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(-0.01, 0.6)) + ggplot2::ylim(c(-0.01, 0.6)) +
+  ggplot2::ggtitle('Other Conifer') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OTHER HARDWOOD - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Other Hardwood') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(-0.01, 0.5)) + ggplot2::ylim(c(-0.01, 0.5)) +
+  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## PINE - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Pine') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(-0.01, 1)) + ggplot2::ylim(c(-0.01, 1)) +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## SPRUCE - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Spruce') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(-0.01, 0.5)) + ggplot2::ylim(c(-0.01, 0.5)) +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## TAMARACK - mean +/- sd
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Tamarack') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(-0.01, 0.8)) + ggplot2::ylim(c(-0.01, 0.8)) +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## ALL - mean +/- sd
+
+pred_obs_long |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point() +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_mean - observed_sd,
+                                      ymax = observed_mean + observed_sd)) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
+                                       xmax = predicted_mean + predicted_sd)) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## BEECH - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Beech') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Beech') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## BIRCH  - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Birch') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.65)) + ggplot2::ylim(c(0, 0.65)) +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## ELM  - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Elm') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## HEMLOCK  - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Hemlock') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## MAPLE - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Maple') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.6)) + ggplot2::ylim(c(0, 0.6)) +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OTHER CONIFER - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Other Conifer') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Other Conifer') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## OTHER HARDWOOD - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Other Hardwood') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.6)) + ggplot2::ylim(c(0, 0.6)) +
+  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## PINE - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Pine') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## SPRUCE - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Spruce') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.65)) + ggplot2::ylim(c(0, 0.65)) +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## TAMARACK - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Tamarack') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, y = observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 0.8)) + ggplot2::ylim(c(0, 0.8)) +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+
+## ALL - mean [95% CI]
+
+pred_obs_long |>
+  dplyr::filter(taxon != 'Oak') |>
+  ggplot2::ggplot(ggplot2::aes(x = predicted_mean, observed_mean)) +
+  ggplot2::geom_point(alpha = 0.8) +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = observed_quant_2.5,
+                                      ymax = observed_quant_975),
+                         alpha = 0.3) +
+  ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_quant_2.5,
+                                       xmax = predicted_quant_975),
+                          alpha = 0.3) +
+  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
 
 ### Difference between observed and predicted: each draw individually ###
 

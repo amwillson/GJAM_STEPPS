@@ -35,6 +35,8 @@ for(i in 1:length(pred)){
   temp <- pred[[i]]
   # Extract oos data for one posterior draw
   oos <- dplyr::filter(post_oos_all, draw == i)
+  # Without missing data
+  oos2 <- tidyr::drop_na(oos)
   
   # If it's the first one
   if(i == 1){
@@ -43,28 +45,52 @@ for(i in 1:length(pred)){
     # Format
     pred_mean <- as.data.frame(pred_mean)
     # Add coordinates
-    pred_mean$x <- oos$x
-    pred_mean$y <- oos$y
+    pred_mean$x <- oos2$x
+    pred_mean$y <- oos2$y
     # Add time
-    pred_mean$time <- oos$time
+    pred_mean$time <- oos2$time
+    
+    # Add to full grid (with missing data)
+    pred_mean2 <- oos |>
+      dplyr::select(x, y, time) |>
+      dplyr::left_join(y = pred_mean, by = c('x', 'y', 'time'))
+    
     # Add draw index
-    pred_mean$draw <- rep(i, times = nrow(oos))
+    pred_mean2$draw <- rep(i, times = nrow(pred_mean2))
+    
     # Otherwise add to previous draw
   }else{
     # Same steps but temporary storage
     temp2 <- temp$sdList$yMu
     temp2 <- as.data.frame(temp2)
-    temp2$x <- oos$x
-    temp2$y <- oos$y
-    temp2$time <- oos$time
-    temp2$draw <- rep(i, times = nrow(oos))
+    temp2$x <- oos2$x
+    temp2$y <- oos2$y
+    temp2$time <- oos2$time
+    
+    temp3 <- oos |>
+      dplyr::select(x, y, time) |>
+      dplyr::left_join(y = temp2, by = c('x', 'y', 'time'))
+    
+    temp3$draw <- rep(i, times = nrow(temp3))
+    
     # Add to previous draw
-    pred_mean <- rbind(pred_mean, temp2)
+    pred_mean2 <- rbind(pred_mean2, temp3)
   }
   print(i)
 }
 
 ### Plot each taxon's predictive mean over space and time ###
+
+## Predictive mean is what the model on average
+## predicts the relative abundance of each taxon
+## to be, given the environment
+
+## Note that we are plotting the median and 50% CrI 
+## of predictive mean. This is over the 100 posterior
+## draws of STEPPS
+## Plotting median and CrI in separate figures
+## to maximize the size of facets representing individual
+## time intervals in each figure
 
 # Time order
 time_order <- c('1900 YBP', '1800 YBP', '1700 YBP', '1600 YBP',
@@ -75,7 +101,7 @@ time_order <- c('1900 YBP', '1800 YBP', '1700 YBP', '1600 YBP',
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -101,7 +127,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -109,7 +137,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -135,7 +163,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -143,7 +173,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -169,7 +199,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -179,7 +211,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -205,7 +237,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -213,7 +247,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -239,7 +273,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -247,7 +283,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -273,7 +309,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -283,7 +321,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -309,7 +347,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -317,7 +357,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -343,7 +383,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -351,7 +393,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -377,7 +419,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -387,7 +431,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -413,7 +457,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -421,7 +467,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -447,7 +493,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -455,7 +503,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -481,7 +529,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -491,7 +541,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -517,7 +567,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -525,7 +577,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -551,7 +603,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -559,7 +613,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -585,7 +639,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -595,7 +651,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -621,7 +677,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -629,7 +687,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -655,7 +713,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -663,7 +723,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -689,7 +749,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -699,7 +761,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -725,7 +787,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -733,7 +797,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -759,7 +823,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -767,7 +833,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -793,7 +859,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -803,7 +871,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -829,7 +897,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -837,7 +907,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -863,7 +933,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -871,7 +943,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -897,7 +969,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -907,7 +981,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -933,7 +1007,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -941,7 +1017,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -967,7 +1043,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -975,7 +1053,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -1001,7 +1079,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -1011,7 +1091,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -1037,7 +1117,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -1045,7 +1127,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -1071,7 +1153,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -1079,7 +1163,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -1105,7 +1189,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -1115,7 +1201,7 @@ pred_mean |>
 
 # 25% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -1141,7 +1227,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack, 25%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -1149,7 +1237,7 @@ pred_mean |>
 
 # Median
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -1175,7 +1263,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack, Median') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -1183,7 +1273,7 @@ pred_mean |>
 
 # 75% CI
 
-pred_mean |>
+pred_mean2 |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '18', '1800 YBP', time),
@@ -1209,7 +1299,9 @@ pred_mean |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack, 75%') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -1217,7 +1309,13 @@ pred_mean |>
 
 ### Plot observed vs predicted irrespective of space/time ###
 
-pred_mean_long <- pred_mean |>
+## If the model is doing a good job predicting relative abundances,
+## then we would expect that the points would generally fall around
+## the 1:1 line. If the model produces biased predictions,
+## then we would see that the points generally fall either above
+## or below the 1:1 line
+
+pred_mean_long <- pred_mean2 |>
   # pivot predictions longer
   tidyr::pivot_longer(cols = BEECH:TAMARACK,
                       names_to = 'taxon',
@@ -1277,7 +1375,7 @@ pred_obs_long |>
   ggplot2::geom_errorbarh(ggplot2::aes(xmin = predicted_mean - predicted_sd,
                                        xmax = predicted_mean + predicted_sd),
                           alpha = 0.3) +
-  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::geom_abline(color = 'blue', linetype = 'dashed') +
   ggplot2::xlim(c(0, 0.7)) + ggplot2::ylim(c(0, 0.7)) +
   ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
   ggplot2::ggtitle('Beech') +

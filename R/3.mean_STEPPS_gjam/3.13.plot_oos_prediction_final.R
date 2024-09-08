@@ -32,11 +32,17 @@ pred_mean <- pred$sdList$yMu
 
 # Format
 pred_mean <- as.data.frame(pred_mean)
+
+# Add coordinates and time steps
 pred_mean$x <- taxon_oos_all$stepps_x
 pred_mean$y <- taxon_oos_all$stepps_y
 pred_mean$time <- taxon_oos_all$time
 
 ### Plot each taxon's predictive mean over space and time ###
+
+## Predictive mean is what the model on average
+## predicts the relative abundance of each taxon
+## to be, given the environment
 
 # Order of facets
 time_order <- c('1900 YBP', '1800 YBP', '1700 YBP', '1600 YBP',
@@ -69,7 +75,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -100,7 +108,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -131,7 +141,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -162,7 +174,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -193,7 +207,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -224,7 +240,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -255,7 +273,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -286,7 +306,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -317,7 +339,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -348,7 +372,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -379,13 +405,18 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### Plot observed vs predicted irrespective of space/time ###
+
+## How far off are our predictions from the observations of 
+## relative abundance across all time steps?
 
 pred_mean_long <- pred_mean |>
   # pivot predictions longer
@@ -418,16 +449,40 @@ pred_obs_long <- pred_mean_long |>
   dplyr::full_join(y = obs_long,
                    by = c('x', 'y', 'time', 'taxon'))
 
+# Plot observed vs predicted with 1:1 line
+# Predictions ideally would be along the 1:1 line and
+# there would be even spread of points above and below 1:1 line
 pred_obs_long |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
-  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::geom_abline(color = 'blue', linetype = 'dashed') +
   ggplot2::facet_wrap(~taxon) +
   ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
   ggplot2::theme_minimal() +
   ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
 
+# 
+get_density <- function(x, y, ...) {
+  dens <- MASS::kde2d(x, y, ...)
+  ix <- findInterval(x, dens$x)
+  iy <- findInterval(y, dens$y)
+  ii <- cbind(ix, iy)
+  return(dens$z[ii])
+}
+
+pred_obs_long$density <- get_density(pred_obs_long$Predicted, pred_obs_long$Observed, n = 100)
+
+pred_obs_long |>
+  dplyr::filter(taxon == 'Beech') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed, color = density)) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::geom_abline()
+
 ### Difference between observed and predicted ###
+
+## How far off are our predictions from the observations of 
+## relative abundance?
 
 # Difference (observed - predicted)
 diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(pred_mean, beech:tamarack)
@@ -467,7 +522,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 limits = c(-1, 1),
                                 direction = 1,
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -500,7 +556,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -533,7 +590,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -566,7 +624,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -599,7 +658,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -632,7 +692,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -665,7 +726,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -698,7 +760,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -731,7 +794,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -764,7 +828,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -797,13 +862,19 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 #### Conditional prediction ####
+
+## Repeat same types of figures but for prediction
+## conditional on the observed relative abundance of
+## all other taxa
+## Code is nearly identical to the case of non-conditional prediction
 
 # Loop through each output
 pred_cond <- matrix(, nrow = nrow(pred_mean), ncol = 11)
@@ -846,7 +917,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -877,7 +950,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -908,7 +983,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -939,7 +1016,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -970,7 +1049,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -1001,7 +1082,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -1032,7 +1115,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -1063,7 +1148,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -1094,7 +1181,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -1125,7 +1214,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -1156,7 +1247,9 @@ pred_cond |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -1229,7 +1322,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -1262,7 +1356,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -1295,7 +1390,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -1328,7 +1424,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -1361,7 +1458,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -1394,7 +1492,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -1427,7 +1526,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -1460,7 +1560,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -1493,7 +1594,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -1526,7 +1628,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -1559,7 +1662,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -1603,7 +1707,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -1634,7 +1740,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -1665,7 +1773,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -1696,7 +1806,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -1727,7 +1839,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -1758,7 +1872,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -1789,7 +1905,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -1820,7 +1938,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -1851,7 +1971,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -1882,7 +2004,9 @@ pred_mean |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                name = 'Relative\nabundance') +
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -1956,7 +2080,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -1989,7 +2114,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -2022,7 +2148,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -2055,7 +2182,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -2088,7 +2216,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -2119,9 +2248,10 @@ diff |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed-\nPredicted') +
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -2154,7 +2284,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -2187,7 +2318,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -2220,7 +2352,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -2253,7 +2386,8 @@ diff |>
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
-                                name = 'Observed-\nPredicted') +
+                                name = 'Observed-\nPredicted',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +

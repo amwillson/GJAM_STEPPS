@@ -15,6 +15,7 @@ source('R/funs.R')
 # Load means
 load('data/processed/mean_STEPPS.RData')
 
+# Format into dataframes
 ash_melt <- melt_array(taxon_mat = ash,
                        x = x, y = y, time = time,
                        col_names = c('x', 'y', 'time', 'ash'))
@@ -52,7 +53,7 @@ tamarack_melt <- melt_array(taxon_mat = tamarack,
                             x = x, y = y, time = time,
                             col_names = c('x', 'y', 'time', 'tamarack'))
 
-# Combine
+# Combine individual taxon dataframes into one
 taxon_melt <- ash_melt |>
   dplyr::left_join(y = beech_melt, by = c('x', 'y', 'time')) |>
   dplyr::left_join(y = birch_melt, by = c('x', 'y', 'time')) |>
@@ -69,12 +70,14 @@ taxon_melt <- ash_melt |>
 # Map of study region
 states <- map_states()
 
-# Order of facets
+# Order of facets for plotting
 time_order <- c('2100 YBP', '2000 YBP', '1900 YBP', '1800 YBP', '1700 YBP',
                 '1600 YBP', '1500 YBP', '1400 YBP', '1300 YBP', '1200 YBP',
                 '1100 YBP', '1000 YBP', '900 YBP', '800 YBP', '700 YBP',
                 '600 YBP', '500 YBP', '400 YBP', '300 YBP', '200 YBP')
-# Plot
+
+# Plot the relative abundance of each taxon (individually) over space and time
+# We just want to see what the data look like over the entire spatiotemporal domain
 taxon_melt |>
   dplyr::mutate(time = as.character(time),
                 time = dplyr::if_else(time == '2', '200 YBP', time),
@@ -101,7 +104,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Ash') +
@@ -133,7 +137,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -165,7 +170,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -197,7 +203,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -229,7 +236,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -261,7 +269,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -293,7 +302,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -325,7 +335,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -357,7 +368,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -389,7 +401,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -421,7 +434,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -453,7 +467,8 @@ taxon_melt |>
   ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white', 
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +

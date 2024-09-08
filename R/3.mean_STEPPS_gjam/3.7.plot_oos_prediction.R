@@ -31,154 +31,194 @@ states <- map_states()
 # Predictive mean
 pred_mean <- pred$sdList$yMu
 
+# Only non-NA observations
+taxon_oos_all2 <- tidyr::drop_na(taxon_oos_all)
+
 # Format
 pred_mean <- as.data.frame(pred_mean)
-pred_mean$x <- taxon_oos_all$stepps_x
-pred_mean$y <- taxon_oos_all$stepps_y
+
+# Add coordinates
+pred_mean$x <- taxon_oos_all2$stepps_x
+pred_mean$y <- taxon_oos_all2$stepps_y
+
+# Add to full grid (with missing data)
+pred_mean2 <- taxon_oos_all |>
+  dplyr::select(stepps_x, stepps_y) |>
+  dplyr::rename(x = stepps_x,
+                y = stepps_y) |>
+  dplyr::left_join(y = pred_mean, by = c('x', 'y'))
 
 ### Plot each taxon's predictive mean over space ###
 
+## Predictive mean is what the model on average
+## predicts the relative abundance of each taxon
+## to be, given the environment
+
 ## BEECH
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## BIRCH
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## ELM
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## HEMLOCK
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## MAPLE
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## OAK
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## OTHER CONIFER
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oc), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## OTHER HARDWOOD
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oh), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## PINE
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## SPRUCE
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## TAMARACK
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### Difference between observed and predicted ###
 
+## How far off are our predictions from the observations of 
+## relative abundance?
+
 # Difference (observed - predicted)
-diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(pred_mean, beech:tamarack)
+diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(pred_mean2, beech:tamarack)
 
 # Assign coords
-diff$x <- pred_mean$x
-diff$y <- pred_mean$y
+diff$x <- pred_mean2$x
+diff$y <- pred_mean2$y
 
 # Plot
 
@@ -186,13 +226,13 @@ diff$y <- pred_mean$y
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -201,13 +241,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -216,13 +256,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -231,13 +271,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -246,13 +286,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -261,13 +301,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -276,13 +316,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -291,13 +331,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -306,13 +346,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -321,13 +361,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -336,18 +376,23 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 #### Conditional prediction ####
+
+## Repeat same types of figures but for prediction
+## conditional on the observed relative abundance of
+## all other taxa
+## Code is nearly identical to the case of non-conditional prediction
 
 # Loop through each output
 pred_cond <- matrix(, nrow = nrow(pred_mean), ncol = 11)
@@ -362,147 +407,164 @@ pred_cond <- as.data.frame(pred_cond)
 pred_cond$x <- pred_mean$x
 pred_cond$y <- pred_mean$y
 
+pred_cond2 <- taxon_oos_all |>
+  dplyr::select(stepps_x, stepps_y) |>
+  dplyr::rename(x = stepps_x,
+                y = stepps_y) |>
+  dplyr::left_join(y = pred_cond, by = c('x', 'y'))
+
 ### Plot each taxon's predictive mean over space ###
 
 ## BEECH
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## BIRCH
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## ELM
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## HEMLOCK
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## MAPLE
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## OAK
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('OAK') +
+  ggplot2::ggtitle('Oak') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## OTHER CONIFER
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oc), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## OTHER HARDWOOD
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oh), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## PINE
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## SPRUCE
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## TAMARACK
 
-pred_cond |>
+pred_cond2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -510,11 +572,11 @@ pred_cond |>
 ### Difference between observed and predicted ###
 
 # Difference (observed - predicted)
-diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(pred_cond, beech:tamarack)
+diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(pred_cond2, beech:tamarack)
 
 # Assign coords
-diff$x <- pred_mean$x
-diff$y <- pred_mean$y
+diff$x <- pred_mean2$x
+diff$y <- pred_mean2$y
 
 # Plot
 
@@ -522,13 +584,13 @@ diff$y <- pred_mean$y
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -537,13 +599,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -552,13 +614,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -567,13 +629,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -582,13 +644,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -597,13 +659,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -612,13 +674,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -627,13 +689,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -642,13 +704,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -657,13 +719,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -672,154 +734,178 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 #### Conditional on oak ####
 
+## Repeat same types of figures but for prediction
+## conditional on the observed relative abundance of oak
+## Code is nearly identical to the case of non-conditional prediction
+
 # Predictive mean
 pred_mean <- oak_cond_pred$sdList$yMu
 
 # Format
 pred_mean <- as.data.frame(pred_mean)
-pred_mean$x <- taxon_oos_all$stepps_x
-pred_mean$y <- taxon_oos_all$stepps_y
+
+# Add coordinates
+pred_mean$x <- taxon_oos_all2$stepps_x
+pred_mean$y <- taxon_oos_all2$stepps_y
+
+# Add to full grid (with missing data)
+pred_mean2 <- taxon_oos_all |>
+  dplyr::select(stepps_x, stepps_y) |>
+  dplyr::rename(x = stepps_x,
+                y = stepps_y) |>
+  dplyr::left_join(y = pred_mean, by = c('x', 'y'))
 
 ### Plot each taxon's predictive mean over space ###
 
 ## BEECH
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## BIRCH
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## ELM
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## HEMLOCK
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## MAPLE
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## OTHER CONIFER
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oc), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## OTHER HARDWOOD
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oh), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## PINE
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## SPRUCE
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ## TAMARACK
 
-pred_mean |>
+pred_mean2 |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1,
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -827,11 +913,11 @@ pred_mean |>
 ### Difference between observed and predicted ###
 
 # Difference (observed - predicted)
-diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(pred_mean, beech:tamarack)
+diff <- dplyr::select(taxon_oos_all, beech:tamarack) - dplyr::select(pred_mean2, beech:tamarack)
 
 # Assign coords
-diff$x <- pred_mean$x
-diff$y <- pred_mean$y
+diff$x <- pred_mean2$x
+diff$y <- pred_mean2$y
 
 # Plot
 
@@ -839,13 +925,13 @@ diff$y <- pred_mean$y
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -854,13 +940,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -869,13 +955,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -884,13 +970,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -899,13 +985,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -914,13 +1000,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -929,13 +1015,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -944,13 +1030,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -959,13 +1045,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -974,13 +1060,13 @@ diff |>
 
 diff |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack), 
-                      shape = 15, size = 10) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'RdBu',
-                                 direction = 1,
-                                 limits = c(-1, 1),
-                                 name = 'Observed -\nPredicted') +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                direction = 1,
+                                limits = c(-1, 1),
+                                name = 'Observed -\nPredicted',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))

@@ -32,6 +32,8 @@ This repository was built in the R environment on two machines. The majority of 
 -   `tidytext` v. 0.4.2
 -   `tigris` v. 2.1 (v. 1.6 on VM)
 
+All packages can be installed using the install_packages.R script. When possible, the specific version of the package will be installed.
+
 # Directory structure
 
 ## data
@@ -154,7 +156,7 @@ This repository was built in the R environment on two machines. The majority of 
 
 ## R
 
-**Code** for processing data, running models, processing output, and plotting results. Broken into four sections: **1.Format_STEPPS**, **2.Process_climate**, **3.mean_STEPPS_gjam**, **4.posterior_draws_boostrap**. Additionally includes 2 helper files (**climate_dimensions.R** and **funs.R**), a **deprecated** folder, and a directory for determining subsampling scheme (**Testing_subsampling_methods**).
+**Code** for processing data, running models, processing output, and plotting results. Broken into four sections: **1.Format_STEPPS**, **2.Process_climate**, **3.mean_STEPPS_gjam**, **4.posterior_draws_boostrap**. Additionally includes 3 helper files (**climate_dimensions.R**, **install_packages.R**, and **funs.R**), a **deprecated** folder, and a directory for determining subsampling scheme (**Testing_subsampling_methods**).
 
 ### 1.Format_STEPPS
 
@@ -451,6 +453,7 @@ This repository was built in the R environment on two machines. The majority of 
 
 - **climate_dimensions.R**: helper file with the maximum extent of climate domain for use in 2.1.process_climate.R
 - **funs.R**: helper functions for formatting STEPPS arrays (melt_array) and mapping study region (map_states)
+- **install_packages.R**: installs all required packages for all parts of the analysis. When possible, the specific version of the package used in the analysis will be installed using the remotes package
 - **deprecated**: contains a small number of deprecated scripts that are ultimately not used
 - **Testing_subsampling_methods**: contains three Rmd (and three corresponding pdf) files detailing how the sampling density and specific sampling scheme were chosen in space and time
     - **Semivariogram_spatial_subsampling.Rmd**: fitting semivariograms to the mean relative abundance reconstructions to justify the spatial sampling density (every three grid cells)

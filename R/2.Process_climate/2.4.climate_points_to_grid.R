@@ -34,6 +34,9 @@ rm(list = ls())
 source('R/funs.R')
 
 # Load intermediate step
+# This is the climate across full spatial domain from
+# step 2-3 but only for one time period
+# (so each spatial location shows up once)
 load('data/intermediate/clipped_clim_50.RData')
 
 # Load PLS point level data for area of interest
@@ -44,7 +47,7 @@ load('data/input/PLS_point/wisconsin_process.RData')
 # Combine all PLS data
 pls <- rbind(minnesota, upmichigan, wisconsin)
 
-# Transform so that each point has one line
+# Transform so that each point has one row
 pls <- pls |>
   tidyr::pivot_wider(names_from = 'tree', values_from = 'species') |>
   dplyr::mutate(uniqueID = paste0(y,'_',x),
@@ -72,7 +75,7 @@ pls <- dplyr::select(pls, keep_x, keep_y, uniqueID)
 save(pls, file = 'data/intermediate/clipped_pls.RData')
 
 # Define coordinate system of climate data
-# (we haad transformed earlier)
+# (we had transformed earlier)
 ey.hat_50 <- sf::st_as_sf(ey.hat_50,
                           coords = c('x', 'y'),
                           crs = 'EPSG:3175')
@@ -95,10 +98,13 @@ unbias_50 <- dplyr::select(unbias_50, -sfg_id, -point_id)
 pls <- dplyr::rename(pls, x = keep_x, y = keep_y)
 
 # Make two subsets of pls
+# This is done because finding the distance between
+# all PLS points and climate points is really
+# computationally demanding so we just do it twice
 pls1 <- pls[1:253536,]
 pls2 <- pls[253537:nrow(pls),]
 
-# Select coordinates
+# Select coordinates from each dataframe
 coords_pls1 <- dplyr::select(pls1, y, x)
 coords_pls2 <- dplyr::select(pls2, y, x)
 coords_ey.hat <- dplyr::select(ey.hat_50, y, x)
@@ -118,13 +124,18 @@ closest_point <- apply(dists, 1, which.min)
 # Immediately remove dists because it's huge
 rm(dists)
 
+# Make new climate dataframe with rows that correspond to each row of PLS
 select_ey.hat <- dplyr::slice(ey.hat_50, closest_point)
 
+# Bind PLS and climate together
 clim_pls <- cbind(select_ey.hat, pls1)
 
+# Remove large objects
 rm(closest_point, coords_pls1, select_ey.hat, pls1)
 
 ### Subset 2 ###
+
+# Repeat all the same steps
 
 dists <- fields::rdist(coords_pls2, coords_ey.hat)
 closest_point <- apply(dists, 1, which.min)
@@ -133,6 +144,7 @@ rm(dists)
 select_ey.hat <- dplyr::slice(ey.hat_50, closest_point)
 
 temp <- cbind(select_ey.hat, pls2)
+# Bind all climate and PLS together from two subsets
 clim_pls <- rbind(clim_pls, temp)
 
 rm(closest_point, coords_pls2, select_ey.hat, pls2)
@@ -143,6 +155,7 @@ colnames(clim_pls) <- c('time', 'aat', 'tpr', 'tsd', 'prsd', 'prcv', 'spatID', '
 #### Data checks ####
 
 # Check that coordinates match up
+# We want them to be along 1:1 line
 clim_pls |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = pls_x, y = clim_x)) +
@@ -154,6 +167,7 @@ clim_pls |>
   ggplot2::geom_abline()
 
 # Check that spatial patterns make sense
+# We still need climate to follow expected spatial patterns
 clim_pls |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = pls_x, y = pls_y, color = aat)) +

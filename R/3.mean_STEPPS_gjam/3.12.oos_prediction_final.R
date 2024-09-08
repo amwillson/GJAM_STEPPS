@@ -26,12 +26,15 @@ load('data/processed/mean_stepps_full_oos.RData')
 
 # Format ydata
 new_ydata <- taxon_oos_all |>
+  tidyr::drop_na() |>
   dplyr::select(beech:tamarack) |>
   dplyr::rename(oc = other_conifer,
                 oh = other_hardwood)
 
 # Format xdata (keep all columsn to match format from step 3-8)
-xdata <- dplyr::select(taxon_oos_all, clay:prsd)
+xdata <- taxon_oos_all |>
+  tidyr::drop_na() |>
+  dplyr::select(clay:prsd)
 
 #### Non conditional ####
 

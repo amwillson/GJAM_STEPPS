@@ -33,6 +33,10 @@ rm(list = ls())
 # Load data
 load('data/processed/mean_stepps_soil_clim.RData')
 
+# Remove missing data (from removed locations)
+taxon_insample_all <- tidyr::drop_na(taxon_insample_all)
+taxon_oos_all <- tidyr::drop_na(taxon_oos_all)
+
 # Format xdata
 xdata <- dplyr::select(taxon_insample_all, clay:prcv)
 

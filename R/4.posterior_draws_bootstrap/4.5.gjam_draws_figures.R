@@ -40,9 +40,12 @@ rm(list = ls())
 # sand_aat_tpr_prsd
 # silt_aat_tsd_prsd
 # sand_aat_tsd_prsd
-form <- 'sand_aat_tsd_prsd'
+form <- 'sand_aat_tpr_prsd'
 
 #### Trace plots ####
+
+## Trace plots are used to make sure parameters converged in the MCMC algorithm
+## If there are no clear trends across iterations, we infer good convergence
 
 # Load gibbs samples
 bFacGibbs <- readRDS(file = paste0('out/posteriors/', form, '/bFacGibbs.RDS'))
@@ -732,7 +735,10 @@ sgibbs |>
   ggplot2::ggtitle('Covariance with Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-#### Correlations between taxa and environment ####
+#### Coefficients between taxa and environment ####
+
+## What is the relationship between the environment and each taxon?
+## Here, we plot the beta coefficient distributions across iterations
 
 # Number of columns we're working with
 cols <- ncol(bFacGibbs)
@@ -838,6 +844,9 @@ for_plotting |>
 
 #### Covariate sensitivity ####
 
+## Joint sensitivity of all taxa to each covariate
+## How much does relative abundance change when each covariate changes?
+
 # Do some cleaning of the sensitivity fSensGibbs
 fSensGibbs_sum <- dplyr::select(fSensGibbs, -iter, -draw)
 sens_mean <- apply(fSensGibbs_sum, 2, mean, na.rm = TRUE)
@@ -897,6 +906,9 @@ fSensGibbs |>
                  axis.text = ggplot2::element_text(size = 12))
 
 #### Correlations between taxa ####
+
+## After accounting for their joint dependence on the environmental covariates
+## included in the model, are there residual correlations between taxa?
 
 # remove unnecessary columns
 sgibbs_cor <- dplyr::select(sgibbs, -iter, -draw)
@@ -990,3 +1002,39 @@ corrplot::corrplot(corr_mat, lowCI.mat = low_mat_50, uppCI.mat = upp_mat_50,
 corrplot::corrplot(corr_mat, lowCI.mat = low_mat_sd, uppCI.mat = upp_mat_sd,
                    plotCI = 'circle', diag = FALSE, type = 'upper',
                    col = pal, tl.col = 'black', tl.cex = 1.4)
+
+# Plot with 95% credible interval
+# but removing any correlations crossing 0
+insig <- which(low_mat_95 < 0 & upp_mat_95 > 0)
+corr_mat[insig] <- NA
+low_mat_95[insig] <- NA
+upp_mat_95[insig] <- NA
+
+corrplot::corrplot(corr_mat, lowCI.mat = low_mat_95, uppCI.mat = upp_mat_95,
+                   plotCI = 'circle', diag = FALSE, type = 'upper',
+                   col = pal, tl.col = 'black', tl.cex = 1.4,
+                   na.label = ' ')
+
+# Plot with 50% credible interval
+# but removing any correlations crossing 0
+insig <- which(low_mat_50 < 0 & upp_mat_50 > 0)
+corr_mat[insig] <- NA
+low_mat_50[insig] <- NA
+upp_mat_50[insig] <- NA
+
+corrplot::corrplot(corr_mat, lowCI.mat = low_mat_50, uppCI.mat = upp_mat_50,
+                   plotCI = 'circle', diag = FALSE, type = 'upper',
+                   col = pal, tl.col = 'black', tl.cex = 1.4,
+                   na.label = ' ')
+
+# Plot with +/- 1 SD
+# but removing any correlations crossing 0
+insig <- which(low_mat_sd < 0 & upp_mat_sd > 0)
+corr_mat[insig] <- NA
+low_mat_sd[insig] <- NA 
+upp_mat_sd[insig] <- NA
+
+corrplot::corrplot(corr_mat, lowCI.mat = low_mat_sd, uppCI.mat = upp_mat_sd,
+                   plotCI = 'circle', diag = FALSE, type = 'upper',
+                   col = pal, tl.col = 'black', tl.cex = 1.4,
+                   na.label = ' ')

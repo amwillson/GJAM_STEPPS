@@ -43,7 +43,10 @@ pred <- list()
 # Loop over posterior draws
 for(i in 1:100){
   # Subset for one posterior draw
-  sub <- dplyr::filter(post_oos_all, draw == i)
+  sub <- post_oos_all |> 
+    dplyr::filter(draw == i) |>
+    tidyr::drop_na()
+  
   # Subset for one GJAM fit
   out <- output[[i]]
   
@@ -75,7 +78,10 @@ oak_cond_pred <- list()
 
 # Loop over posterior draws
 for(i in 1:100){
-  sub <- dplyr::filter(post_oos_all, draw == i)
+  sub <- post_oos_all |>
+    dplyr::filter(draw == i) |>
+    tidyr::drop_na()
+  
   out <- output[[i]]
   
   # Format xdata (keep all columns to match format from step 4-5)

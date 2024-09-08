@@ -22,7 +22,7 @@ rm(list = ls())
 # Reduced dimensions
 source('R/climate_dimensions.R')
 
-# Load monthly temperature
+# Load monthly temperature file
 tas1 <- R.matlab::readMat('/Volumes/FileBackup/Climate_Downscaling_RG/tas_PCRdownscaled_mth=1_alyssa.mat')
 # Array for estimate
 tas1_ey.hat <- tas1$EY.hat
@@ -32,15 +32,16 @@ tas1_e <- tas1$e
 tas1_lon <- tas1$lon
 # Vector for latitude
 tas1_lat <- tas1$lat
-# Vector for time
+# Vector for time (know this from pers. comm.)
 tas1_time <- seq(from = 0, to = 2014, by = 1)
 
-# Dimensions to keep
+# Dimensions to keep so that we can subset the entire
+# spatiotemporal domain of the climate reconstructions
 keep_lon <- which(tas1_lon >= min_lon & tas1_lon <= max_lon)
 keep_lat <- which(tas1_lat >= min_lat & tas1_lat <= max_lat)
 keep_time <- which(tas1_time >= min_time & tas1_time <= max_time)
 
-# Subset
+# Subset for more limited spatiotemporal domain
 tas1_ey.hat <- tas1_ey.hat[keep_lon, keep_lat, keep_time]
 tas1_e <- tas1_e[keep_lon, keep_lat]
 tas1_lon <- tas1_lon[keep_lon]

@@ -31,12 +31,15 @@ post_df <- reshape2::melt(post)
 # Column names
 colnames(post_df) <- c('ind', 'taxon', 'time', 'draw', 'val')
 
-# Rescale factor
+# Rescale coordinates
+# Just a scalar to multiply cooridnates by to get
+# actual coordinates
 rescale <- 1e6
 
 # Format
 post_df <- post_df |>
-  # Add coordinates
+  # Add coordinates by joining with centers_veg
+  # We know that the grid cells are in the same order
   dplyr::full_join(y = centers_veg, by = 'ind') |>
   # Fix coords
   dplyr::mutate(x = x * rescale,
@@ -77,6 +80,7 @@ locs_melt <- dplyr::mutate(locs_melt,
                            keep = dplyr::if_else(is.na(keep), FALSE, keep))
 
 # Plot locations we are going to keep to make sure it looks good
+# We want to keep as many grid cells as possible within the study domain
 locs_melt |>
   dplyr::filter(keep == TRUE) |>
   ggplot2::ggplot() +
@@ -84,16 +88,28 @@ locs_melt |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::theme_void()
 
+# Take out all data when keep == FALSE
 locs_melt_keep <- locs_melt |>
-  dplyr::filter(keep == TRUE) |>
+  #dplyr::filter(keep == TRUE) |>
   dplyr::mutate(loc = paste0(x, '_', y))
 
-# Subset the total taxon dataframe
+# Take out all data when keep == FALSE
 post_filter <- post_df |>
   dplyr::mutate(loc = paste0(x, '_', y)) |>
   dplyr::select(-x, -y) |>
   dplyr::left_join(y = locs_melt_keep, by = 'loc') |>
-  dplyr::filter(keep == TRUE)
+  dplyr::mutate(ASH = dplyr::if_else(keep == TRUE, ASH, NA),
+                BEECH = dplyr::if_else(keep == TRUE, BEECH, NA),
+                BIRCH = dplyr::if_else(keep == TRUE, BIRCH, NA),
+                ELM = dplyr::if_else(keep == TRUE, ELM, NA),
+                HEMLOCK = dplyr::if_else(keep == TRUE, HEMLOCK, NA),
+                MAPLE = dplyr::if_else(keep == TRUE, MAPLE, NA),
+                OAK = dplyr::if_else(keep == TRUE, OAK, NA),
+                OTHER.CONIFER = dplyr::if_else(keep == TRUE, OTHER.CONIFER, NA),
+                OTHER.HARDWOOD = dplyr::if_else(keep == TRUE, OTHER.HARDWOOD, NA),
+                PINE = dplyr::if_else(keep == TRUE, PINE, NA),
+                SPRUCE = dplyr::if_else(keep == TRUE, SPRUCE, NA),
+                TAMARACK = dplyr::if_else(keep == TRUE, TAMARACK, NA))
 
 #### Plotting spatial subsample ####
 
@@ -105,7 +121,8 @@ time_order <- c('2100 YBP', '2000 YBP', '1900 YBP', '1800 YBP', '1700 YBP',
 
 ### ASH ###
 
-# Plot median over time
+# Plot each taxon with filtered grid
+# This should be effectively identical to mean STEPPS subsample plots
 post_filter |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(ash = median(ASH)) |>
@@ -134,7 +151,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Ash') +
@@ -144,18 +162,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(ASH, probs = 0.025),
-                   `25%` = quantile(ASH, probs = 0.25),
-                   `50%` = median(ASH),
-                   `75%` = quantile(ASH, probs = 0.75),
-                   `97.5%` = quantile(ASH, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(ASH, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(ASH, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(ASH, na.rm = TRUE),
+                   `75%` = quantile(ASH, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(ASH, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Ash') +
@@ -192,7 +211,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -202,18 +222,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(BEECH, probs = 0.025),
-                   `25%` = quantile(BEECH, probs = 0.25),
-                   `50%` = median(BEECH),
-                   `75%` = quantile(BEECH, probs = 0.75),
-                   `97.5%` = quantile(BEECH, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(BEECH, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(BEECH, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(BEECH, na.rm = TRUE),
+                   `75%` = quantile(BEECH, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(BEECH, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -250,7 +271,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -260,18 +282,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(BIRCH, probs = 0.025),
-                   `25%` = quantile(BIRCH, probs = 0.25),
-                   `50%` = median(BIRCH),
-                   `75%` = quantile(BIRCH, probs = 0.75),
-                   `97.5%` = quantile(BIRCH, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(BIRCH, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(BIRCH, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(BIRCH, na.rm = TRUE),
+                   `75%` = quantile(BIRCH, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(BIRCH, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -308,7 +331,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -318,18 +342,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(ELM, probs = 0.025),
-                   `25%` = quantile(ELM, probs = 0.25),
-                   `50%` = median(ELM),
-                   `75%` = quantile(ELM, probs = 0.75),
-                   `97.5%` = quantile(ELM, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(ELM, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(ELM, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(ELM, na.rm = TRUE),
+                   `75%` = quantile(ELM, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(ELM, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -366,7 +391,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -376,18 +402,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(HEMLOCK, probs = 0.025),
-                   `25%` = quantile(HEMLOCK, probs = 0.25),
-                   `50%` = median(HEMLOCK),
-                   `75%` = quantile(HEMLOCK, probs = 0.75),
-                   `97.5%` = quantile(HEMLOCK, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(HEMLOCK, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(HEMLOCK, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(HEMLOCK, na.rm = TRUE),
+                   `75%` = quantile(HEMLOCK, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(HEMLOCK, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -424,7 +451,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -434,18 +462,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(MAPLE, probs = 0.025),
-                   `25%` = quantile(MAPLE, probs = 0.25),
-                   `50%` = median(MAPLE),
-                   `75%` = quantile(MAPLE, probs = 0.75),
-                   `97.5%` = quantile(MAPLE, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(MAPLE, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(MAPLE, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(MAPLE, na.rm = TRUE),
+                   `75%` = quantile(MAPLE, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(MAPLE, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -482,7 +511,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -492,18 +522,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(OAK, probs = 0.025),
-                   `25%` = quantile(OAK, probs = 0.25),
-                   `50%` = median(OAK),
-                   `75%` = quantile(OAK, probs = 0.75),
-                   `97.5%` = quantile(OAK, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(OAK, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(OAK, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(OAK, na.rm = TRUE),
+                   `75%` = quantile(OAK, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(OAK, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -540,7 +571,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -550,18 +582,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(OTHER.CONIFER, probs = 0.025),
-                   `25%` = quantile(OTHER.CONIFER, probs = 0.25),
-                   `50%` = median(OTHER.CONIFER),
-                   `75%` = quantile(OTHER.CONIFER, probs = 0.75),
-                   `97.5%` = quantile(OTHER.CONIFER, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(OTHER.CONIFER, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(OTHER.CONIFER, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(OTHER.CONIFER, na.rm = TRUE),
+                   `75%` = quantile(OTHER.CONIFER, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(OTHER.CONIFER, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -598,7 +631,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -608,18 +642,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(OTHER.HARDWOOD, probs = 0.025),
-                   `25%` = quantile(OTHER.HARDWOOD, probs = 0.25),
-                   `50%` = median(OTHER.HARDWOOD),
-                   `75%` = quantile(OTHER.HARDWOOD, probs = 0.75),
-                   `97.5%` = quantile(OTHER.HARDWOOD, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(OTHER.HARDWOOD, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(OTHER.HARDWOOD, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(OTHER.HARDWOOD, na.rm = TRUE),
+                   `75%` = quantile(OTHER.HARDWOOD, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(OTHER.HARDWOOD, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -656,7 +691,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -666,18 +702,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(PINE, probs = 0.025),
-                   `25%` = quantile(PINE, probs = 0.25),
-                   `50%` = median(PINE),
-                   `75%` = quantile(PINE, probs = 0.75),
-                   `97.5%` = quantile(PINE, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(PINE, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(PINE, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(PINE, na.rm = TRUE),
+                   `75%` = quantile(PINE, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(PINE, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -714,7 +751,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -724,18 +762,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(SPRUCE, probs = 0.025),
-                   `25%` = quantile(SPRUCE, probs = 0.25),
-                   `50%` = median(SPRUCE),
-                   `75%` = quantile(SPRUCE, probs = 0.75),
-                   `97.5%` = quantile(SPRUCE, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(SPRUCE, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(SPRUCE, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(SPRUCE, na.rm = TRUE),
+                   `75%` = quantile(SPRUCE, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(SPRUCE, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -772,7 +811,8 @@ post_filter |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -782,18 +822,19 @@ post_filter |>
 post_filter |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
-  dplyr::summarize(`2.5%` = quantile(TAMARACK, probs = 0.025),
-                   `25%` = quantile(TAMARACK, probs = 0.25),
-                   `50%` = median(TAMARACK),
-                   `75%` = quantile(TAMARACK, probs = 0.75),
-                   `97.5%` = quantile(TAMARACK, probs = 0.975)) |>
+  dplyr::summarize(`2.5%` = quantile(TAMARACK, probs = 0.025, na.rm = TRUE),
+                   `25%` = quantile(TAMARACK, probs = 0.25, na.rm = TRUE),
+                   `50%` = median(TAMARACK, na.rm = TRUE),
+                   `75%` = quantile(TAMARACK, probs = 0.75, na.rm = TRUE),
+                   `97.5%` = quantile(TAMARACK, probs = 0.975, na.rm = TRUE)) |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -806,9 +847,20 @@ post_filter |>
 # Sample times 4 apart
 keep_times <- seq(from = 19, to = 3, by = -4)
 
-# Subsample taxon data
+# Take out all data where the time is not within the times we're keeping
 post_filter <- post_filter |>
-  dplyr::filter(time %in% keep_times)
+  dplyr::mutate(ASH = dplyr::if_else(time %in% keep_times, ASH, NA),
+                BEECH = dplyr::if_else(time %in% keep_times, BEECH, NA),
+                BIRCH = dplyr::if_else(time %in% keep_times, BIRCH, NA),
+                ELM = dplyr::if_else(time %in% keep_times, ELM, NA),
+                HEMLOCK = dplyr::if_else(time %in% keep_times, HEMLOCK, NA),
+                MAPLE = dplyr::if_else(time %in% keep_times, MAPLE, NA),
+                OAK = dplyr::if_else(time %in% keep_times, OAK, NA),
+                OTHER.CONIFER = dplyr::if_else(time %in% keep_times, OTHER.CONIFER, NA),
+                OTHER.HARDWOOD = dplyr::if_else(time %in% keep_times, OTHER.HARDWOOD, NA),
+                PINE = dplyr::if_else(time %in% keep_times, PINE, NA),
+                SPRUCE = dplyr::if_else(time %in% keep_times, SPRUCE, NA),
+                TAMARACK = dplyr::if_else(time %in% keep_times, TAMARACK, NA))
 
 # Separate in sample and out of sample data
 post_insample <- post_filter |>
@@ -819,6 +871,9 @@ post_oos <- post_filter |>
   dplyr::filter(time == keep_times[5])
 
 #### Plotting temporal subsample ####
+
+# Plot each taxon with reduced spatiotemporal domain
+# This should again look essentially identical to STEPPS mean subsampling figures
 
 # Order for  facets
 facet_order <- c('1900 YBP', '1500 YBP',
@@ -836,13 +891,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = ash), 
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme_void() +
@@ -860,13 +915,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = beech),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme_void() +
@@ -884,13 +939,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = birch),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme_void() +
@@ -908,13 +963,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = elm),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme_void() +
@@ -932,13 +987,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = hemlock),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme_void() +
@@ -956,15 +1011,15 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = maple),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
-  ggplot2::ggtitle('MAPLE') +
+  ggplot2::ggtitle('Maple') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
@@ -980,13 +1035,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = oak),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme_void() +
@@ -1004,13 +1059,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_conifer),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme_void() +
@@ -1028,13 +1083,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = other_hardwood),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme_void() +
@@ -1052,13 +1107,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = pine),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme_void() +
@@ -1076,13 +1131,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = spruce),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme_void() +
@@ -1100,13 +1155,13 @@ post_insample |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = x, y = y, color = tamarack),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Greens',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white') +
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme_void() +

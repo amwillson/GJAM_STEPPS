@@ -20,6 +20,9 @@ load('out/mean/processed_sand_aat_tpr_prsd_300YBP.RData')
 
 #### Trace plots ####
 
+## Trace plots are used to make sure parameters converged in the MCMC algorithm
+## If there are no clear trends across iterations, we infer good convergence
+
 ### bFacGibbs ###
 
 ## BEECH
@@ -688,21 +691,29 @@ sgibbs |>
   ggplot2::theme_minimal() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-#### Correlations between taxa and environment ####
+#### Coefficients between taxa and environment ####
+
+## What is the relationship between the environment and each taxon?
+## Here, we plot the beta coefficient distributions across iterations
 
 # Number of columns we're working with
 cols <- ncol(bFacGibbs)
 
 # Format for distributions
 bFacGibbs_long <- bFacGibbs |>
+  # Remove iteration column
   dplyr::select(-iter) |>
+  # Pivot all remaining columns to long format
   tidyr::pivot_longer(dplyr::everything(),
                       names_to = 'var', values_to = 'val') |>
+  # Extract taxon and covariate from the names outputed from GJAM
   dplyr::mutate(taxon = sub(pattern = '_.*', replacement = '', x = var),
                 covariate = sub(pattern = '.*_', replacement = '', x = var))
 
-# Remove unnecessary columns and generate summary statistics
+# Remove unnecessary columns
 bFacGibbs_corr <- dplyr::select(bFacGibbs, -iter)
+
+# Generate summary statistics
 corr_mean <- apply(bFacGibbs_corr, 2, mean, na.rm = TRUE)
 corr_sd <- apply(bFacGibbs_corr, 2, stats::sd, na.rm = TRUE)
 corr_lower <- apply(bFacGibbs_corr, 2, stats::quantile, probs = 0.025, na.rm = TRUE)
@@ -718,8 +729,10 @@ corr <- corr |>
   dplyr::mutate(taxon = sub('_.*', '', beta),
                 covariate = sub('.*_', '', beta))
 
+# Color palette for plots
 pal <- RColorBrewer::brewer.pal(n = length(unique(corr$taxon)), name = 'Set3')
 
+# Formatting taxon names
 for_plotting <- corr |>
   dplyr::mutate(taxon = dplyr::if_else(taxon == 'beech', 'Beech', taxon),
                 taxon = dplyr::if_else(taxon == 'birch', 'Birch', taxon),
@@ -734,6 +747,7 @@ for_plotting <- corr |>
                 taxon = dplyr::if_else(taxon == 'tamarack', 'Tamarack', taxon)) |>
   dplyr::rename(Taxon = taxon)
 
+# Formatting covariate names
 my_labeller <- ggplot2::as_labeller(x = c(aat = '`Average annual temperature`',
                                           tpr = '`Total annual precipitation`',
                                           tsd = '`Temperature seasonality`',
@@ -742,7 +756,9 @@ my_labeller <- ggplot2::as_labeller(x = c(aat = '`Average annual temperature`',
                                           prsd = '`Precipitation seasonality`'),
                                     default = ggplot2::label_parsed)
 
+# Violin plots of coefficient estimates
 bFacGibbs_long |>
+  # Formatting taxon names
   dplyr::mutate(taxon = dplyr::if_else(taxon == 'beech', 'Beech', taxon),
                 taxon = dplyr::if_else(taxon == 'birch', 'Birch', taxon),
                 taxon = dplyr::if_else(taxon == 'elm', 'Elm', taxon),
@@ -772,6 +788,7 @@ bFacGibbs_long |>
                  axis.title.y = ggplot2::element_text(size = 14),
                  axis.text.y = ggplot2::element_text(size = 12))
 
+# Box plots of coefficient estimates using coefficient summary statistics
 for_plotting |>
   ggplot2::ggplot() +
   ggplot2::geom_boxplot(ggplot2::aes(x = tidytext::reorder_within(Taxon, mean, covariate), ymin = lower, lower = mean - sd,
@@ -793,19 +810,26 @@ for_plotting |>
 
 #### Covariate sensitivity ####
 
-# Do some cleaning of the sensitivity fSensGibbs
+## Joint sensitivity of all taxa to each covariate
+## How much does relative abundance change when each covariate changes?
+
+# Remove the iter column
 fSensGibbs_sum <- dplyr::select(fSensGibbs, -iter)
+
+# Generate summary statistics
 sens_mean <- apply(fSensGibbs_sum, 2, mean, na.rm = TRUE)
 sens_sd <- apply(fSensGibbs_sum, 2, stats::sd, na.rm = TRUE)
 sens_lower <- apply(fSensGibbs_sum, 2, stats::quantile, probs = 0.025, na.rm = TRUE)
 sens_upper <- apply(fSensGibbs_sum, 2, stats::quantile, probs = 0.975, na.rm = TRUE)
 
+# Format sensitivity summary statistics
 sens <- rbind(sens_mean, sens_sd, sens_lower, sens_upper)
 rownames(sens) <- c('mean', 'sd', 'lower', 'upper')
 sens <- t(sens)
 sens <- as.data.frame(sens)
 sens <- tibble::rownames_to_column(sens, var = 'covar')
 
+# Boxplots of sensitivity summary statistics
 sens |>
   ggplot2::ggplot() +
   ggplot2::geom_boxplot(ggplot2::aes(x = reorder(covar, mean, decreasing = FALSE),
@@ -827,6 +851,7 @@ sens |>
   ggplot2::theme(axis.title = ggplot2::element_text(size = 14),
                  axis.text = ggplot2::element_text(size = 12))
 
+# Violin plots of sensitivity (distribution over Gibbs samples)
 fSensGibbs |>
   dplyr::select(-iter) |>
   tidyr::pivot_longer(dplyr::everything(), names_to = 'covariate', values_to = 'val') |>
@@ -851,6 +876,9 @@ fSensGibbs |>
                  axis.text = ggplot2::element_text(size = 12))
 
 #### Correlations between taxa ####
+
+## After accounting for their joint dependence on the environmental covariates
+## included in the model, are there residual correlations between taxa?
 
 # remove unnecessary columns
 sgibbs_cor <- dplyr::select(sgibbs, -iter)
@@ -897,6 +925,8 @@ upp_mat <- matrix(upp_mat, nrow = nrow(corr_mat), ncol = nrow(corr_mat))
 upp_mat <- stats::cov2cor(upp_mat)
 colnames(upp_mat) <- rownames(upp_mat) <- colnames(corr_mat)
 
+# Reset graphing window
+# (needed if re-running this section)
 dev.off()
 
 # Without uncertainty
@@ -905,3 +935,21 @@ corrplot::corrplot(corr_mat, diag = FALSE, type = 'upper', col = pal, tl.col = '
 # Plot with uncertainty
 corrplot::corrplot(corr_mat, lowCI.mat = low_mat, uppCI.mat = upp_mat, plotCI = 'circle',
                    diag = FALSE, type = 'upper', col = pal, tl.col = 'black', tl.cex = 1.4)
+
+# Plot with uncertainty
+# Remove crossing 0
+insig <- which(low_mat < 0 & upp_mat > 0)
+corr_mat[insig] <- NA
+low_mat[insig] <- NA
+upp_mat[insig] <- NA
+
+corrplot::corrplot(corr_mat,
+                   lowCI.mat = low_mat,
+                   uppCI.mat = upp_mat,
+                   plotCI = 'circle',
+                   diag = FALSE,
+                   type = 'upper',
+                   col = pal,
+                   tl.col = 'black',
+                   tl.cex = 1.4,
+                   na.label = ' ')

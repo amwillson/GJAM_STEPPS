@@ -48,11 +48,14 @@ for(i in 1:ndraw){
   
   ### Format xdata ###
   
-  xdata <- dplyr::select(draw, clay:prsd)
+  xdata <- draw |>
+    tidyr::drop_na() |>
+    dplyr::select(clay:prsd)
   
   ### Format ydata ###
   
   ydata <- draw |>
+    tidyr::drop_na() |>
     # Remove ASH (results in design matrix not being inverible
     # because of strong correlations. I believe it is because
     # ASH is always approximately 0 while other taxa are more
@@ -101,11 +104,14 @@ for(i in 1:ndraw){
   
   ### Format xdata ###
   
-  xdata <- dplyr::select(draw, clay:prsd)
+  xdata <- draw |>
+    tidyr::drop_na() |>
+    dplyr::select(clay:prsd)
   
   ### Format ydata ###
   
   ydata <- draw |>
+    tidyr::drop_na() |>
     # Remove ASH (results in design matrix not being inverible
     # because of strong correlations. I believe it is because
     # ASH is always approximately 0 while other taxa are more
@@ -154,11 +160,14 @@ for(i in 1:ndraw){
   
   ### Format xdata ###
   
-  xdata <- dplyr::select(draw, clay:prsd)
+  xdata <- draw |>
+    tidyr::drop_na() |>
+    dplyr::select(clay:prsd)
   
   ### Format ydata ###
   
   ydata <- draw |>
+    tidyr::drop_na() |>
     # Remove ASH (results in design matrix not being inverible
     # because of strong correlations. I believe it is because
     # ASH is always approximately 0 while other taxa are more
@@ -207,11 +216,14 @@ for(i in 1:ndraw){
   
   ### Format xdata ###
   
-  xdata <- dplyr::select(draw, clay:prsd)
+  xdata <- draw |>
+    tidyr::drop_na() |>
+    dplyr::select(clay:prsd)
   
   ### Format ydata ###
   
   ydata <- draw |>
+    tidyr::drop_na() |>
     # Remove ASH (results in design matrix not being inverible
     # because of strong correlations. I believe it is because
     # ASH is always approximately 0 while other taxa are more

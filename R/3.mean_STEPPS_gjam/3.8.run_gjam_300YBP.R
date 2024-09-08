@@ -26,16 +26,19 @@ rm(list = ls())
 # Load data
 load('data/processed/mean_stepps_soil_clim.RData')
 
-# Combine
+# Combine what we previously called in sample and out of sample
 taxon_all <- rbind(taxon_insample_all, taxon_oos_all)
 
 # Format xdata
-xdata <- dplyr::select(taxon_all, clay:prcv)
+xdata <- taxon_all |>
+  tidyr::drop_na() |>
+  dplyr::select(clay:prcv)
 
 #### Format ydata ####
 
 # Format ydata
 ydata <- taxon_all |>
+  tidyr::drop_na() |>
   dplyr::select(beech:tamarack) |>
   dplyr::rename(oc = other_conifer,
                 oh = other_hardwood)

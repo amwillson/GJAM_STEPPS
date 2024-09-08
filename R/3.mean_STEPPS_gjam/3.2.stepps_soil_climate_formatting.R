@@ -33,6 +33,7 @@
 
 rm(list = ls())
 
+# Load helper functions
 source('R/funs.R')
 
 #### Soils ####
@@ -49,9 +50,11 @@ comp_dens <- dplyr::select(comp_dens, x, y, id)
 # Add ID column from PLS data to STEPPS data
 # We can then join the soil & STEPPS data by the PLS grid ID
 taxon_insample_id <- taxon_insample |>
-  dplyr::left_join(y = comp_dens, by = c('x', 'y'))
+  dplyr::left_join(y = comp_dens, by = c('x', 'y')) |>
+  dplyr::mutate(id = dplyr::if_else(is.na(ash), NA, id))
 taxon_oos_id <- taxon_oos |>
-  dplyr::left_join(y = comp_dens, by = c('x', 'y'))
+  dplyr::left_join(y = comp_dens, by = c('x', 'y')) |>
+  dplyr::mutate(id = dplyr::if_else(is.na(ash), NA, id))
 
 # Load soil data
 load('data/input/gridded_soil.RData')
@@ -61,7 +64,7 @@ soil_grid <- dplyr::rename(soil_grid,
                            soil_x = x,
                            soil_y = y)
 
-# Join
+# Join STEPPS and soil data
 taxon_insample_soil <- taxon_insample_id |>
   dplyr::rename(grid_id = id,
                 stepps_x = x,
@@ -73,43 +76,65 @@ taxon_oos_soil <- taxon_oos_id |>
                 stepps_y = y) |>
   dplyr::left_join(y = soil_grid, by = 'grid_id')
 
+# Map of study region
 states <- map_states()
 
-# Transform state map
+# Transform CRS of state map
 states2 <- sf::st_transform(states, crs = 'EPSG:4326')
 
 # Check to make sure the plots look the same regardless of coordinate system
-# and make sense
+# We want to make sure the plots follow reasonable spatial patterns (higher sand
+# where there are known sand plains)
+# and the spatial patterns should look the same regardless of CRS
 p1 <- taxon_insample_soil |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = sand)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = sand)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Oranges',
+                                name = 'Soil %\nsand',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 p1
 
 p2 <- taxon_insample_soil |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = soil_x, y = soil_y, color = sand)) +
+  ggplot2::geom_point(ggplot2::aes(x = soil_x, y = soil_y, color = sand),
+                      shape = 15) +
   ggplot2::geom_sf(data = states2, color = 'black', fill = NA) +
+  ggplot2::scale_color_distiller(palette = 'Oranges',
+                                name = 'Soil %\nsand',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 p2
 
 cowplot::plot_grid(p1, p2)
 
+# Same checks for OOS data
 p1 <- taxon_oos_soil |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = sand)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = sand)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Oranges',
+                                name = 'Soil%\nsand',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 p1
 
 p2 <- taxon_oos_soil |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = soil_x, y = soil_y, color = sand)) +
+  ggplot2::geom_point(ggplot2::aes(x = soil_x, y = soil_y, color = sand),
+                      shape = 15) +
   ggplot2::geom_sf(data = states2, color = 'black', fill = NA) +
+  ggplot2::scale_color_distiller(palette = 'Oranges',
+                                 name = 'Soil%\nsand',
+                                 na.value = 'white',
+                                 limits = c(0, 100)) +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 p2
@@ -117,38 +142,39 @@ p2
 cowplot::plot_grid(p1, p2)
 
 # Now convert one set of coordinates and make sure it still matches up
-taxon_insample_soil <- sf::st_as_sf(taxon_insample_soil, coords = c('soil_x', 'soil_y'), crs = 'EPSG:4326')
-taxon_insample_soil <- sf::st_transform(taxon_insample_soil, crs = 'EPSG:3175')
-taxon_insample_soil <- sfheaders::sf_to_df(taxon_insample_soil, fill = TRUE)
-taxon_insample_soil <- taxon_insample_soil |>
+taxon_insample_soil2 <- sf::st_as_sf(tidyr::drop_na(taxon_insample_soil), coords = c('soil_x', 'soil_y'), crs = 'EPSG:4326')
+taxon_insample_soil2 <- sf::st_transform(taxon_insample_soil2, crs = 'EPSG:3175')
+taxon_insample_soil2 <- sfheaders::sf_to_df(taxon_insample_soil2, fill = TRUE)
+taxon_insample_soil2 <- taxon_insample_soil2 |>
   dplyr::rename(soil_x = x,
                 soil_y = y) |>
   dplyr::select(-sfg_id, -point_id)
 
-taxon_oos_soil <- sf::st_as_sf(taxon_oos_soil, coords = c('soil_x', 'soil_y'), crs = 'EPSG:4326')
-taxon_oos_soil <- sf::st_transform(taxon_oos_soil, crs = 'EPSG:3175')
-taxon_oos_soil <- sfheaders::sf_to_df(taxon_oos_soil, fill = TRUE)
-taxon_oos_soil <- taxon_oos_soil |>
+taxon_oos_soil2 <- sf::st_as_sf(tidyr::drop_na(taxon_oos_soil), coords = c('soil_x', 'soil_y'), crs = 'EPSG:4326')
+taxon_oos_soil2 <- sf::st_transform(taxon_oos_soil2, crs = 'EPSG:3175')
+taxon_oos_soil2 <- sfheaders::sf_to_df(taxon_oos_soil2, fill = TRUE)
+taxon_oos_soil2 <- taxon_oos_soil2 |>
   dplyr::rename(soil_x = x,
                 soil_y = y) |>
   dplyr::select(-sfg_id, -point_id)
 
 # Plot x against x
-taxon_insample_soil |>
+# Should be exactly on the 1:1 line if our CRS conversion was done correctly
+taxon_insample_soil2 |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = soil_x, y = stepps_x)) +
   ggplot2::geom_abline()
-taxon_oos_soil |>
+taxon_oos_soil2 |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = soil_x, y = stepps_x)) +
   ggplot2::geom_abline()
 
 # same with y
-taxon_insample_soil |>
+taxon_insample_soil2 |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = soil_y , stepps_y)) +
   ggplot2::geom_abline()
-taxon_oos_soil |>
+taxon_oos_soil2 |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = soil_y, stepps_y)) +
   ggplot2::geom_abline()
@@ -182,28 +208,37 @@ unbias_grid <- unbias_grid |>
   dplyr::mutate(time = 1950 - time,
                 time = time / 100)
 
-# Join
+# Join by space and time
 taxon_insample_all <- taxon_insample_soil |>
   dplyr::left_join(y = unbias_grid, by = c('grid_id', 'time'))
 taxon_oos_all <- taxon_oos_soil |>
   dplyr::left_join(y = unbias_grid, by = c('grid_id', 'time'))
 
+# Map of study region
 states <- map_states()
 
 # Check to make sure the plots look the same regardless of coordinate set
-# and make sense
+# Temperature should still follow the correct spatial patterns
+# And the patterns should be exactly the same regardless of CRS
 p1 <- taxon_insample_all |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = aat)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = aat)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_viridis_c(option = 'F',
+                                name = 'Average annual\ntemperature (°C)',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 p1
 
 p2 <- taxon_insample_all |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = clim_x, y = clim_y, color = aat)) +
+  ggplot2::geom_point(ggplot2::aes(x = clim_x, y = clim_y, color = aat),
+                      shape = 15) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_color_viridis_c(option = 'F',
+                                 name = 'Average annual\ntemperature (°C)',
+                                 na.value = 'white') +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 p2
@@ -212,16 +247,23 @@ cowplot::plot_grid(p1, p2)
 
 p1 <- taxon_oos_all |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = tpr)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tpr)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_viridis_c(option = 'G',
+                                name = 'Total annual\nprecipitation (mm)',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 p1
 
 p2 <- taxon_oos_all |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = clim_x, y = clim_y, color = tpr)) +
+  ggplot2::geom_point(ggplot2::aes(x = clim_x, y = clim_y, color = tpr),
+                      shape = 15) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_color_viridis_c(option = 'G',
+                                name = 'Total annual\nprecipitation (mm)',
+                                na.value = 'white') +
   ggplot2::facet_wrap(~time) +
   ggplot2::theme_void()
 p2
@@ -229,6 +271,7 @@ p2
 cowplot::plot_grid(p1, p2)
 
 # Plot x against x
+# Should be exactly one the 1:1 line
 taxon_insample_all |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = clim_x, y = stepps_x)) +
@@ -256,6 +299,9 @@ taxon_oos_all <- dplyr::select(taxon_oos_all,
 
 #### Plots ####
 
+# These are more production-level plots of response variables
+# and covariates, rather than ones meant for checks
+
 # Order of facets
 time_order <- c('1900 YBP', '1500 YBP', '1100 YBP', '700 YBP')
 
@@ -270,12 +316,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = ash),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                 name = 'Relative\nabundance',
+                                 na.value = 'white',
+                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -290,12 +337,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = beech),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -310,12 +358,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = birch),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -330,12 +379,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = elm),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -350,12 +400,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = hemlock),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -370,12 +421,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = maple),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -390,12 +442,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = oak),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -410,12 +463,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = other_conifer),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -430,12 +484,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = other_hardwood),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -450,12 +505,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = pine),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -470,12 +526,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = spruce),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -490,12 +547,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = tamarack),
-                      shape = 15, size = 6) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA, linewidth = 1) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tamarack)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Greens', direction = 1, 
-                                 name = 'Relative\nabundance') +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -512,12 +570,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = clay),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = clay)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Oranges', direction = 1, 
-                                 name = 'Soil % clay') +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
+                                name = 'Soil %\nclay',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::ggtitle('Soil % Clay') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -532,12 +591,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = sand),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = sand)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Oranges', direction = 1, 
-                                 name = 'Soil % sand') +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
+                                name = 'Soil %\nsand',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::ggtitle('Soil % Sand') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -552,12 +612,13 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = silt),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = silt)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Oranges', direction = 1,
-                                 name = 'Soil % silt') +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1,
+                                name = 'Soil %\nsilt',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::ggtitle('Soil % Silt') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -572,12 +633,12 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = caco3),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = caco3)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Oranges', direction = 1,
-                                 name = '[CaCO3]') +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1,
+                                name = '[CaCO3]',
+                                na.value = 'white') +
   ggplot2::ggtitle('[CaCO3]') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -592,12 +653,12 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = awc),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = awc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_distiller(palette = 'Oranges', direction = 1, 
-                                 name = 'AWC') +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
+                                name = 'AWC',
+                                na.value = 'white') +
   ggplot2::ggtitle('Available Water Content') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -614,11 +675,12 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = aat),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = aat)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_viridis_c(option = 'F', name = 'AAT') +
+  ggplot2::scale_fill_viridis_c(option = 'F', 
+                                name = 'Average annual\ntemperature (°C)',
+                                na.value = 'white') +
   ggplot2::ggtitle('Average Annual Temperature') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -633,11 +695,12 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = tpr),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tpr)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_viridis_c(option = 'G', name = 'TPR') +
+  ggplot2::scale_fill_viridis_c(option = 'G', 
+                                name = 'Total annual\nprecipitation (mm)',
+                                na.value = 'white') +
   ggplot2::ggtitle('Total annual precipitation') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -652,11 +715,12 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = tsd),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tsd)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_viridis_c(option = 'D', name = 'TSD') +
+  ggplot2::scale_fill_viridis_c(option = 'D', 
+                                name = 'Temperature\nseasonality (°C)',
+                                na.value = 'white') +
   ggplot2::ggtitle('Temperature seasonality') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
@@ -671,11 +735,12 @@ taxon_insample_all |>
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = stepps_x, y = stepps_y, color = prsd),
-                      shape = 15, size = 6) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = prsd)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_color_viridis_c(option = 'E', name = 'PRSD') +
+  ggplot2::scale_fill_viridis_c(option = 'E', 
+                                name = 'Precipitation\nseasonality (mm)',
+                                na.value = 'white') +
   ggplot2::ggtitle('Precipitation seasonality') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),

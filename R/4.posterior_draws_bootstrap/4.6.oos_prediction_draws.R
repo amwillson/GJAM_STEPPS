@@ -48,7 +48,9 @@ for(i in 1:100){
   out <- output[[i]]
   
   # Format xdata (keep all columns to match format from step 4-3)
-  xdata <- dplyr::select(sub, clay:prsd)
+  xdata <- sub |>
+    tidyr::drop_na() |>
+    dplyr::select(clay:prsd)
   
   # New data list
   new_datalist <- list(xdata = xdata,
@@ -74,9 +76,13 @@ for(i in 1:100){
   sub <- dplyr::filter(post_oos_all, draw == i)
   out <- output[[i]]
   
-  xdata <- dplyr::select(sub, clay:prsd)
+  xdata <- sub |>
+    tidyr::drop_na() |>
+    dplyr::select(clay:prsd)
   
-  ydata_cond <- dplyr::select(sub, OAK)
+  ydata_cond <- sub |>
+    tidyr::drop_na() |>
+    dplyr::select(OAK)
   
   # nsim must be lower to get the model to run
   new_datalist <- list(ydataCond = ydata_cond,

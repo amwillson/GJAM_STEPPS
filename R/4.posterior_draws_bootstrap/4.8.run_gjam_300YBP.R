@@ -50,11 +50,14 @@ output <- list()
 
 for(i in 1:ndraw){
   # Subset for one posterior draw
-  draw <- dplyr::filter(post_all, draw == i)
+  draw <- post_all |>
+    tidyr::drop_na() |>
+    dplyr::filter(draw == i)
   
   ### Format xdata ###
   
-  xdata <- dplyr::select(draw, clay:prsd)
+  xdata <- draw |>
+    dplyr::select(clay:prsd)
   
   ### Format ydata ###
   

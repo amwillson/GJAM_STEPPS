@@ -41,7 +41,7 @@ rm(list = ls())
 
 ### Loading and processing ###
 
-# Load monthly temperature
+# Load monthly temperature from step 2.1.process_climate.R
 load('/Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/tas1.RData')
 load('/Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/tas2.RData')
 load('/Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/tas3.RData')
@@ -55,7 +55,7 @@ load('/Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/tas10.R
 load('/Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/tas11.RData')
 load('/Volumes/FileBackup/Climate_Downscaling_RG/processed_monthly_Rdata/tas12.RData')
 
-# Bias correct
+# Storage for doing bias correction
 tas1_unbias <- array(, dim = dim(tas1_ey.hat))
 tas2_unbias <- array(, dim = dim(tas1_unbias))
 tas3_unbias <- array(, dim = dim(tas1_unbias))
@@ -83,10 +83,10 @@ dimnames(tas10_unbias) <- dimnames(tas1_unbias)
 dimnames(tas11_unbias) <- dimnames(tas1_unbias)
 dimnames(tas12_unbias) <- dimnames(tas1_unbias)
 
-# time
+# Save time as separate vector
 time <- dimnames(tas1_ey.hat)[[3]]
 
-# Subtract bias for each year
+# Subtract bias for each year to create debiased temperature reconstructions
 for(i in 1:length(time)){
   temp <- tas1_ey.hat[,,i]
   tas1_unbias[,,i] <- temp + tas1_e
@@ -148,7 +148,7 @@ for(i in 1:length(time)){
   print(i)
 }
 
-# Combine into larger array
+# Combine estimates into larger array
 tas_ey.hat <- array(, dim = list(dim(tas1_ey.hat)[[1]],
                                  dim(tas1_ey.hat)[[2]],
                                  dim(tas1_ey.hat)[[3]],
@@ -171,6 +171,7 @@ rm(tas1_ey.hat, tas2_ey.hat, tas3_ey.hat, tas4_ey.hat,
    tas5_ey.hat, tas6_ey.hat, tas7_ey.hat, tas8_ey.hat,
    tas9_ey.hat, tas10_ey.hat, tas11_ey.hat, tas12_ey.hat)
 
+# Do the same for debiased estimates
 tas_unbias <- array(, dim = dim(tas_ey.hat))
 
 tas_unbias[,,,1] <- tas1_unbias
@@ -205,20 +206,23 @@ save(tas_ey.hat, tas_unbias,
 
 ### Average annual temperature ###
 
-# Average over months for each year
+# Average over months for each year to get
+# average annual temperature
 aat_ey.hat <- apply(tas_ey.hat, 1:3, mean)
 aat_unbias <- apply(tas_unbias, 1:3, mean)
 
+# Apply dimension names
 dimnames(aat_ey.hat) <- list(dimnames(tas_unbias)[[1]],
                              dimnames(tas_unbias)[[2]],
                              dimnames(tas_unbias)[[3]])
 dimnames(aat_unbias) <- dimnames(aat_ey.hat)
 
-# Load STEPPS data
-# for time steps
+# Load STEPPS data for time steps
+# Just need to know what time steps we need to make
+# with the climate reconstructions to match our relative abundances
 load('data/processed/mean_STEPPS.RData')
 
-# Convert to calendar years
+# Convert to calendar years from YBP
 time <- time * 100
 time <- 1950 - time
 
@@ -266,6 +270,8 @@ save(aat_ey.hat_mean, aat_unbias_mean,
 ### Temperature seasonality ###
 
 # Find standard deviation of temperature across months for each year
+# We use standard deviation as a metric of seasonality-- how much
+# variability is there across months?
 tsd_ey.hat <- apply(tas_ey.hat, 1:3, sd)
 tsd_unbias <- apply(tas_unbias, 1:3, sd)
 
@@ -304,6 +310,8 @@ save(tsd_ey.hat_mean, tsd_unbias_mean,
      file = 'data/intermediate/mean_temperature_seasonality.RData')
 
 #### Precipitation ####
+
+# Steps are essentially replicates of everything for temperature above
 
 rm(list = ls())
 
@@ -542,6 +550,10 @@ prmean_ey.hat <- apply(pr_ey.hat, 1:3, mean)
 prmean_unbias <- apply(pr_unbias, 1:3, mean)
 
 # Coefficient of variation
+# This is another metric of seasonality
+# I didn't end up using it because it is very correlated
+# with total annual precipitation, which makes sense
+# because it's in the denominator
 prcv_ey.hat <- prsd_ey.hat / prmean_ey.hat
 prcv_unbias <- prsd_unbias / prmean_unbias
 

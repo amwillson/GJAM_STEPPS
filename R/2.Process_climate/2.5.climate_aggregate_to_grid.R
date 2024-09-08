@@ -41,6 +41,7 @@
 
 rm(list = ls())
 
+# Load helper functions
 source('R/funs.R')
 
 # Load intermediate step
@@ -54,6 +55,8 @@ time <- unique(ey.hat$time)
 spat_map <- dplyr::select(clim_pls, spatID:uniqueID)
 
 # Repeat dataframe for each time step
+# We know the spatial information is the exact same for each
+# time step because we verified this in an earlier step
 spat_map <- do.call('rbind', replicate(n = length(time), spat_map, simplify = FALSE))
 
 # Add time to dataframe
@@ -67,9 +70,12 @@ unbias_pls_full <- dplyr::right_join(x = unbias,
                                      y = spat_map,
                                      by = c('time', 'spatID'))
 
+# Map of study region
 states <- map_states()
 
 # Plot to make sure it looks consistent
+# We want to see the correct spatial extent and 
+# correct spatial patterns of climate
 p1 <- ey.hat_pls_full |>
   dplyr::filter(time == 850) |>
   ggplot2::ggplot() +
@@ -85,8 +91,12 @@ p2 <- unbias_pls_full |>
 
 cowplot::plot_grid(p1, p2, nrow = 1)
 
+# Transform CRS for state maps
 states <- sf::st_transform(states, crs = 'EPSG:4326')
 
+# Make sure that using the other set of coordinates also looks good
+# Arbitrarily plotting a different variable to make sure spatial
+# patterns still look good
 p1 <- ey.hat_pls_full |>
   dplyr::filter(time == 250) |>
   ggplot2::ggplot() +
@@ -102,6 +112,7 @@ p2 <- unbias_pls_full |>
 
 cowplot::plot_grid(p1, p2, nrow = 1)
 
+# One more random variable to check final coordinate set
 p1 <- ey.hat_pls_full |>
   dplyr::filter(time == 1550) |>
   ggplot2::ggplot() +
@@ -120,6 +131,7 @@ cowplot::plot_grid(p1, p2, nrow = 1)
 #### Aggregate points to PLS grid ####
 
 # Load point and grid matched PLS data
+# Maps from points to grid
 load('data/input/total_matched.RData')
 
 # Add grid ID to climate data
@@ -135,6 +147,7 @@ unbias_matched <- ecosystem_matched |>
   dplyr::right_join(y = unbias_pls_full, by = c('pls_x', 'pls_y'))
 
 # Summarize for each grid cell at each time
+# Averaging over all points within a grid cell
 ey.hat_grid <- ey.hat_matched |>
   dplyr::group_by(time, grid_id) |>
   dplyr::summarize(aat = mean(aat),
@@ -164,8 +177,11 @@ ey.hat_grid <- ey.hat_grid |>
 unbias_grid <- unbias_grid |>
   dplyr::left_join(y = grid_coords, by = 'grid_id')
 
+# Transform CRS for state map
 states <- sf::st_transform(states, crs = 'EPSG:3175')
 
+# Plot gridded and point-level climate
+# Make sure patterns look the same
 grid <- ey.hat_grid |>
   dplyr::filter(time == 850) |>
   ggplot2::ggplot() +
@@ -181,6 +197,7 @@ point <- ey.hat_pls_full |>
 
 cowplot::plot_grid(grid, point, nrow = 1)
 
+# Same for debiased estimates
 grid <- unbias_grid |>
   dplyr::filter(time == 850) |>
   ggplot2::ggplot() +
@@ -223,6 +240,8 @@ nopoints <- comp_dens[!comp_dens$id %in% grid,]
 nopoints <- dplyr::distinct(nopoints)
 
 # Plot locations of grid cells with no points
+# Want to verify that grid cells with no points
+# are in locations where there were no PLS data
 nopoints |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = x, y = y)) +

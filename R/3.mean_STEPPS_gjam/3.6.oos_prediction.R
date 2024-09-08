@@ -25,14 +25,20 @@ load('data/processed/mean_stepps_soil_clim.RData')
 
 # Format ydata
 new_ydata <- taxon_oos_all |>
+  tidyr::drop_na() |>
   dplyr::select(beech:tamarack) |>
   dplyr::rename(oc = other_conifer,
                 oh = other_hardwood)
 
 # Format xdata (keep all columns to match format from step 3-3)
-xdata <- dplyr::select(taxon_oos_all, clay:prsd)
+xdata <- taxon_oos_all |>
+  tidyr::drop_na() |>
+  dplyr::select(clay:prsd)
 
 #### Non conditional ####
+
+## Predict relative abundance based on the environment
+## and parameter estimates
 
 # New data list
 new_datalist <- list(xdata = xdata,
@@ -43,6 +49,10 @@ pred <- gjam::gjamPredict(output = out,
                           newdata = new_datalist)
 
 #### Conditional ####
+
+## Predict relative abundance of one taxon at a time
+## based on the environment, parameter estimates, and the
+## observed relative abundance of all other taxa
 
 cond_pred <- list()
 
@@ -67,12 +77,19 @@ for(s in 1:ncol(new_ydata)){
 
 #### Conditional on oak ####
 
+## Predict relative abundance of all taxa except for oak
+## based on the environment, parameter estimates, and the
+## observed relative abundance of oak
+
+# Conditional response data is just oak
 ydata_cond <- dplyr::select(new_ydata, oak)
 
+# Data list
 new_datalist <- list(ydataCond = ydata_cond,
                      xdata = xdata,
                      nsim = 10000)
 
+# Prediction conditional only on oak
 oak_cond_pred <- gjam::gjamPredict(output = out,
                                    newdata = new_datalist)
 

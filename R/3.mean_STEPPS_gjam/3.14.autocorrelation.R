@@ -46,6 +46,13 @@ hemlock_mountain <- diff |>
   dplyr::mutate(loc = paste0(x, '_', y)) |>
   dplyr::filter(loc %in% c(hemlock_mountain_locs$loc))
 
+# Plot of area
+hemlock_mountain |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+
 ### Using observed-predicted at previous time step
 
 lagged <- hemlock_mountain |>
@@ -130,3 +137,118 @@ hemlock_mountain_lagged |>
   ggplot2::xlab('Observed Hemlock Relative Abundance at Previous Time Step') +
   ggplot2::ylab('Observed - Predicted at Current Time Step') +
   ggplot2::theme_minimal()
+
+#### Smaller area hemlock mountain ####
+
+# Maximum at x = 445000, y = 982000
+# Surrounding x = 421000, 469000
+# Surrounding y = 958000, 1006000
+
+hemlock_mountain_locs <- expand.grid(x = c(421000, 445000, 469000),
+                                     y = c(958000, 982000, 1006000))
+
+hemlock_mountain_locs$loc <- paste0(hemlock_mountain_locs$x, '_', hemlock_mountain_locs$y)
+
+hemlock_mountain <- diff |>
+  dplyr::mutate(loc = paste0(x, '_', y)) |>
+  dplyr::filter(loc %in% c(hemlock_mountain_locs$loc))
+
+hemlock_mountain |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::theme_void()
+
+### Using observed-predicted at previous time step
+
+lagged <- hemlock_mountain |>
+  dplyr::mutate(time = time - 1) |>
+  dplyr::rename(lagged_hemlock = hemlock) |>
+  dplyr::select(x, y, time, loc, lagged_hemlock)
+
+hemlock_mountain_lagged <- hemlock_mountain |>
+  dplyr::select(x, y, time, loc, hemlock) |>
+  dplyr::full_join(y = lagged,
+                   by = c('x', 'y', 'time', 'loc')) |>
+  tidyr::drop_na()
+
+hemlock_mountain_lmer <- lme4::lmer(formula = hemlock ~ lagged_hemlock + (1|loc),
+                                    data = hemlock_mountain_lagged)
+summary(hemlock_mountain_lmer)
+
+hemlock_mountain_lm <- lm(formula = hemlock ~ lagged_hemlock,
+                          data = hemlock_mountain_lagged)
+summary(hemlock_mountain_lm)
+
+hemlock_mountain_lagged |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = rev(time), y = hemlock, color = loc), 
+                     show.legend = FALSE) +
+  ggplot2::xlab('Time (YBP)') + ggplot2::ylab('Observed - Predicted Hemlock Relative Abundance') +
+  ggplot2::theme_minimal()
+
+hemlock_mountain_lagged |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = lagged_hemlock, y = hemlock, color = loc),
+                      show.legend = FALSE) +
+  ggplot2::geom_abline() +
+  ggplot2::xlab('Observed - Predicted at Previous Time Step') +
+  ggplot2::ylab('Observed - Predicted at Current Time Step') +
+  ggplot2::theme_minimal()
+
+### Using observed relative abundance at previous timestep
+
+lagged <- taxon_oos_all |>
+  dplyr::mutate(loc = paste0(stepps_x, '_', stepps_y)) |>
+  dplyr::filter(loc %in% hemlock_mountain_locs$loc) |>
+  dplyr::mutate(time = time - 1) |>
+  dplyr::rename(lagged_hemlock = hemlock,
+                x = stepps_x,
+                y = stepps_y) |>
+  dplyr::select(x, y, time, loc, lagged_hemlock)
+
+hemlock_mountain_lagged <- hemlock_mountain |>
+  dplyr::select(x, y, time, loc, hemlock) |>
+  dplyr::full_join(y = lagged,
+                   by = c('x', 'y', 'time', 'loc')) |>
+  tidyr::drop_na()
+
+hemlock_mountain_lmer <- lme4::lmer(formula = hemlock ~ lagged_hemlock + (1|loc),
+                                    data = hemlock_mountain_lagged)
+summary(hemlock_mountain_lmer)
+
+hemlock_mountain_lm <- lm(formula = hemlock ~ lagged_hemlock,
+                          data = hemlock_mountain_lagged)
+summary(hemlock_mountain_lm)
+
+hemlock_mountain_lagged |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = rev(time), y = hemlock, color = loc), 
+                     show.legend = FALSE) +
+  ggplot2::xlab('Time (YBP)') + ggplot2::ylab('Observed - Predicted Hemlock Relative Abundance') +
+  ggplot2::theme_minimal()
+
+hemlock_mountain_lagged |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = rev(time), y = lagged_hemlock, color = loc),
+                     show.legend = FALSE) +
+  ggplot2::xlab('Time (YBP)') + ggplot2::ylab('Observed Hemlock Relative Abundance') +
+  ggplot2::theme_minimal()
+
+hemlock_mountain_lagged |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = lagged_hemlock, y = hemlock, color = loc),
+                      show.legend = FALSE) +
+  ggplot2::geom_abline() +
+  ggplot2::xlab('Observed Hemlock Relative Abundance at Previous Time Step') +
+  ggplot2::ylab('Observed - Predicted at Current Time Step') +
+  ggplot2::theme_minimal()
+
+#### Pine plains ####
+
+diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~time) +
+  ggplot2::theme_void()

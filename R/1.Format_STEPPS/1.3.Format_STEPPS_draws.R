@@ -25,24 +25,31 @@ rm(list = ls())
 # Helper funs
 source('R/funs.R')
 
-# Load posterior draws
+# Load posterior draws 
+# (this is unpublished from STEPPS)
 post <- readRDS(file = 'data/input/posterior_stepps/rIts_sub.RDS')
 
 # Load dimension information
+# (this was provided as part of the same directory
+# of unpublished STEPPS data)
 load('data/input/posterior_stepps/input.rdata')
 
 # Rescale coordinates
+# Just a scalar to multiply cooridnates by to get
+# actual coordinates
 rescale <- 1e6
 
 # Map of states
 states <- map_states()
 
 # Plot coordinates
+# This ensures all the grid centroids are within the geospatial domain we expect
 ggplot2::ggplot() +
   ggplot2::geom_point(data = centers_veg, ggplot2::aes(x = x * rescale, y = y * rescale)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA)
 
 # Add index column to centers_veg
+# Uniquely identifies all grid cell locations
 centers_veg <- dplyr::mutate(centers_veg,
                              ind = seq(from = 1, to = nrow(centers_veg)))
 
@@ -52,6 +59,7 @@ dimnames(post) <- list(centers_veg$ind,
                        ages,
                        seq(from = 1, to = 100))
 
+# Coordinates need to be rescaled using the rescale factor
 x <- unique(centers_veg$x * rescale)
 y <- unique(centers_veg$y * rescale)
 

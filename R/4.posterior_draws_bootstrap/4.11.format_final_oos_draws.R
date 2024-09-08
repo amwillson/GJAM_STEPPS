@@ -24,6 +24,7 @@
 
 rm(list = ls())
 
+# Load helper functions
 source('R/funs.R')
 
 #### STEPPS data ####
@@ -37,12 +38,15 @@ post_df <- reshape2::melt(post)
 # Column names
 colnames(post_df) <- c('ind', 'taxon', 'time', 'draw', 'val')
 
-# Rescale factor
+# Rescale coordinates
+# Just a scalar to multiply cooridnates by to get
+# actual coordinates
 rescale <- 1e6
 
 # Format
 post_df <- post_df |>
-  # Add coordinates
+  # Add coordinates by joining with centers_veg
+  # We know that the grid cells are in the same order
   dplyr::full_join(y = centers_veg, by =  'ind') |>
   # Fix coords
   dplyr::mutate(x = x * rescale,
@@ -61,6 +65,9 @@ load('data/intermediate/stepps_post_subsampled.RData')
 # Combine original in-sample and oos
 post_insample <- rbind(post_insample, post_oos)
 
+# Remove missing data (these are out-of-sample locations)
+post_insample <- tidyr::drop_na(post_insample)
+
 post_insample <- post_insample |>
   # add column to mark in-sample locations
   dplyr::mutate(insample = 'yes',
@@ -78,9 +85,6 @@ post_oos <- post_insample |>
   dplyr::mutate(insample = dplyr::if_else(is.na(insample), 'no', insample)) |>
   # keep only locations not included in model fitting
   dplyr::filter(insample == 'no') |>
-  # translate to point-type data by dropping NAs
-  # (where no data exist)
-  tidyr::drop_na() |>
   # remove insample indexing column
   dplyr::select(-insample)
 
@@ -123,6 +127,11 @@ time_order <- c('1900 YBP', '1800 YBP', '1700 YBP', '1600 YBP',
 
 ## Plot covariates
 
+# These are more production-level plots of response variables
+# and covariates, rather than ones meant for checks
+
+### Soil covariates ###
+
 ### CLAY ###
 
 post_oos_all |>
@@ -150,8 +159,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = clay)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% clay',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
+                                name = 'Soil %\nclay',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Soil Clay Content') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -183,10 +194,12 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = sand)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% sand',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
+                                name = 'Soil %\nsand',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Sand Clay Content') +
+  ggplot2::ggtitle('Soil Sand Content') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### SILT ###
@@ -216,10 +229,12 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = silt)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '% silt',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
+                                name = 'Soil %\nsilt',
+                                na.value = 'white',
+                                limits = c(0, 100)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Silt Clay Content') +
+  ggplot2::ggtitle('Soil Silt Content') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### CACO3 ###
@@ -249,8 +264,9 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = caco3)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = '[CaCO3]',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1,
+                                name = '[CaCO3]',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Soil [CaCO3]') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -282,11 +298,14 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = awc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Available water\ncontent',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1,
+                                 name = 'Available water\ncontent',
+                                 na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Available Water Content') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### Climate covariates ###
 
 ### AAT ###
 
@@ -315,8 +334,9 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = aat)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Temperature (°C)',
-                                direction = 1) +
+  ggplot2::scale_fill_viridis_c(option = 'F', 
+                                name = 'Average annual\ntemperature (°C)',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Average Annual Temperature') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -348,8 +368,9 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tpr)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Precipitation (mm)',
-                                direction = 1) +
+  ggplot2::scale_fill_viridis_c(option = 'G', 
+                                name = 'Total annual\nprecipitation (mm)',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Total Annual Precipitation') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -381,8 +402,9 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tsd)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Temperature\nseasonality (°C)',
-                                direction = 1) +
+  ggplot2::scale_fill_viridis_c(option = 'D', 
+                                name = 'Temperature\nseasonality (°C)',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Temperature Seasonality (Standard Deviation)') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -414,13 +436,14 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = prsd)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'BuPu', name = 'Precipitation\nseasonality (mm)',
-                                direction = 1) +
+  ggplot2::scale_fill_viridis_c(option = 'E', 
+                                name = 'Precipitation\nseasonality (mm)',
+                                na.value = 'white') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Precipitation Seasonality (Standard Deviation)') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-## Plot abundances
+### Relative abundance ###
 
 ### ASH ###
 
@@ -449,8 +472,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -482,8 +507,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -515,8 +542,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -548,8 +577,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -581,8 +612,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -614,8 +647,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -647,8 +682,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -680,8 +717,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -713,8 +752,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -746,8 +787,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -779,8 +822,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
@@ -812,8 +857,10 @@ post_oos_all |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
-                                direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
+                                name = 'Relative\nabundance',
+                                na.value = 'white',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))

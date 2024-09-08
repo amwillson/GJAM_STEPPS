@@ -22,11 +22,15 @@ post_df <- reshape2::melt(post)
 colnames(post_df) <- c('ind', 'taxon', 'time', 'draw', 'val')
 
 # Rescale factor
+# Just a scalar to multiply coordinates by to get actual coordinates
+# The x and y vectors are already scaled, but if we're joining
+# using centers_veg, that x and y is not scaled
 rescale <- 1e6
 
 # Format
 post_df <- post_df |>
-  # Add coordinates
+  # Add coordinates by joining with centers_veg
+  # We know that the grid cells are in the same order
   dplyr::full_join(y = centers_veg, by = 'ind') |>
   # Fix coords
   dplyr::mutate(x = x * rescale,
@@ -47,7 +51,10 @@ time_order <- c('2100 YBP', '2000 YBP', '1900 YBP', '1800 YBP', '1700 YBP',
 
 ### ASH ###
 
-# Plot median over time
+# Plot median of posterior draws over entire spatiotemporal domain
+# Analogous to plots in 1.2.Plot_STEPPS_mean.R
+# This is just to look at median of the posterior draws and see what 
+# the data look like
 post_df |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(ash = median(ASH)) |>
@@ -76,13 +83,17 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot different quantiles at one time point
+# This is to look at the uncertainty in relative abundance estimates
+# but simplifying the plots by only looking at one representative time point
+# Arbitrarily chose 1100 YBP because it's in the middle of our temporal domain
 post_df |>
   dplyr::filter(time == 11) |>
   dplyr::group_by(x, y) |>
@@ -97,7 +108,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
     ggplot2::facet_wrap(~factor(metric)) +
     ggplot2::theme_void() +
     ggplot2::ggtitle('Ash') +
@@ -134,7 +146,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -155,7 +168,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -192,7 +206,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -213,7 +228,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -250,7 +266,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -271,7 +288,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -308,7 +326,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -329,7 +348,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -366,7 +386,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -387,7 +408,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -424,7 +446,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -445,7 +468,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -482,7 +506,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -503,7 +528,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -540,7 +566,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -561,7 +588,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -598,7 +626,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -619,7 +648,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -656,7 +686,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -677,7 +708,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -714,7 +746,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -735,7 +768,8 @@ post_df |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
-                                direction = 1, name = 'Relative\nabundance') +
+                                direction = 1, name = 'Relative\nabundance',
+                                limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +

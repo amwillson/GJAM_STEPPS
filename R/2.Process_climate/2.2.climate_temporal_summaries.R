@@ -479,7 +479,7 @@ rm(pr1_e, pr2_e, pr3_e, pr4_e, pr5_e, pr6_e,
 save(pr_ey.hat, pr_unbias,
      file = 'data/intermediate/pr_201.113.1776.12.RData')
 
-### Total annual precipitation ###
+ ### Total annual precipitation ###
 
 # Sum over months for each year
 tpr_ey.hat <- apply(pr_ey.hat, 1:3, sum)

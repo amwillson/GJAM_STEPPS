@@ -774,5 +774,3 @@ post_df |>
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
-
-

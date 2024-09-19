@@ -2,8 +2,7 @@
 ## temporal depedence in STEPPS record for a subset
 ## of locations
 
-## Beta regression with standardized relative abundance
-## estimated in the model
+## Simplest possible beta regression
 
 rm(list = ls())
 
@@ -83,7 +82,7 @@ xdata <- xdata |>
 ## Dynamic linear model
 ## Current hemlock abundance = previous abundance + previous abundance * alpha + environment * beta
 
-dlm_beta <- "
+dlm_beta_simple <- "
 model{
 #### Priors
 for(s in 1:ns){
@@ -92,32 +91,20 @@ sigma[1,s] <- sqrt((x[1,s] * (1 - x[1,s])) / (1 + phi_add))
 x_scaled[1,s] <- x[1,s] / sigma[1,s]
 }
 
-phi_obs ~ dgamma(a_obs, r_obs) # prior on observation precision
 phi_add ~ dgamma(a_add, r_add) # prior on process precision
 
 #### Fixed Effects
 beta ~ dmnorm(mu_beta, tau_beta) # Prior on beta coefficients
-alpha ~ dmnorm(mu_alpha, tau_alpha) # Prior on temporal dependence coefficients
-
-#### Data Model
-for(t in 1:n){
-for(s in 1:ns){
-alpha_obs[t,s] <- x[t,s] * phi_obs # beta distribution shape paramter 
-beta_obs[t,s] <- (1 - x[t,s]) * phi_obs # beta distribution shape parameter
-OBS[t,s] ~ dbeta(alpha_obs[t,s], beta_obs[t,s]) # observation drawn from beta distribution
-}
-}
+alpha ~ dnorm(mu_alpha, tau_alpha) # Prior on temporal dependence coefficients
 
 #### Process Model
 for(t in 2:n){
 for(s in 1:ns){
 # Process equation
-logit(mu[t,s]) <- x[t-1,s] + alpha[s] * x_scaled[t-1,s] + beta[1] * sand[t,s] + beta[2] * aat[t,s] + beta[3] * tpr[t,s] + beta[4] * prsd[t,s]
+logit(mu[t,s]) <- OBS[t-1,s] + alpha * OBS[t-1,s] + beta[1] * sand[t,s] + beta[2] * aat[t,s] + beta[3] * tpr[t,s] + beta[4] * prsd[t,s]
 alpha_add[t,s] <- mu[t,s] * phi_add # beta distribution shape parameter
 beta_add[t,s] <- (1 - mu[t,s]) * phi_add # beta distribution shape parameter
-x[t,s] ~ dbeta(alpha_add[t,s], beta_add[t,s]) # latent relative abundance drawn from beta distribution
-sigma[t,s] <- sqrt((mu[t,s] * (1 - mu[t,s])) / (1 + phi_add))
-x_scaled[t,s] <- mu[t,s] / sigma[t,s]
+OBS[t,s] ~ dbeta(alpha_add[t,s], beta_add[t,s]) # latent relative abundance drawn from beta distribution
 }
 }
 }
@@ -216,28 +203,24 @@ beta_ic <- (mu_ic - 2*mu_ic^2 + mu_ic^3 - (1/tau_ic) + mu_ic * (1/tau_ic)) / (1/
 data$alpha_ic <- alpha_ic
 data$beta_ic <- beta_ic
 # Prior parameters for observation and process uncertainty
-data$a_obs <- 1
-data$r_obs <- 1
 data$a_add <- 1
 data$r_add <- 1
 # Prior parameters for beta coefficients
 # This doesn't work very well
 # Priors taken from GJAM model bgibbs
 # Order: sand, aat, tpr, prsd
-#data$mu_beta <- c(0, -0.03, 0.05, -0.03)
-#data$tau_beta <- diag(x = c(60000, 38000,
-#                            40000, 60000),
-#                      nrow = 4,
-#                      ncol = 4)
-data$mu_beta <- rep(0, times = 4)
-data$tau_beta <- diag(x = rep(0.001, times = 4),
+data$mu_beta <- c(0, -0.03, 0.05, -0.03)
+data$tau_beta <- diag(x = c(60000, 38000,
+                            40000, 60000),
                       nrow = 4,
                       ncol = 4)
+#data$mu_beta <- rep(0, times = 4)
+#data$tau_beta <- diag(x = rep(0.001, times = 4),
+#                      nrow = 4,
+#                      ncol = 4)
 # Prior parameters for alpha coefficient
-data$mu_alpha <- rep(0, times = data$ns)
-data$tau_alpha <- diag(x = rep(0.001, times = data$ns),
-                       nrow = data$ns,
-                       ncol = data$ns)
+data$mu_alpha <- 0
+data$tau_alpha <- 0.001
 # Covariates
 data$sand <- dplyr::select(sand_wide, -time)
 data$aat <- dplyr::select(aat_wide, -time)
@@ -245,144 +228,17 @@ data$tpr <- dplyr::select(tpr_wide, -time)
 data$prsd <- dplyr::select(prsd_wide, -time)
 
 # Create JAGS model with 3 chains
-jm <- rjags::jags.model(file = textConnection(dlm_beta),
+jm <- rjags::jags.model(file = textConnection(dlm_beta_simple),
                         data = data,
                         n.chains = 3,
-                        n.adapt = 1000)
+                        n.adapt = 10000)
 
 # Posterior samples of pooled parameters
 hm_out_pooled <- rjags::coda.samples(model = jm,
                                      variable.names = c('beta',
-                                                        'phi_obs',
+                                                        'alpha',
                                                         'phi_add'),
                                      n.iter = 1000,
                                      thin = 1)
-# Posterior samples of alphas
-hm_out_alpha <- rjags::coda.samples(model = jm,
-                                    variable.names = 'alpha',
-                                    n.iter = 10000,
-                                    thin = 1)
 
-print(Sys.time())
-
-# Save
-save(jm, hm_out_pooled, hm_out_alpha,
-     file = 'out/DLM/hemlock_mountain.RData')
-
-# Checks for convergence
 plot(hm_out_pooled)
-#coda::gelman.diag(hm_out_params, confidence = 0.99)
-coda::gelman.diag(hm_out_pooled, confidence = 0.99)
-coda::gelman.diag(hm_out_alpha, confidence = 0.99)
-
-# Extract parameter estimates
-param_out <- as.data.frame(as.matrix(hm_out_params))
-
-### Figures ###
-
-## Not updated
-
-# Violin plots of parameter distributions
-# Just checking to make sure values are appropriate
-param_out |>
-  tidyr::pivot_longer(cols = dplyr::everything(),
-                      names_to = 'param',
-                      values_to = 'estimate') |>
-  # These are different order of magnitude so remove
-  dplyr::filter(!(param %in% c('tau_add', 'tau_obs', 'phi_add', 'phi_obs'))) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_violin(ggplot2::aes(x = param, y = estimate)) +
-  ggplot2::theme_minimal()
-
-# Column names related to locations, covariate, or uncertainty
-colnames(param_out) <- c(colnames(ydata_wide[2:ncol(ydata_wide)]),
-                         'sand', 'aat', 'tpr', 'prsd',
-                         'tau_add', 'tau_obs')
-
-# Parameters related to environment
-env_params <- param_out |>
-  dplyr::select(sand:prsd) |>
-  tidyr::pivot_longer(cols = dplyr::everything(),
-                      names_to = 'param',
-                      values_to = 'estimate')
-
-# Parameters related to lags over time
-lag_params <- param_out |>
-  dplyr::select(-(sand:tau_obs)) |>
-  tidyr::pivot_longer(cols = dplyr::everything(),
-                      names_to = 'param',
-                      values_to = 'estimate') |>
-  dplyr::mutate(x = as.numeric(sub(pattern = '_.*', replacement = '', x = param)),
-                y = as.numeric(sub(pattern = '.*_', replacement = '', x = param)))
-
-# Parameters related to uncertainty
-uncert_params <- param_out |>
-  dplyr::select(tau_add, tau_obs) |>
-  tidyr::pivot_longer(cols = dplyr::everything(),
-                      names_to = 'param',
-                      values_to = 'estimate')
-
-# Plot mean lags
-lag_params |>
-  dplyr::group_by(param, x, y) |>
-  dplyr::summarize(mean = mean(estimate)) |>
-  #dplyr::filter(mean > 0) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = mean)) +
-  ggplot2::theme_void()
-
-# Plot median +/- 95% CrI
-lag_params |>
-  dplyr::group_by(param, x, y) |>
-  dplyr::summarize(low = quantile(estimate, probs = 0.025),
-                   median = median(estimate),
-                   high = quantile(estimate, probs = 0.975)) |>
-  #dplyr::mutate(low = dplyr::if_else(low < 0 & median > 0, NA, low),
-  #              high = dplyr::if_else(high > 0 & median < 0, NA, high),
-  #              median = dplyr::if_else(is.na(low) | is.na(high), NA, median)) |>
-  tidyr::pivot_longer(cols = low:high,
-                      names_to = 'quantile',
-                      values_to = 'estimate') |>
-  ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = estimate)) +
-  ggplot2::facet_wrap(~factor(quantile, levels = c('low', 'median', 'high'))) +
-  ggplot2::theme_void()
-
-# versus observed hemlock at one time period
-ydata_hm |>
-  dplyr::mutate(x = as.numeric(sub(pattern = '_.*', replacement = '', x = loc)),
-                y = as.numeric(sub(pattern = '.*_', replacement = '', x = loc))) |>
-  dplyr::filter(time == 17) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
-  ggplot2::theme_void()
-
-# versus difference between time steps
-unique_times <- unique(ydata_hm$time)
-unique_locs <- unique(ydata_hm$loc)
-
-diff <- matrix(, nrow = (length(unique_times)-1), ncol = length(unique_locs))
-
-for(s in 1:length(unique_locs)){
-  sub <- dplyr::filter(ydata_hm, loc == unique_locs[s])
-  for(t in 1:(length(unique_times)-1)){
-    diff[t,s] <- dplyr::filter(sub, time == t+1)$hemlock - dplyr::filter(sub, time == t)$hemlock
-  }
-}
-
-colnames(diff) <- unique_locs
-rownames(diff) <- 1:(length(unique_times)-1)
-
-diff <- as.data.frame(diff)
-
-diff |>
-  tibble::rownames_to_column(var = 'time') |>
-  tidyr::pivot_longer(cols = -time,
-                      names_to = 'loc',
-                      values_to = 'diff') |>
-  dplyr::mutate(x = as.numeric(sub(pattern = '_.*', replacement = '', x = loc)),
-                y = as.numeric(sub(pattern = '.*_', replacement = '', x = loc))) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
-  ggplot2::facet_wrap(~as.numeric(time)) +
-  ggplot2::theme_void()

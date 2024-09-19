@@ -164,7 +164,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### BEECH ###
 
@@ -201,7 +202,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### BIRCH ###
 
@@ -238,7 +240,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### ELM ###
 
@@ -275,7 +278,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### HEMLOCK ###
 
@@ -312,7 +316,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### MAPLE ###
 
@@ -349,7 +354,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### OAK ###
 
@@ -386,7 +392,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### OTHER CONIFER ###
 
@@ -423,7 +430,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### OTHER HARDWOOD ###
 
@@ -460,7 +468,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### PINE ###
 
@@ -497,7 +506,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### SPRUCE ###
 
@@ -534,7 +544,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### TAMARACK ###
 
@@ -571,7 +582,8 @@ taxon_filter |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 #### Temporal subsampling ####
 
@@ -628,7 +640,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -647,7 +660,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -666,7 +680,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -685,7 +700,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -704,7 +720,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -723,7 +740,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -742,7 +760,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -761,7 +780,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -780,7 +800,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -799,7 +820,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -818,7 +840,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 taxon_insample |>
   dplyr::mutate(time = as.character(time),
@@ -837,7 +860,8 @@ taxon_insample |>
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 # Save
 save(taxon_insample, taxon_oos,

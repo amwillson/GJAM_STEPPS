@@ -231,6 +231,10 @@ p1 <- taxon_insample_all |>
   ggplot2::theme_void()
 p1
 
+# Note that this can techinically be tiled but it doesn't faithfully
+# depict the spatial scale because there are no "NAs" so there are 
+# no gaps in the points across space
+# It's more faithful to depict as points
 p2 <- taxon_insample_all |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = clim_x, y = clim_y, color = aat),

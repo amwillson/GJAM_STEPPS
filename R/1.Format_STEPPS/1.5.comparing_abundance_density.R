@@ -137,7 +137,8 @@ pls_density_clip |>
   ggplot2::ggplot() +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = total_density)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
+                                na.value = 'white') +
   ggplot2::theme_void()
 
 # Convert stem density to ecosystem
@@ -209,6 +210,7 @@ unbias_grid |>
   dplyr::group_by(grid_id, grid_x, grid_y) |>
   dplyr::summarize(mean = mean(tpr)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = grid_x, grid_y, fill = mean)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_viridis_c(option = 'G',

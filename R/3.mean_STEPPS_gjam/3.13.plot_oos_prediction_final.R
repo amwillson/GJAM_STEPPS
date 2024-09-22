@@ -72,16 +72,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## BIRCH
 
@@ -105,16 +107,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## ELM
 
@@ -138,16 +142,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## HEMLOCK
 
@@ -171,16 +177,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## MAPLE
 
@@ -204,16 +212,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OAK
 
@@ -237,16 +247,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER CONIFER
 
@@ -270,16 +282,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER HARDWOOD
 
@@ -303,16 +317,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## PINE
 
@@ -336,16 +352,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## SPRUCE
 
@@ -369,16 +387,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## TAMARACK
 
@@ -402,16 +422,18 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### Plot observed vs predicted irrespective of space/time ###
 
@@ -455,13 +477,19 @@ pred_obs_long <- pred_mean_long |>
 pred_obs_long |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
-  ggplot2::geom_abline(color = 'blue', linetype = 'dashed') +
+  ggplot2::geom_abline(color = 'blue', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = Predicted, y = Observed),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
   ggplot2::facet_wrap(~taxon) +
   ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
   ggplot2::theme_minimal() +
-  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA),
+                 strip.text = ggplot2::element_text(size = 14),
+                 axis.title = ggplot2::element_text(size = 12))
 
-# 
+# Color points by the number of points in a given region of the plot
+# This function gets the relative density of points
 get_density <- function(x, y, ...) {
   dens <- MASS::kde2d(x, y, ...)
   ix <- findInterval(x, dens$x)
@@ -472,12 +500,24 @@ get_density <- function(x, y, ...) {
 
 pred_obs_long$density <- get_density(pred_obs_long$Predicted, pred_obs_long$Observed, n = 100)
 
+# Plot predicted vs observed with point density colored
+# this helps because there are so many points that it's not
+# possible to see point density with different levels of opacity
 pred_obs_long |>
-  dplyr::filter(taxon == 'Beech') |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed, color = density)) +
+  ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed, color = density),
+                      show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = Predicted, y = Observed),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
   ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
-  ggplot2::geom_abline()
+  ggplot2::scale_color_distiller(transform = 'sqrt') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA),
+                 strip.text = ggplot2::element_text(size = 14),
+                 axis.title = ggplot2::element_text(size = 12))
 
 ### Difference between observed and predicted ###
 
@@ -517,17 +557,19 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## BIRCH
 
@@ -551,17 +593,19 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## ELM
 
@@ -585,17 +629,19 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## HEMLOCK
 
@@ -619,17 +665,19 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## MAPLE
 
@@ -653,13 +701,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -687,13 +736,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -721,13 +771,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -755,13 +806,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -789,13 +841,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -823,13 +876,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -857,13 +911,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -914,11 +969,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -947,11 +1003,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -980,11 +1037,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1013,11 +1071,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1046,11 +1105,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1079,11 +1139,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1112,11 +1173,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1145,11 +1207,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1178,11 +1241,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1211,11 +1275,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1244,11 +1309,12 @@ pred_cond |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1276,11 +1342,34 @@ pred_obs_long <- pred_cond_long |>
 pred_obs_long |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
-  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::geom_abline(color = 'blue', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = Predicted, y = Observed),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
   ggplot2::facet_wrap(~taxon) +
   ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
   ggplot2::theme_minimal() +
-  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA),
+                 strip.text = ggplot2::element_text(size = 14),
+                 axis.title = ggplot2::element_text(size = 12))
+
+pred_obs_long$density <- get_density(pred_obs_long$Predicted, pred_obs_long$Observed, n = 100)
+
+pred_obs_long |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed, color = density),
+                      show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = Predicted, y = Observed),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::scale_color_distiller(transform = 'sqrt') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA),
+                 strip.text = ggplot2::element_text(size = 14),
+                 axis.title = ggplot2::element_text(size = 12))
 
 ### Difference between observed and predicted ###
 
@@ -1317,13 +1406,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -1351,13 +1441,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -1385,13 +1476,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -1419,13 +1511,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -1453,13 +1546,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -1487,13 +1581,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Oak') +
@@ -1521,13 +1616,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -1555,13 +1651,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -1589,13 +1686,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -1623,13 +1721,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -1657,13 +1756,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
@@ -1704,11 +1804,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1737,11 +1838,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1770,11 +1872,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1803,11 +1906,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1836,11 +1940,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1869,11 +1974,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1902,11 +2008,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1935,11 +2042,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -1968,11 +2076,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -2001,11 +2110,12 @@ pred_mean |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
@@ -2031,14 +2141,36 @@ pred_obs_long <- pred_mean_long |>
                    by = c('x', 'y', 'time', 'taxon'))
 
 pred_obs_long |>
-  dplyr::filter(taxon != 'Oak') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
-  ggplot2::geom_abline(color = 'blue') +
+  ggplot2::geom_abline(color = 'blue', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = Predicted, y = Observed),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
   ggplot2::facet_wrap(~taxon) +
   ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
   ggplot2::theme_minimal() +
-  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA))
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA),
+                 strip.text = ggplot2::element_text(size = 14),
+                 axis.title = ggplot2::element_text(size = 12))
+
+pred_obs_long$density <- get_density(pred_obs_long$Predicted, pred_obs_long$Observed, n = 100)
+
+pred_obs_long |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed, color = density),
+                      show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = Predicted, y = Observed),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::scale_color_distiller(transform = 'sqrt') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA),
+                 strip.text = ggplot2::element_text(size = 14),
+                 axis.title = ggplot2::element_text(size = 12))
 
 ### Difference between observed and predicted ###
 
@@ -2075,13 +2207,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Beech') +
@@ -2109,13 +2242,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Birch') +
@@ -2143,13 +2277,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Elm') +
@@ -2177,13 +2312,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Hemlock') +
@@ -2211,13 +2347,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Maple') +
@@ -2245,13 +2382,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Conifer') +
@@ -2279,13 +2417,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other Hardwood') +
@@ -2313,13 +2452,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Pine') +
@@ -2347,13 +2487,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Spruce') +
@@ -2381,13 +2522,14 @@ diff |>
                 time = dplyr::if_else(time == '4', '400 YBP', time),
                 time = dplyr::if_else(time == '3', '300 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'RdBu',
                                 direction = 1,
                                 limits = c(-1, 1),
                                 name = 'Observed-\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +

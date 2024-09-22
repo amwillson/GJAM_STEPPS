@@ -80,9 +80,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -105,9 +106,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
     ggplot2::facet_wrap(~factor(metric)) +
@@ -143,9 +145,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -165,9 +168,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -203,9 +207,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -225,9 +230,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -263,9 +269,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -285,9 +292,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -323,9 +331,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -345,9 +354,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -383,9 +393,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -405,9 +416,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -443,9 +455,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -465,9 +478,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -503,9 +517,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -525,9 +540,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -563,9 +579,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -585,9 +602,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -623,9 +641,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -645,9 +664,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -683,9 +703,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -705,9 +726,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
@@ -743,9 +765,10 @@ post_df |>
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
@@ -765,9 +788,10 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'white',
+  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
                                 direction = 1, name = 'Relative\nabundance',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +

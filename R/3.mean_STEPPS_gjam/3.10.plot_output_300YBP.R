@@ -740,8 +740,8 @@ for_plotting <- corr |>
                 taxon = dplyr::if_else(taxon == 'hemlock', 'Hemlock', taxon),
                 taxon = dplyr::if_else(taxon == 'maple', 'Maple', taxon),
                 taxon = dplyr::if_else(taxon == 'oak', 'Oak', taxon),
-                taxon = dplyr::if_else(taxon == 'conifer', 'Other Conifer', taxon),
-                taxon = dplyr::if_else(taxon == 'hardwood', 'Other Hardwood', taxon),
+                taxon = dplyr::if_else(taxon == 'oc', 'Other Conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'oh', 'Other Hardwood', taxon),
                 taxon = dplyr::if_else(taxon == 'pine', 'Pine', taxon),
                 taxon = dplyr::if_else(taxon == 'spruce', 'Spruce', taxon),
                 taxon = dplyr::if_else(taxon == 'tamarack', 'Tamarack', taxon)) |>
@@ -765,8 +765,8 @@ bFacGibbs_long |>
                 taxon = dplyr::if_else(taxon == 'hemlock', 'Hemlock', taxon),
                 taxon = dplyr::if_else(taxon == 'maple', 'Maple', taxon),
                 taxon = dplyr::if_else(taxon == 'oak', 'Oak', taxon),
-                taxon = dplyr::if_else(taxon == 'conifer', 'Other Conifer', taxon),
-                taxon = dplyr::if_else(taxon == 'hardwood', 'Other Hardwood', taxon),
+                taxon = dplyr::if_else(taxon == 'oc', 'Other Conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'oh', 'Other Hardwood', taxon),
                 taxon = dplyr::if_else(taxon == 'pine', 'Pine', taxon),
                 taxon = dplyr::if_else(taxon == 'spruce', 'Spruce', taxon),
                 taxon = dplyr::if_else(taxon == 'tamarack', 'Tamarack', taxon)) |>

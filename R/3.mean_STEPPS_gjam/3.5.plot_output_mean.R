@@ -20,7 +20,7 @@ rm(list = ls())
 # sand_aat_tpr_prsd
 # silt_aat_tsd_prsd
 # sand_aat_tsd_prsd
-form <- 'sand_aat_tsd_prsd'
+form <- 'silt_aat_tpr_prsd'
 
 # Load formatted data
 load(paste0('out/mean/processed_', form, '.RData'))

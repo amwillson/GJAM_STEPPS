@@ -153,14 +153,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(ash), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Ash',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme_void() +
@@ -191,14 +196,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(beech), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Beech',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme_void() +
@@ -229,14 +239,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(birch), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Birch',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme_void() +
@@ -267,14 +282,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(elm), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Elm',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme_void() +
@@ -305,14 +325,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(hemlock), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Hemlock',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme_void() +
@@ -343,14 +368,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(maple), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Maple',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme_void() +
@@ -381,14 +411,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(oak), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Oak',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme_void() +
@@ -419,14 +454,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(other_conifer), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Other conifer',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme_void() +
@@ -457,14 +497,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(other_hardwood), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) + 
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Other hardwood',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme_void() +
@@ -495,14 +540,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(pine), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Pine',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme_void() +
@@ -533,14 +583,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(spruce), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Spruce',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme_void() +
@@ -571,14 +626,19 @@ taxon_filter |>
                 time = dplyr::if_else(time == '19', '1900 YBP', time),
                 time = dplyr::if_else(time == '20', '2000 YBP', time),
                 time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(tamarack), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Tamarack',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme_void() +
@@ -629,14 +689,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(ash), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Ash') +
   ggplot2::theme_void() +
@@ -649,14 +714,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(beech), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Beech') +
   ggplot2::theme_void() +
@@ -669,14 +739,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(birch), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y ,fill = birch)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Birch') +
   ggplot2::theme_void() +
@@ -689,14 +764,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(elm), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Elm') +
   ggplot2::theme_void() +
@@ -709,14 +789,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(hemlock), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Hemlock') +
   ggplot2::theme_void() +
@@ -729,14 +814,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(maple), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Maple') +
   ggplot2::theme_void() +
@@ -749,14 +839,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(oak), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Oak') +
   ggplot2::theme_void() +
@@ -769,14 +864,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(other_conifer), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Other Conifer') +
   ggplot2::theme_void() +
@@ -789,14 +889,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(other_hardwood), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Other Hardwood') +
   ggplot2::theme_void() +
@@ -809,14 +914,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(pine), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Pine') +
   ggplot2::theme_void() +
@@ -829,14 +939,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(spruce), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Spruce') +
   ggplot2::theme_void() +
@@ -849,14 +964,19 @@ taxon_insample |>
                 time = dplyr::if_else(time == '15', '1500 YBP', time),
                 time = dplyr::if_else(time == '11', '1100 YBP', time),
                 time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+  dplyr::mutate(data = dplyr::if_else(is.na(tamarack), FALSE, TRUE)) |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = NA, color = data),
+                     show.legend = FALSE) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::facet_wrap(~factor(time, facet_order)) +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme_void() +

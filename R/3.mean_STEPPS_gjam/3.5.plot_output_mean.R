@@ -20,7 +20,8 @@ rm(list = ls())
 # sand_aat_tpr_prsd
 # silt_aat_tsd_prsd
 # sand_aat_tsd_prsd
-form <- 'silt_aat_tpr_prsd'
+# sand_aat_tpr_prsd_interaction
+form <- 'sand_aat_tpr_prsd_interaction'
 
 # Load formatted data
 load(paste0('out/mean/processed_', form, '.RData'))
@@ -760,7 +761,8 @@ my_labeller <- ggplot2::as_labeller(x = c(aat = '`Average annual temperature`',
                                           tsd = '`Temperature seasonality`',
                                           sand = '`Soil % sand`',
                                           silt = '`Soil % silt`',
-                                          prsd = '`Precipitation seasonality`'),
+                                          prsd = '`Precipitation seasonality`',
+                                          `sand:tpr` = '`Soil % sand x precipitation`'),
                                     default = ggplot2::label_parsed)
 
 # Violin plots of coefficient estimates
@@ -854,7 +856,8 @@ sens |>
                                        'tpr' = 'Total precipitation',
                                        'sand' = 'Soil % sand',
                                        'silt' = 'Soil % silt',
-                                       'tsd' = 'Temperature seasonality')) +
+                                       'tsd' = 'Temperature seasonality',
+                                       'sand:tpr' = 'Soil % sand x precipitation')) +
   ggplot2::theme(axis.title = ggplot2::element_text(size = 14),
                  axis.text = ggplot2::element_text(size = 12))
 

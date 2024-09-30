@@ -40,7 +40,7 @@ rm(list = ls())
 # sand_aat_tpr_prsd
 # silt_aat_tsd_prsd
 # sand_aat_tsd_prsd
-form <- 'silt_aat_tsd_prsd'
+form <- 'sand_aat_tsd_prsd'
 
 #### Trace plots ####
 

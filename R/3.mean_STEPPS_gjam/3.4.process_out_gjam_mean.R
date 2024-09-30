@@ -23,7 +23,8 @@ rm(list = ls())
 # sand_aat_tpr_prsd
 # silt_aat_tsd_prsd
 # sand_aat_tsd_prsd
-form <- 'sand_aat_tsd_prsd'
+# sand_aat_tpr_prsd_interaction
+form <- 'sand_aat_tpr_prsd_interaction'
 
 # Load model output
 load(paste0('out/mean/mean_', form, '.RData'))

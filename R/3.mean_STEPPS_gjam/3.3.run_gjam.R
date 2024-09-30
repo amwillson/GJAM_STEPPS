@@ -168,3 +168,16 @@ gjam::gjamPlot(out)
 
 # Save output
 save(out, file = 'out/mean/mean_sand_aat_tsd_prsd.RData')
+
+### sand + aat + tpr + prsd + sand * tpr ###
+
+# run model
+out <- gjam::gjam(formula = ~ sand + aat + tpr + prsd + sand * tpr,
+                  xdata = xdata, ydata = ydata,
+                  modelList = ml)
+
+# Simple plots
+gjam::gjamPlot(out)
+
+# Save output
+save(out, file = 'out/mean/mean_sand_aat_tpr_prsd_interaction.RData')

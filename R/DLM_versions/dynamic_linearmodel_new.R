@@ -22,7 +22,8 @@ OBS[t,s] ~ dbeta(alpha_obs[t,s], beta_obs[t,s])
 #### Process Model
 for(t in 2:n){
 for(s in 1:ns){
-logit(mu[t,s]) <- x[t-1,s] + alpha[map[s]] * x[t-1,s] + beta[1] * aat[t,s] + beta[2] * tpr[t,s] + beta[3] * prsd[t,s] + beta[4] * sand[s]
+logit(mu[t,s]) <- x[t-1,s] + alpha[s] * x[t-1,s] + beta[1] * aat[t,s] + beta[2] * tpr[t,s] + beta[3] * prsd[t,s] + beta[4] * sand[s]
+#logit(mu[t,s]) <- x[t-1,s] + alpha[map[s]] * x[t-1,s] + beta[1] * aat[t,s] + beta[2] * tpr[t,s] + beta[3] * prsd[t,s] + beta[4] * sand[s]
 alpha_proc[t,s] <- mu[t,s] * phi_proc
 beta_proc[t,s] <- (1 - mu[t,s]) * phi_proc
 x[t,s] ~ dbeta(alpha_proc[t,s], beta_proc[t,s])
@@ -36,35 +37,44 @@ data$OBS <- dplyr::select(ydata_wide, -time)
 data$n <- nrow(data$OBS)
 data$ns <- ncol(data$OBS)
 data$mu_beta <- rep(0, times = 4)
-data$tau_beta <- diag(x = rep(0.1, times = 4),
+data$tau_beta <- diag(x = rep(0.01, times = 4),
                       nrow = 4,
                       ncol = 4)
-data$mu_alpha <- rep(1, times = background_id)
-data$tau_alpha <- diag(x = rep(0.1, times = background_id),
-                       nrow = background_id,
-                       ncol = background_id)
+data$mu_alpha <- rep(1, times = data$ns)
+#data$mu_alpha <- rep(1, times = background_id)
+data$tau_alpha <- diag(x = rep(0.01, times = data$ns),
+                       nrow = data$ns,
+                       ncol = data$ns)
+#data$tau_alpha <- diag(x = rep(0.1, times = background_id),
+#                       nrow = background_id,
+#                       ncol = background_id)
 data$aat <- dplyr::select(aat_wide, -time)
 data$tpr <- dplyr::select(tpr_wide, -time)
 data$prsd <- dplyr::select(prsd_wide, -time)
 sand <- sand_wide[1,2:703]
 data$sand <- as.vector(as.matrix(sand))
-map <- hm_cells_wide[1,2:703]
-data$map <- as.vector(as.matrix(map))
+#map <- hm_cells_wide[1,2:703]
+#data$map <- as.vector(as.matrix(map))
 
 jm <- rjags::jags.model(file = textConnection(beta_regression),
                         data = data,
                         n.chains = 3,
-                        n.adapt = 1000)
+                        n.adapt = 50000)
 
 out <- rjags::coda.samples(model = jm,
                            variable.names = c('beta',
-                                              'alpha',
+                                              #'alpha',
                                               'phi_obs',
                                               'phi_proc'),
                            n.iter = 1000)
 
+out_alpha <- rjags::coda.samples(model = jm,
+                                 variable.names = 'alpha',
+                                 n.iter = 1000)
+
 plot(out)
 coda::gelman.diag(out)
+coda::gelman.diag(out_alpha)
 
 out_mat <- as.matrix(out)
 

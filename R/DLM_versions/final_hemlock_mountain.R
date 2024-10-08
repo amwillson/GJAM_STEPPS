@@ -996,3 +996,221 @@ coda::gelman.diag(out, confidence = 0.99)
 # Save
 save(out, data, regression_model_fixed_alpha,
      file = 'out/hemlock/out_full_domain.RData')
+
+#### Case 5: Allowing alpha to vary at Hemlock Mountain ####
+
+## Use large Hemlock Mountain domain
+## Maximum hemlock abundance at x = 445000, y = 982000
+## This also corresponds to maximum bias in hemlock prediction from GJAM
+## Take 80 grid cells surrounding the peak in abundance
+
+# 81 grid cells near Hemlock Mountain
+hemlock_mountain_locs <- expand.grid(x = c(349000, 373000, 397000, 421000, 445000,
+                                           469000, 493000, 517000, 541000),
+                                     y = c(886000, 910000, 934000, 958000, 982000,
+                                           1006000, 1030000, 1054000, 1078000))
+# Add location index
+hemlock_mountain_locs$loc <- paste0(hemlock_mountain_locs$x, '_', hemlock_mountain_locs$y)
+
+# Subset data for only Hemlock Mountain region
+xdata_hm <- dplyr::filter(xdata, loc %in% hemlock_mountain_locs$loc)
+ydata_hm <- dplyr::filter(ydata, loc %in% hemlock_mountain_locs$loc)
+
+# Map of study region
+states <- map_states()
+
+# Plot subsetted area
+# Make sure region follows anticipated patterns and see spatial domain we have subsampled
+ydata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens',
+                                direction = 1,
+                                limits = c(0, 1),
+                                name = 'Relative\nabundance') +
+  ggplot2::facet_wrap(~time) +
+  ggplot2::ggtitle('Hemlock relative abundance') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+ydata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = time, y = hemlock, color = loc),
+                     show.legend = FALSE) +
+  ggplot2::xlab('Time step') + ggplot2::ylab('Hemlock relative abundance') +
+  ggplot2::theme_minimal()
+
+# Plot covariates
+# Make sure covariates follow anticipated patterns
+xdata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = sand)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~time) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Soil %\nsand') +
+  ggplot2::ggtitle('Soil texture') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+xdata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = aat)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~time) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = '°C') +
+  ggplot2::ggtitle('Average annual temperature') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+xdata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tpr)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~time) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'mm') +
+  ggplot2::ggtitle('Total annual precipitation') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+xdata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = prsd)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~time) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'mm') +
+  ggplot2::ggtitle('Precipitation seasonality') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+xdata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = time, y = sand, color = loc),
+                     show.legend = FALSE) +
+  ggplot2::xlab('Time step') + ggplot2::ylab('Soil % sand') +
+  ggplot2::theme_minimal()
+
+xdata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = time, y = aat, color = loc),
+                     show.legend = FALSE) +
+  ggplot2::xlab('Time step') + ggplot2::ylab('Average annual temperature (°C)') +
+  ggplot2::theme_minimal()
+
+xdata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = time, y = tpr, color = loc),
+                     show.legend = FALSE) +
+  ggplot2::xlab('Time step') + ggplot2::ylab('Total annual precipitation (mm)') +
+  ggplot2::theme_minimal()
+
+xdata_hm |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = time, y = prsd, color = loc),
+                     show.legend = FALSE) +
+  ggplot2::xlab('Time step') + ggplot2::ylab('Precipitation seasonality (mm)') +
+  ggplot2::theme_minimal()
+
+# Standardize covariates
+# Represent in units of standard deviation
+# To match how relative abundance is standardized in the model
+xdata_hm <- xdata_hm |>
+  dplyr::mutate(sand_stand = sand / sd(sand),
+                aat_stand = aat / sd(aat),
+                tpr_stand = tpr / sd(tpr),
+                prsd_stand = prsd / sd(prsd)) |>
+  dplyr::select(-sand, -aat, -tpr, -prsd) |>
+  dplyr::rename(sand = sand_stand,
+                aat = aat_stand,
+                tpr = tpr_stand,
+                prsd = prsd_stand)
+
+# Pivot data for inputting into model
+ydata_wide <- ydata_hm |>
+  dplyr::select(-stepps_x, -stepps_y) |>
+  tidyr::pivot_wider(values_from = hemlock,
+                     names_from = loc) |>
+  dplyr::arrange(time)
+
+sand_wide <- xdata_hm |>
+  dplyr::select(-aat, -tpr, -prsd, -stepps_x, -stepps_y) |>
+  tidyr::pivot_wider(values_from = sand,
+                     names_from = loc) |>
+  dplyr::arrange(time)
+
+aat_wide <- xdata_hm |>
+  dplyr::select(-sand, -tpr, -prsd, -stepps_x, -stepps_y) |>
+  tidyr::pivot_wider(values_from = aat,
+                     names_from = loc) |>
+  dplyr::arrange(time)
+
+tpr_wide <- xdata_hm |>
+  dplyr::select(-sand, -aat, -prsd, -stepps_x, -stepps_y) |>
+  tidyr::pivot_wider(values_from = tpr,
+                     names_from = loc) |>
+  dplyr::arrange(time)
+
+prsd_wide <- xdata_hm |>
+  dplyr::select(-sand, -aat, -tpr, -stepps_x, -stepps_y) |>
+  tidyr::pivot_wider(values_from = prsd,
+                     names_from = loc) |>
+  dplyr::arrange(time)
+
+# Define data list for model
+data <- list()
+data$OBS <- dplyr::select(ydata_wide, -time) # observation of relative abundance
+data$n <- nrow(data$OBS) # number of time steps
+data$ns <- ncol(data$OBS) # number of grid cells
+data$mu_alpha <- rep(0, times = data$ns) # prior mean for alpha parameters
+data$tau_alpha <- diag(x = rep(0.1, times = data$ns),
+                       nrow = data$ns,
+                       ncol = data$ns)# prior precision for alpha parameter
+data$mu_beta <- rep(0, times = 5) # prior means for beta parameters
+data$tau_beta <- diag(x = c(1, 1, 1, 1, 5),
+                      nrow = 5,
+                      ncol = 5) # prior precisions for beta parameters with slightly higher precision for intercept
+data$aat <- dplyr::select(aat_wide, -time) # observation of temperature
+data$tpr <- dplyr::select(tpr_wide, -time) # observation of precipitation
+data$prsd <- dplyr::select(prsd_wide, -time) # observation of precipitation seasonality
+data$sand <- as.vector(as.matrix(sand_wide[1,2:ncol(sand_wide)])) # observation of soil texture, which doesn't change over time
+data$map <- seq(from = 1, by = 1, length.out = data$ns)
+
+# Create JAGS model
+jm <- rjags::jags.model(file = textConnection(regression_model_variable_alpha),
+                        data = data,
+                        n.chains = 3,
+                        n.adapt = 1000)
+                        n.adapt = 500000) # number of adaptation iterations
+
+# Samples from model
+out <- rjags::coda.samples(model = jm,
+                           variable.names = c('alpha',
+                                              'beta',
+                                              'phi_obs',
+                                              'tau_proc'),
+                           n.iter = 50000) # number of iterations to keep
+
+# Check for convergence
+plot(out)
+coda::gelman.diag(out, confidence = 0.99)
+
+# Save
+save(out, data, regression_model_fixed_alpha,
+     file = 'out/hemlock/out_large_hemlock_mountain.RData')

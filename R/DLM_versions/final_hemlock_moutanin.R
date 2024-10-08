@@ -979,7 +979,7 @@ data$sand <- as.vector(as.matrix(sand_wide[1,2:ncol(sand_wide)])) # observation 
 jm <- rjags::jags.model(file = textConnection(regression_model_fixed_alpha),
                         data = data,
                         n.chains = 3,
-                        n.adapt = 50000) # number of adaptation iterations
+                        n.adapt = 500000) # number of adaptation iterations
 
 # Samples from model
 out <- rjags::coda.samples(model = jm,
@@ -987,8 +987,7 @@ out <- rjags::coda.samples(model = jm,
                                               'beta',
                                               'phi_obs',
                                               'tau_proc'),
-                           n.iter = 1000)
-                           #n.iter = 50000) # number of iterations to keep
+                           n.iter = 50000) # number of iterations to keep
 
 # Check for convergence
 plot(out)
@@ -996,4 +995,4 @@ coda::gelman.diag(out, confidence = 0.99)
 
 # Save
 save(out, data, regression_model_fixed_alpha,
-     file = 'out/hemlock/out_large_hemlock_mountain.RData')
+     file = 'out/hemlock/out_full_domain.RData')

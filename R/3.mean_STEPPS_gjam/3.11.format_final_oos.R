@@ -12,20 +12,11 @@
 ## mean estimates of STEPPS relative abundances, but for a subset of
 ## spatio-temporal locations
 
-## Input: data/input/8km.RData
-## Dataframe with grid ID and grid centroid lat/lon from PLS data
-## This is required because the soil variable estimates were originally
-## sampled using PLS data
-
-## Input: data/input/gridded_soil.RData
-## Soil data that was previously processed for the PLS dataset
-## In the "input" folder because this was processed for a different project,
-## not processed for this project
+## Input: data/processed/gridded_soil.RData
+## Soil estimates
 
 ## Input: data/processed/gridded_climate.RData
 ## Downscaled climate reconstructions
-## In the "processed" folder because this was downscaled and processed
-## for this project
 
 ## Output: data/processed/mean_stepps_full_oos.RData
 ## Full OOS dataset
@@ -108,98 +99,17 @@ taxon_oos <- taxon_insample |>
 
 #### Soil data ####
 
-# Load PLS data because that's how we matched the soil grid
-load('data/input/8km.RData')
-
-# Take only coordinates and ID column
-comp_dens <- dplyr::select(comp_dens, x, y, id)
-
-# Add ID column from PLS data to STEPPS data
-# We can then join the soil and STEPPS data by the PLS grid ID
-taxon_oos_id <- taxon_oos |>
-  dplyr::left_join(y = comp_dens, by = c('x', 'y'))
-
 # Load soil data
-load('data/input/gridded_soil.RData')
+load('data/processed/gridded_soil.RData')
 
-# Rename coordinate columns to make sure we're on target later
-soil_grid <- dplyr::rename(soil_grid,
-                           soil_x = x,
-                           soil_y = y)
-
-# Join OOS STEPPS reconstructions and soil data
-taxon_oos_soil <- taxon_oos_id |>
-  dplyr::rename(grid_id = id,
-                stepps_x = x,
-                stepps_y = y) |>
-  dplyr::left_join(y = soil_grid, by = 'grid_id') |>
-  # drop NAs in southwest corner of Minnesota
-  tidyr::drop_na()
-
-# Map of states
-states <- map_states()
-
-# Transform state map to new CRS
-states2 <- sf::st_transform(states, crs = 'EPSG:4326')
-
-# Check to make sure the plots look the same regardless of coordinate system
-# We want to make sure the plots follow reasonable spatial patterns (higher sand
-# where there are known sand plains)
-# and the spatial patterns should look the same regardless of CRS
-p1 <- taxon_oos_soil |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = sand)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Oranges',
-                                name = 'Soil %\nsand',
-                                na.value = '#00000000',
-                                limits = c(0, 100)) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
-p1
-
-p2 <- taxon_oos_soil |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states2, color = NA, fill = 'grey85') +
-  ggplot2::geom_point(ggplot2::aes(x = soil_x, y = soil_y, color = sand),
-                      shape = 15) +
-  ggplot2::geom_sf(data = states2, color = 'black', fill = NA) +
-  ggplot2::scale_color_distiller(palette = 'Oranges',
-                                 name = 'Soil %\nsand',
-                                 na.value = '#00000000',
-                                 limits = c(0, 100)) +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
-p2
-
-cowplot::plot_grid(p1, p2)
-
-# Now convert one set of coordinates and make sure it still matches up
-taxon_oos_soil <- sf::st_as_sf(taxon_oos_soil, coords = c('soil_x', 'soil_y'), crs = 'EPSG:4326')
-taxon_oos_soil <- sf::st_transform(taxon_oos_soil, crs = 'EPSG:3175')
-taxon_oos_soil <- sfheaders::sf_to_df(taxon_oos_soil, fill = TRUE)
-taxon_oos_soil <- taxon_oos_soil |>
-  dplyr::rename(soil_x = x,
-                soil_y = y) |>
-  dplyr::select(-sfg_id, -point_id)
-
-# Plot x against x
-# Should be exactly on the 1:1 line if our CRS conversion was done correctly
-taxon_oos_soil |>
-  ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = soil_x, y = stepps_x)) +
-  ggplot2::geom_abline()
-
-# same with y
-taxon_oos_soil |>
-  ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = soil_y, y = stepps_y)) +
-  ggplot2::geom_abline()
+# Join STEPPS and soil data
+taxon_oos_soil <- taxon_oos |>
+  dplyr::left_join(y = soil_grid,
+                   by = c('x', 'y', 'time'))
 
 # Remove & rearrange columns
 taxon_oos_soil <- dplyr::select(taxon_oos_soil,
-                                stepps_x, stepps_y, time, grid_id,
+                                x, y, time,
                                 ash:tamarack,
                                 clay:awc)
 
@@ -208,99 +118,12 @@ taxon_oos_soil <- dplyr::select(taxon_oos_soil,
 # Load climate data
 load('data/processed/gridded_climate.RData')
 
-# Rename coordinate columns to make sure we're on target later
-unbias_grid <- dplyr::rename(unbias_grid,
-                             clim_x = grid_x,
-                             clim_y = grid_y)
-
-# Convert time in climate dataset to YBP
-unbias_grid <- unbias_grid |>
-  dplyr::mutate(time = 1950 - time,
-                time = time / 100)
-
 # Join
 taxon_oos_all <- taxon_oos_soil |>
-  dplyr::left_join(y = unbias_grid, by = c('grid_id', 'time')) |>
-  # remove time steps where we don't have climate data
-  # and where we know there is anthropogenic influence
-  dplyr::filter(!(time %in% c(20:21, 2)))
-
-# Map of states
-states <- map_states()
-
-# Check to make sure the plots look the same regardless of coordinate set
-# Temperature should still follow the correct spatial patterns
-# And the patterns should be exactly the same regardless of CRS
-p1 <- taxon_oos_all |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = aat)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_viridis_c(option = 'F',
-                                name = 'Average annual\ntemperature (°C)',
-                                na.value = '#00000000') +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
-p1
-
-p2 <- taxon_oos_all |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_point(ggplot2::aes(x = clim_x, y = clim_y, color = aat),
-                      shape = 15) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_viridis_c(option = 'F',
-                                 name = 'Average annual\ntemperature (°C)',
-                                 na.value = '#00000000') +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
-p2
-
-cowplot::plot_grid(p1, p2)
-
-p1 <- taxon_oos_all |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tpr)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_viridis_c(option = 'G',
-                                name = 'Total annual\nprecipitation (mm)',
-                                na.value = '#00000000') +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
-p1
-
-p2 <- taxon_oos_all |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_point(ggplot2::aes(x = clim_x, y = clim_y, color = tpr),
-                      shape = 15) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_color_viridis_c(option = 'G',
-                                 name = 'Total annual\nprecipitation (mm)',
-                                 na.value = '#00000000') +
-  ggplot2::facet_wrap(~time) +
-  ggplot2::theme_void()
-p2
-
-cowplot::plot_grid(p1, p2)
-
-# Plot x against x
-# Should be exactly one the 1:1 line
-taxon_oos_all |>
-  ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = clim_x, y = stepps_x)) +
-  ggplot2::geom_abline()
-
-# same with y
-taxon_oos_all |>
-  ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = clim_y, y = stepps_y)) +
-  ggplot2::geom_abline()
-
-# Remove and rearrange columns
-taxon_oos_all <- dplyr::select(taxon_oos_all,
-                               -grid_id, -clim_x, -clim_y)
+  dplyr::left_join(y = climate_grid,
+                   by = c('x', 'y', 'time')) |>
+  # filter out time steps we don't need
+  dplyr::filter(time %in% 3:19)
 
 #### Plots ####
 
@@ -319,26 +142,10 @@ time_order <- c('1900 YBP', '1800 YBP', '1700 YBP', '1600 YBP',
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = ash)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -354,26 +161,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = beech)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -389,26 +180,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = birch)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -424,26 +199,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = elm)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -459,26 +218,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = hemlock)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -494,26 +237,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = maple)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -529,26 +256,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = oak)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -564,26 +275,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = other_conifer)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -599,26 +294,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = other_hardwood)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -634,26 +313,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = pine)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -669,26 +332,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = spruce)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -704,26 +351,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tamarack)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1, 
@@ -741,26 +372,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = clay)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = clay)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
@@ -776,26 +391,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = sand)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = sand)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
@@ -811,26 +410,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = silt)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = silt)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1,
@@ -846,26 +429,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = caco3)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = caco3)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1,
@@ -880,26 +447,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = awc)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = awc)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Oranges', direction = 1, 
@@ -916,26 +467,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = aat)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = aat)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_viridis_c(option = 'F', 
@@ -950,26 +485,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tpr)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tpr)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_viridis_c(option = 'G', 
@@ -984,26 +503,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tsd)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tsd)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_viridis_c(option = 'D', 
@@ -1018,26 +521,10 @@ taxon_oos_all |>
 
 taxon_oos_all |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = prsd)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = prsd)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_viridis_c(option = 'E', 

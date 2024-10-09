@@ -29,29 +29,21 @@ load('data/processed/mean_stepps_soil_clim.RData')
 # Select only climate and soil varaibles from mean STEPPS dataframe
 # The climate and soil are the same. We only want to change estimates from
 # STEPPS
-soil_clim_insample <- dplyr::select(taxon_insample_all, c(stepps_x:time, clay:prsd))
-soil_clim_oos <- dplyr::select(taxon_oos_all, c(stepps_x:time, clay:prsd))
+soil_clim_insample <- dplyr::select(taxon_insample_all, c(x:time, clay:prsd))
+soil_clim_oos <- dplyr::select(taxon_oos_all, c(x:time, clay:prsd))
 
 # Remove mean dfs
 rm(taxon_insample_all, taxon_oos_all)
 
 # Combine climate/soil and posterior draws by time and coordinates
 post_insample_all <- post_insample |>
-  dplyr::rename(stepps_x = x,
-                stepps_y = y) |>
   dplyr::full_join(y = soil_clim_insample,
-                   by = c('stepps_x', 'stepps_y', 'time')) |>
-  dplyr::rename(x = stepps_x,
-                y = stepps_y) |>
+                   by = c('x', 'y', 'time')) |>
   dplyr::filter(!is.na(draw))
 
 post_oos_all <- post_oos |>
-  dplyr::rename(stepps_x = x,
-                stepps_y = y) |>
   dplyr::full_join(y = soil_clim_oos,
-                   by = c('stepps_x', 'stepps_y', 'time')) |>
-  dplyr::rename(x = stepps_x,
-                y = stepps_y) |>
+                   by = c('x', 'y', 'time')) |>
   dplyr::filter(!is.na(draw))
 
 #### Plotting checks ####
@@ -76,10 +68,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(clay = median(clay)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(clay), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -90,10 +79,11 @@ post_insample_all |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Oranges', name = '% clay',
                                 direction = 1,
-                                na.value = '#00000000') +
+                                na.value = '#00000000',
+                                limits = c(0, 100)) +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Soil Clay Content') +
+  ggplot2::ggtitle('Soil clay content') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -103,10 +93,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(sand = median(sand)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(sand), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -117,10 +104,11 @@ post_insample_all |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Oranges', name = '% sand',
                                 direction = 1,
-                                na.value = '#00000000') +
+                                na.value = '#00000000',
+                                limits = c(0, 100)) +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Soil Sand Content') +
+  ggplot2::ggtitle('Soil sand content') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -130,10 +118,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(silt = median(silt)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(silt), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -144,10 +129,11 @@ post_insample_all |>
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::scale_fill_distiller(palette = 'Oranges', name = '% silt',
                                 direction = 1,
-                                na.value = '#00000000') +
+                                na.value = '#00000000',
+                                limits = c(0, 100)) +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Soil Silt Content') +
+  ggplot2::ggtitle('Soil silt content') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -157,10 +143,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(caco3 = median(caco3)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(caco3), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -169,12 +152,13 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Oranges', name = '[CaCO3]',
+  ggplot2::scale_fill_distiller(palette = 'Oranges', 
+                                name = expression(paste('%CaC', 0[3])),
                                 direction = 1,
                                 na.value = '#00000000') +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Soil [CaCO3]') +
+  ggplot2::ggtitle('Soil calcium carbonate concentration') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -184,10 +168,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(awc = median(awc)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(awc), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -196,12 +177,13 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Oranges', name = 'Available water\ncontent',
+  ggplot2::scale_fill_distiller(palette = 'Oranges', 
+                                name = 'cm/cm',
                                 direction = 1,
                                 na.value = '#00000000') +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Available Water Content') +
+  ggplot2::ggtitle('Soil available water content') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -213,10 +195,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(aat = median(aat)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(aat), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -225,11 +204,11 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_viridis_c(option = 'F', name = 'Average annual\ntemperature (°C)',
+  ggplot2::scale_fill_viridis_c(option = 'F', name = '°C',
                                 na.value = '#00000000') +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Average Annual Temperature') +
+  ggplot2::ggtitle('Average annual temperature') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -239,10 +218,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(tpr = median(tpr)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(tpr), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -251,11 +227,12 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_viridis_c(option = 'G', name = 'Total annual\nprecipitation (mm)',
+  ggplot2::scale_fill_viridis_c(option = 'G', 
+                                name = 'mm/year',
                                 na.value = '#00000000') +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Total Annual Precipitation') +
+  ggplot2::ggtitle('Total annual precipitation') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -265,10 +242,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(tsd = median(tsd)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(tsd), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -277,11 +251,12 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_viridis_c(option = 'D', name = 'Temperature\nseasonality (°C)',
+  ggplot2::scale_fill_viridis_c(option = 'D', 
+                                name = '°C',
                                 na.value = '#00000000') +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Temperature Seasonality (Standard Deviation)') +
+  ggplot2::ggtitle('Temperature seasonality (standard deviation)') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -291,10 +266,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(prsd = median(prsd)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |> 
+                time = paste0(time, '00 YBP')) |> 
   dplyr::mutate(data = dplyr::if_else(is.na(prsd), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -303,11 +275,12 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_viridis_c(option = 'E', name = 'Precipitation\nseasonality (mm)',
+  ggplot2::scale_fill_viridis_c(option = 'E', 
+                                name = 'mm/year',
                                 na.value = '#00000000') +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Precipitation Seasonality (Standard Deviation)') +
+  ggplot2::ggtitle('Precipitation seasonality (standard deviation)') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -319,10 +292,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(ash = median(ASH)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(ash), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -331,7 +301,8 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                name = 'Relative\nabundance',
                                 direction = 1,
                                 na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
@@ -375,10 +346,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(beech = median(BEECH)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(beech), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -387,7 +355,8 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                name = 'Relative\nabundance',
                                 direction = 1,
                                 na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
@@ -431,10 +400,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(birch = median(BIRCH)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(birch), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -443,7 +409,8 @@ post_insample_all |>
                      show.legend = FALSE, fill = NA) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                name = 'Relative\nabundance',
                                 direction = 1,
                                 na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
@@ -487,10 +454,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(elm = median(ELM)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(elm), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -543,10 +507,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(hemlock = median(HEMLOCK)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(hemlock), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -599,10 +560,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(maple = median(MAPLE)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(maple), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -655,10 +613,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(oak = median(OAK)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(oak), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -711,10 +666,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(other_conifer = median(OTHER.CONIFER)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(other_conifer), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -767,10 +719,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(other_hardwood = median(OTHER.HARDWOOD)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(other_hardwood), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -823,10 +772,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(pine = median(PINE)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(pine), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -879,10 +825,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(spruce = median(SPRUCE)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(spruce), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -935,10 +878,7 @@ post_insample_all |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(tamarack = median(TAMARACK)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   dplyr::mutate(data = dplyr::if_else(is.na(tamarack), FALSE, TRUE)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +

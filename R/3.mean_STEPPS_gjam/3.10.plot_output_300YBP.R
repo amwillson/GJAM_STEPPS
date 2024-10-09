@@ -780,13 +780,17 @@ bFacGibbs_long |>
   ggplot2::scale_color_viridis_d(option = 'H') +
   ggplot2::scale_fill_viridis_d(option = 'H') +
   ggplot2::theme_minimal() +
-  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, size = 12),
-                 strip.text = ggplot2::element_text(size = 14, face = 'bold'),
-                 legend.title = ggplot2::element_text(size = 14),
-                 legend.text = ggplot2::element_text(size = 12),
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, size = 8),
+                 strip.text = ggplot2::element_text(size = 10, face = 'bold'),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8),
                  axis.title.x = ggplot2::element_blank(),
-                 axis.title.y = ggplot2::element_text(size = 14),
-                 axis.text.y = ggplot2::element_text(size = 12))
+                 axis.title.y = ggplot2::element_text(size = 10),
+                 axis.text.y = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/mean/sand_aat_tpr_prsd_300YBP/coefficients_violin.png',
+                height = 12, width = 18, units = 'cm')
 
 # Box plots of coefficient estimates using coefficient summary statistics
 for_plotting |>
@@ -800,13 +804,17 @@ for_plotting |>
   ggplot2::ylab('Coefficient estimate') +
   ggplot2::scale_color_viridis_d(option = 'H') +
   ggplot2::theme_minimal() +
-  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, size = 12),
-                 strip.text = ggplot2::element_text(size = 14, face = 'bold'),
-                 legend.title = ggplot2::element_text(size = 14),
-                 legend.text = ggplot2::element_text(size = 12),
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, size = 8),
+                 strip.text = ggplot2::element_text(size = 10, face = 'bold'),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8),
                  axis.title.x = ggplot2::element_blank(),
-                 axis.title.y = ggplot2::element_text(size = 14),
-                 axis.text.y = ggplot2::element_text(size = 12))
+                 axis.title.y = ggplot2::element_text(size = 10),
+                 axis.text.y = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/mean/sand_aat_tpr_prsd_300YBP/coefficients_boxplot.png',
+                height = 12, width = 18, units = 'cm')
 
 #### Covariate sensitivity ####
 
@@ -834,9 +842,8 @@ sens |>
   ggplot2::ggplot() +
   ggplot2::geom_boxplot(ggplot2::aes(x = reorder(covar, mean, decreasing = FALSE),
                                      ymin = lower, lower = mean - sd, middle = mean, upper = mean + sd, ymax = upper,
-                                     color = reorder(covar, mean, decreasing = TRUE),
-                                     fill = reorder(covar, mean, decreasing = TRUE)), 
-                        stat = 'identity', show.legend = FALSE, alpha = 0.5, linewidth = 1) +
+                                     color = reorder(covar, mean, decreasing = TRUE)),
+                        stat = 'identity', show.legend = FALSE, alpha = 0.5, linewidth = 0.8) +
   ggplot2::coord_flip() +
   ggplot2::xlab('') + ggplot2::ylab(expression(paste('Sensitivity (', hat(F), ')'))) +
   ggplot2::theme_minimal() +
@@ -848,8 +855,12 @@ sens |>
                                        'sand' = 'Soil % sand',
                                        'silt' = 'Soil % silt',
                                        'tsd' = 'Temperature seasonality')) +
-  ggplot2::theme(axis.title = ggplot2::element_text(size = 14),
-                 axis.text = ggplot2::element_text(size = 12))
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/mean/sand_aat_tpr_prsd_300YBP/sensitivity_boxplot.png',
+                height = 8.5, width = 8.5, units = 'cm')
 
 # Violin plots of sensitivity (distribution over Gibbs samples)
 fSensGibbs |>
@@ -872,8 +883,12 @@ fSensGibbs |>
                                        'sand' = 'Soil % sand',
                                        'silt' = 'Soil % silt',
                                        'tsd' = 'Temperature seasonality')) +
-  ggplot2::theme(axis.title = ggplot2::element_text(size = 14),
-                 axis.text = ggplot2::element_text(size = 12))
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/mean/sand_aat_tpr_prsd_300YBP/sensitivity_violin.png',
+                height = 8.5, width = 8.5, units = 'cm')
 
 #### Correlations between taxa ####
 
@@ -929,12 +944,38 @@ colnames(upp_mat) <- rownames(upp_mat) <- colnames(corr_mat)
 # (needed if re-running this section)
 dev.off()
 
+png(filename = 'figures/mean/sand_aat_tpr_prsd_300YBP/corr.png',
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
+
 # Without uncertainty
-corrplot::corrplot(corr_mat, diag = FALSE, type = 'upper', col = pal, tl.col = 'black', tl.cex = 1.4)
+corrplot::corrplot(corr_mat, 
+                   diag = FALSE, 
+                   type = 'upper', 
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()
+
+png(filename = 'figures/mean/sand_aat_tpr_prsd_300YBP/corr_95CI.png',
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
 
 # Plot with uncertainty
-corrplot::corrplot(corr_mat, lowCI.mat = low_mat, uppCI.mat = upp_mat, plotCI = 'circle',
-                   diag = FALSE, type = 'upper', col = pal, tl.col = 'black', tl.cex = 1.4)
+corrplot::corrplot(corr_mat, 
+                   lowCI.mat = low_mat, 
+                   uppCI.mat = upp_mat, 
+                   plotCI = 'circle',
+                   diag = FALSE, 
+                   type = 'upper', 
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()
 
 # Plot with uncertainty
 # Remove crossing 0
@@ -942,6 +983,9 @@ insig <- which(low_mat < 0 & upp_mat > 0)
 corr_mat[insig] <- NA
 low_mat[insig] <- NA
 upp_mat[insig] <- NA
+
+png(filename = 'figures/mean/sand_aat_tpr_prsd_300YBP/corr_95CI_insig.png',
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
 
 corrplot::corrplot(corr_mat,
                    lowCI.mat = low_mat,
@@ -953,3 +997,5 @@ corrplot::corrplot(corr_mat,
                    tl.col = 'black',
                    tl.cex = 1.4,
                    na.label = ' ')
+
+dev.off()

@@ -33,9 +33,12 @@ pred_mean <- pred$sdList$yMu
 # Format
 pred_mean <- as.data.frame(pred_mean)
 
+# Drop NAs from data
+taxon_oos_all <- tidyr::drop_na(taxon_oos_all)
+
 # Add coordinates and time steps
-pred_mean$x <- taxon_oos_all$stepps_x
-pred_mean$y <- taxon_oos_all$stepps_y
+pred_mean$x <- taxon_oos_all$x
+pred_mean$y <- taxon_oos_all$y
 pred_mean$time <- taxon_oos_all$time
 
 ### Plot each taxon's predictive mean over space and time ###
@@ -54,23 +57,7 @@ time_order <- c('1900 YBP', '1800 YBP', '1700 YBP', '1600 YBP',
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
@@ -89,23 +76,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
@@ -124,23 +95,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
@@ -159,23 +114,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
@@ -194,23 +133,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
@@ -229,23 +152,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
@@ -264,23 +171,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
@@ -299,23 +190,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
@@ -334,23 +209,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
@@ -369,23 +228,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
@@ -404,23 +247,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
@@ -453,7 +280,7 @@ pred_mean_long <- pred_mean |>
 
 obs_long <- taxon_oos_all |>
   # Select relevant columns
-  dplyr::select(stepps_x:tamarack) |>
+  dplyr::select(x:tamarack) |>
   # remove ash taxon
   dplyr::select(-ash) |>
   # pivot observations longer
@@ -462,9 +289,7 @@ obs_long <- taxon_oos_all |>
                       values_to = 'Observed') |>
   # format
   dplyr::mutate(taxon = sub(pattern = '_', replacement = ' ', x = taxon),
-                taxon = stringr::str_to_title(taxon)) |>
-  dplyr::rename(x = stepps_x,
-                y = stepps_y)
+                taxon = stringr::str_to_title(taxon))
 
 # Combine
 pred_obs_long <- pred_mean_long |>
@@ -539,23 +364,7 @@ diff$time <- pred_mean$time
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
@@ -575,23 +384,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
@@ -611,23 +404,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
@@ -647,23 +424,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
@@ -683,23 +444,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
@@ -718,23 +463,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
@@ -753,23 +482,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
@@ -788,23 +501,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
@@ -823,23 +520,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
@@ -858,23 +539,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
@@ -893,23 +558,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
@@ -951,23 +600,7 @@ pred_cond$time <- pred_mean$time
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
@@ -985,23 +618,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
@@ -1019,23 +636,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
@@ -1053,23 +654,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
@@ -1087,23 +672,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
@@ -1121,23 +690,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
@@ -1155,23 +708,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
@@ -1189,23 +726,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
@@ -1223,23 +744,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
@@ -1257,23 +762,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
@@ -1291,23 +780,7 @@ pred_cond |>
 
 pred_cond |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
@@ -1388,23 +861,7 @@ diff$time <- pred_mean$time
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
@@ -1423,23 +880,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
@@ -1458,23 +899,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
@@ -1493,23 +918,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
@@ -1528,23 +937,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
@@ -1563,23 +956,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
@@ -1598,23 +975,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
@@ -1633,23 +994,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
@@ -1668,23 +1013,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
@@ -1703,23 +1032,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
@@ -1738,23 +1051,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
@@ -1776,8 +1073,8 @@ pred_mean <- oak_cond_pred$sdList$yMu
 
 # Format
 pred_mean <- as.data.frame(pred_mean)
-pred_mean$x <- taxon_oos_all$stepps_x
-pred_mean$y <- taxon_oos_all$stepps_y
+pred_mean$x <- taxon_oos_all$x
+pred_mean$y <- taxon_oos_all$y
 pred_mean$time <- taxon_oos_all$time
 
 ### Plot each taxon's predictive mean over space and time ###
@@ -1786,23 +1083,7 @@ pred_mean$time <- taxon_oos_all$time
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
@@ -1820,23 +1101,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
@@ -1854,23 +1119,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
@@ -1888,23 +1137,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
@@ -1922,23 +1155,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
@@ -1956,23 +1173,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oc)) +
@@ -1990,23 +1191,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oh)) +
@@ -2024,23 +1209,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
@@ -2058,23 +1227,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
@@ -2092,23 +1245,7 @@ pred_mean |>
 
 pred_mean |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
@@ -2189,23 +1326,7 @@ diff$time <- pred_mean$time
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
@@ -2224,23 +1345,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
@@ -2259,23 +1364,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
@@ -2294,23 +1383,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
@@ -2329,23 +1402,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
@@ -2364,23 +1421,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
@@ -2399,23 +1440,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
@@ -2434,23 +1459,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
@@ -2469,23 +1478,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
@@ -2504,23 +1497,7 @@ diff |>
 
 diff |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +

@@ -38,14 +38,14 @@ taxon_oos_all2 <- tidyr::drop_na(taxon_oos_all)
 pred_mean <- as.data.frame(pred_mean)
 
 # Add coordinates
-pred_mean$x <- taxon_oos_all2$stepps_x
-pred_mean$y <- taxon_oos_all2$stepps_y
+pred_mean$x <- taxon_oos_all2$x
+pred_mean$y <- taxon_oos_all2$y
 
 # Add to full grid (with missing data)
 pred_mean2 <- taxon_oos_all |>
-  dplyr::select(stepps_x, stepps_y) |>
-  dplyr::rename(x = stepps_x,
-                y = stepps_y) |>
+  dplyr::select(x, y) |>
+  dplyr::rename(x = x,
+                y = y) |>
   dplyr::left_join(y = pred_mean, by = c('x', 'y'))
 
 ### Plot each taxon's predictive mean over space ###
@@ -180,7 +180,7 @@ pred_mean2 |>
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
   ggplot2::theme_void() +
@@ -518,9 +518,9 @@ pred_cond$x <- pred_mean$x
 pred_cond$y <- pred_mean$y
 
 pred_cond2 <- taxon_oos_all |>
-  dplyr::select(stepps_x, stepps_y) |>
-  dplyr::rename(x = stepps_x,
-                y = stepps_y) |>
+  dplyr::select(x, y) |>
+  dplyr::rename(x = x,
+                y = y) |>
   dplyr::left_join(y = pred_cond, by = c('x', 'y'))
 
 ### Plot each taxon's predictive mean over space ###
@@ -978,14 +978,14 @@ pred_mean <- oak_cond_pred$sdList$yMu
 pred_mean <- as.data.frame(pred_mean)
 
 # Add coordinates
-pred_mean$x <- taxon_oos_all2$stepps_x
-pred_mean$y <- taxon_oos_all2$stepps_y
+pred_mean$x <- taxon_oos_all2$x
+pred_mean$y <- taxon_oos_all2$y
 
 # Add to full grid (with missing data)
 pred_mean2 <- taxon_oos_all |>
-  dplyr::select(stepps_x, stepps_y) |>
-  dplyr::rename(x = stepps_x,
-                y = stepps_y) |>
+  dplyr::select(x, y) |>
+  dplyr::rename(x = x,
+                y = y) |>
   dplyr::left_join(y = pred_mean, by = c('x', 'y'))
 
 ### Plot each taxon's predictive mean over space ###
@@ -1390,3 +1390,4 @@ diff |>
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+

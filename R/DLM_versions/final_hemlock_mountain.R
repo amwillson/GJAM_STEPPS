@@ -1196,21 +1196,24 @@ data$map <- seq(from = 1, by = 1, length.out = data$ns)
 jm <- rjags::jags.model(file = textConnection(regression_model_variable_alpha),
                         data = data,
                         n.chains = 3,
-                        n.adapt = 1000)
                         n.adapt = 500000) # number of adaptation iterations
 
 # Samples from model
 out <- rjags::coda.samples(model = jm,
-                           variable.names = c('alpha',
-                                              'beta',
+                           variable.names = c('beta',
                                               'phi_obs',
                                               'tau_proc'),
                            n.iter = 50000) # number of iterations to keep
 
+out_alpha <- rjags::coda.samples(model = jm,
+                                 variable.names = 'alpha',
+                                 n.iter = 50000)
 # Check for convergence
 plot(out)
+plot(out_alpha)
 coda::gelman.diag(out, confidence = 0.99)
+coda::gelman.diag(out_alpha, confidence = 0.99)
 
 # Save
-save(out, data, regression_model_fixed_alpha,
-     file = 'out/hemlock/out_large_hemlock_mountain.RData')
+save(out, out_alpha, data, regression_model_variable_alpha,
+     file = 'out/hemlock/out_large_hemlock_mountain_variable.RData')

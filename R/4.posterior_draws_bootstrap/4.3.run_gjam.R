@@ -86,7 +86,8 @@ for(i in 1:ndraw){
 # Save
 # Should be saved to output directory but it's really big
 # so I'm saving to an external drive
-save(output, file = '/Volumes/FileBackup/GJAM_STEPPS_output/posteriors/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
+save(output, file = 'out/posteriors/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
+#save(output, file = '/Volumes/FileBackup/GJAM_STEPPS_output/posteriors/GJAM_STEPPS_post_sand_aat_tpr_prsd.RData')
 
 #### silt + aat + tpr + prsd ####
 

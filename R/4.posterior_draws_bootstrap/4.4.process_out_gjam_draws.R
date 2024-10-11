@@ -61,7 +61,7 @@ rm(list = ls())
 # sand_aat_tpr_prsd
 # silt_aat_tsd_prsd
 # sand_aat_tsd_prsd
-form <- 'sand_aat_tsd_prsd'
+form <- 'silt_aat_tpr_prsd'
 
 # Load model output
 load(paste0('out/posteriors/', form, '/GJAM_STEPPS_post_', form, '.RData'))

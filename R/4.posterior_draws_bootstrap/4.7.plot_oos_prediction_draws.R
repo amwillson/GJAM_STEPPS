@@ -114,6 +114,9 @@ pred_mean_sum |>
 
 ## BEECH
 
+pdf(file = 'figures/posteriors/oos_prediction/non_conditional_prediction.pdf',
+    width = 8.5, height = 4.5)
+
 pred_mean2 |>
   dplyr::group_by(x, y) |>
   dplyr::summarize(median = median(BEECH, na.rm = TRUE),
@@ -366,6 +369,8 @@ pred_mean2 |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
+dev.off()
+
 ### Difference between observed and predicted: each draw individually ###
 
 # Loop over each draw
@@ -396,6 +401,9 @@ for(i in 1:max(pred_mean2$draw)){
 ## be indicative of a "significant" divergence from observation
 ## by the model. The model does not capture the process that is
 ## giving rise to the relative abundance at those locations
+
+pdf(file = 'figures/posteriors/oos_prediction/non_conditional_difference.pdf',
+    width = 8.5, height = 4.5)
 
 ## BEECH
 
@@ -661,6 +669,8 @@ diff |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
+dev.off()
+
 #### Conditional on oak ####
 
 rm(pred)
@@ -722,6 +732,9 @@ for(i in 1:length(oak_cond_pred)){
 ## near biome boundaries and that interface with the region of
 ## oak dominance should be better predicted (mainly higher predictive
 ## means) when we know the relative abundance of oak
+
+pdf(file = 'figures/posteriors/oos_prediction/oak_conditional_prediction.pdf',
+    width = 8.5, height = 4.5)
 
 ## BEECH
 
@@ -953,6 +966,8 @@ pred_mean2 |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
+dev.off()
+
 ### Difference between observed and predicted: each draw individually ###
 
 # Loop over each draw
@@ -984,6 +999,9 @@ for(i in 1:max(pred_mean2$draw)){
 ## the model doesn't represent other important proceses (e.g.,
 ## hemlock, pine) should not show marked increases in prediction
 ## accuracy here
+
+pdf(file = 'figures/posteriors/oos_prediction/oak_conditional_difference.pdf',
+    width = 8.5, height = 4.5)
 
 ## BEECH
 
@@ -1224,3 +1242,5 @@ diff |>
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
+
+dev.off()

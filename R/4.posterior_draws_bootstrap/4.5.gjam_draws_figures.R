@@ -56,6 +56,10 @@ sgibbs <- readRDS(file = paste0('out/posteriors/', form, '/sgibbs.RDS'))
 
 ### bFacGibbs ###
 
+# Open pdf
+pdf(file = paste0('figures/posteriors/', form, '/trace_bFacGibbs.pdf'),
+    width = 9, height = 5.5)
+
 ## BEECH
 
 bFacGibbs |>
@@ -221,7 +225,13 @@ bFacGibbs |>
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+dev.off()
+
 ### bgibbs ###
+
+# Open pdf
+pdf(file = paste0('figures/posteriors/', form, '/trace_bgibbs.pdf'),
+    width = 9, height = 5.5)
 
 ## BEECH
 
@@ -388,9 +398,15 @@ bgibbs |>
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+dev.off()
+
 ### bgibbsUn ###
 
 ## BEECH
+
+# Open pdf
+pdf(file = paste0('figures/posteriors/', form, '/trace_bgibbsUn.pdf'),
+    width = 9, height = 5.5)
 
 bgibbsUn |>
   dplyr::select(colnames(bgibbsUn)[1:5], iter, draw) |>
@@ -555,7 +571,13 @@ bgibbsUn |>
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+dev.off()
+
 ### fSensGibbs ###
+
+# Open pdf
+pdf(file = paste0('figures/posteriors/', form, '/trace_fSensGibbs.pdf'),
+    width = 9, height = 5.5)
 
 fSensGibbs |>
   tidyr::pivot_longer(cols = colnames(fSensGibbs)[1:4],
@@ -568,7 +590,13 @@ fSensGibbs |>
   ggplot2::ggtitle('Parameter Sensitivity') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+dev.off()
+
 ### sgibbs ###
+
+# Open pdf
+pdf(file = paste0('figures/posteriors/', form, '/trace_sgibbs.pdf'),
+    width = 9, height = 5.5)
 
 ## BEECH
 
@@ -735,6 +763,8 @@ sgibbs |>
   ggplot2::ggtitle('Covariance with Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+dev.off()
+
 #### Coefficients between taxa and environment ####
 
 ## What is the relationship between the environment and each taxon?
@@ -777,8 +807,8 @@ for_plotting <- corr |>
                 taxon = dplyr::if_else(taxon == 'HEMLOCK', 'Hemlock', taxon),
                 taxon = dplyr::if_else(taxon == 'MAPLE', 'Maple', taxon),
                 taxon = dplyr::if_else(taxon == 'OAK', 'Oak', taxon),
-                taxon = dplyr::if_else(taxon == 'OTHER.CONIFER', 'Other Conifer', taxon),
-                taxon = dplyr::if_else(taxon == 'OTHER.HARDWOOD', 'Other Hardwood', taxon),
+                taxon = dplyr::if_else(taxon == 'OC', 'Other Conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'OH', 'Other Hardwood', taxon),
                 taxon = dplyr::if_else(taxon == 'PINE', 'Pine', taxon),
                 taxon = dplyr::if_else(taxon == 'SPRUCE', 'Spruce', taxon),
                 taxon = dplyr::if_else(taxon == 'TAMARACK', 'Tamarack', taxon)) |>
@@ -799,8 +829,8 @@ bFacGibbs_long |>
                 taxon = dplyr::if_else(taxon == 'HEMLOCK', 'Hemlock', taxon),
                 taxon = dplyr::if_else(taxon == 'MAPLE', 'Maple', taxon),
                 taxon = dplyr::if_else(taxon == 'OAK', 'Oak', taxon),
-                taxon = dplyr::if_else(taxon == 'OTHER.CONIFER', 'Other Conifer', taxon),
-                taxon = dplyr::if_else(taxon == 'OTHER.HARDWOOD', 'Other Hardwood', taxon),
+                taxon = dplyr::if_else(taxon == 'OC', 'Other Conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'OH', 'Other Hardwood', taxon),
                 taxon = dplyr::if_else(taxon == 'PINE', 'Pine', taxon),
                 taxon = dplyr::if_else(taxon == 'SPRUCE', 'Spruce', taxon),
                 taxon = dplyr::if_else(taxon == 'TAMARACK', 'Tamarack', taxon)) |>
@@ -814,13 +844,17 @@ bFacGibbs_long |>
   ggplot2::scale_color_viridis_d(option = 'H') +
   ggplot2::scale_fill_viridis_d(option = 'H') +
   ggplot2::theme_minimal() +
-  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, size = 12),
-                 strip.text = ggplot2::element_text(size = 14, face = 'bold'),
-                 legend.title = ggplot2::element_text(size = 14),
-                 legend.text = ggplot2::element_text(size = 12),
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, size = 8),
+                 strip.text = ggplot2::element_text(size = 10, face = 'bold'),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8),
                  axis.title.x = ggplot2::element_blank(),
-                 axis.title.y = ggplot2::element_text(size = 14),
-                 axis.text.y = ggplot2::element_text(size = 12))
+                 axis.title.y = ggplot2::element_text(size = 10),
+                 axis.text.y = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = paste0('figures/posteriors/', form, '/coefficients_violin.png'),
+                height = 12, width = 18, units = 'cm')
 
 for_plotting |>
   ggplot2::ggplot() +
@@ -834,13 +868,17 @@ for_plotting |>
   ggplot2::ylab('Coefficient estimate') +
   ggplot2::scale_color_viridis_d(option = 'H') +
   ggplot2::theme_minimal() +
-  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, size = 12),
-                 strip.text = ggplot2::element_text(size = 14, face = 'bold'),
-                 legend.title = ggplot2::element_text(size = 14),
-                 legend.text = ggplot2::element_text(size = 12),
+  ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, size = 8),
+                 strip.text = ggplot2::element_text(size = 10, face = 'bold'),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8),
                  axis.title.x = ggplot2::element_blank(),
-                 axis.title.y = ggplot2::element_text(size = 14),
-                 axis.text.y = ggplot2::element_text(size = 12))
+                 axis.title.y = ggplot2::element_text(size = 10),
+                 axis.text.y = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = paste0('figures/posteriors/', form, '/coefficients_boxplot.png'),
+                height = 12, width = 18, units = 'cm')
 
 #### Covariate sensitivity ####
 
@@ -865,22 +903,25 @@ sens |>
   ggplot2::geom_boxplot(ggplot2::aes(x = reorder(covar, mean, decreasing = FALSE),
                                      ymin = lower, lower = mean - sd, middle = mean,
                                      upper = mean + sd, ymax = upper,
-                                     color = reorder(covar, mean, decreasing = TRUE),
-                                     fill = reorder(covar, mean, decreasing = TRUE)),
+                                     color = reorder(covar, mean, decreasing = TRUE)),
                         stat = 'identity', show.legend = FALSE, alpha = 0.5) +
   ggplot2::coord_flip() +
   ggplot2::xlab('') + ggplot2::ylab(expression(paste('Sensitivity (', hat(F), ')'))) +
   ggplot2::theme_minimal() +
   ggplot2::scale_color_viridis_d(option = 'D', end = 0.9) +
   ggplot2::scale_fill_viridis_d(option = 'D', end = 0.9) +
-  ggplot2::scale_x_discrete(labels = c('aat' = 'Average annual temperature',
-                                       'prsd' = 'Precipitation seasonality',
+  ggplot2::scale_x_discrete(labels = c('aat' = 'Average annual\ntemperature',
+                                       'prsd' = 'Precipitation\nseasonality',
                                        'tpr' = 'Total precipitation',
                                        'sand' = 'Soil % sand',
                                        'silt' = 'Soil % silt',
-                                       'tsd' = 'Temperature seasonality')) +
-  ggplot2::theme(axis.title = ggplot2::element_text(size = 14),
-                 axis.text = ggplot2::element_text(size = 12))
+                                       'tsd' = 'Temperature\nseasonality')) +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = paste0('figures/posteriors/', form, '/sensitivity_boxplot.png'),
+                height = 8.5, width = 8.5, units = 'cm')
 
 fSensGibbs |>
   dplyr::select(-iter, -draw) |>
@@ -896,14 +937,18 @@ fSensGibbs |>
   ggplot2::theme_minimal() +
   ggplot2::scale_color_viridis_d(option = 'D', end = 0.9) +
   ggplot2::scale_fill_viridis_d(option = 'D', end = 0.9) +
-  ggplot2::scale_x_discrete(labels = c('aat' = 'Average annual temperature',
-                                       'prsd' = 'Precipitation seasonality',
+  ggplot2::scale_x_discrete(labels = c('aat' = 'Average annual\ntemperature',
+                                       'prsd' = 'Precipitation\nseasonality',
                                        'tpr' = 'Total precipitation',
                                        'sand' = 'Soil % sand',
                                        'silt' = 'Soil % silt',
-                                       'tsd' = 'Temperature seasonality')) +
-  ggplot2::theme(axis.title = ggplot2::element_text(size = 14),
-                 axis.text = ggplot2::element_text(size = 12))
+                                       'tsd' = 'Temperature\nseasonality')) +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = paste0('figures/posteriors/', form, '/sensitivity_violin.png'),
+                height = 8.5, width = 8.5, units = 'cm')
 
 #### Correlations between taxa ####
 
@@ -984,24 +1029,76 @@ colnames(low_mat_sd) <- colnames(upp_mat_sd) <-
   rownames(low_mat_sd) <- rownames(upp_mat_sd) <-
   colnames(corr_mat)
 
+dev.off()
+
+png(filename = paste0('figures/posteriors/', form, '/corr.png'),
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
+
 # Plot without uncertainty
-corrplot::corrplot(corr_mat, diag = FALSE, type = 'upper',
-                   col = pal, tl.col = 'black', tl.cex = 1.4)
+corrplot::corrplot(corr_mat, 
+                   diag = FALSE, 
+                   type = 'upper',
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()
+
+png(filename = paste0('figures/posteriors/', form, '/corr_95CI.png'),
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
 
 # Plot with 95% credible interval
-corrplot::corrplot(corr_mat, lowCI.mat = low_mat_95, uppCI.mat = upp_mat_95,
-                   plotCI = 'circle', diag = FALSE, type = 'upper',
-                   col = pal, tl.col = 'black', tl.cex = 1.4)
+corrplot::corrplot(corr_mat, 
+                   lowCI.mat = low_mat_95, 
+                   uppCI.mat = upp_mat_95,
+                   plotCI = 'circle', 
+                   diag = FALSE, 
+                   type = 'upper',
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()
+
+png(filename = paste0('figures/posteriors/', form, '/corr_50CI.png'),
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
 
 # Plot with 50% credible interval
-corrplot::corrplot(corr_mat, lowCI.mat = low_mat_50, uppCI.mat = upp_mat_50,
-                   plotCI = 'circle', diag = FALSE, type = 'upper',
-                   col = pal, tl.col = 'black', tl.cex = 1.4)
+corrplot::corrplot(corr_mat, 
+                   lowCI.mat = low_mat_50, 
+                   uppCI.mat = upp_mat_50,
+                   plotCI = 'circle', 
+                   diag = FALSE, 
+                   type = 'upper',
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()
+
+png(filename = paste0('figures/posteriors/', form, '/corr_SD.png'),
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
 
 # Plot with +/- 1 SD
-corrplot::corrplot(corr_mat, lowCI.mat = low_mat_sd, uppCI.mat = upp_mat_sd,
-                   plotCI = 'circle', diag = FALSE, type = 'upper',
-                   col = pal, tl.col = 'black', tl.cex = 1.4)
+corrplot::corrplot(corr_mat, 
+                   lowCI.mat = low_mat_sd, 
+                   uppCI.mat = upp_mat_sd,
+                   plotCI = 'circle', 
+                   diag = FALSE, 
+                   type = 'upper',
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()
 
 # Plot with 95% credible interval
 # but removing any correlations crossing 0
@@ -1010,10 +1107,23 @@ corr_mat[insig] <- NA
 low_mat_95[insig] <- NA
 upp_mat_95[insig] <- NA
 
-corrplot::corrplot(corr_mat, lowCI.mat = low_mat_95, uppCI.mat = upp_mat_95,
-                   plotCI = 'circle', diag = FALSE, type = 'upper',
-                   col = pal, tl.col = 'black', tl.cex = 1.4,
-                   na.label = ' ')
+png(filename = paste0('figures/posteriors/', form, '/corr_95CI_insig.png'),
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
+
+corrplot::corrplot(corr_mat, 
+                   lowCI.mat = low_mat_95, 
+                   uppCI.mat = upp_mat_95,
+                   plotCI = 'circle', 
+                   diag = FALSE, 
+                   type = 'upper',
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   na.label = ' ',
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()
 
 # Plot with 50% credible interval
 # but removing any correlations crossing 0
@@ -1022,10 +1132,23 @@ corr_mat[insig] <- NA
 low_mat_50[insig] <- NA
 upp_mat_50[insig] <- NA
 
-corrplot::corrplot(corr_mat, lowCI.mat = low_mat_50, uppCI.mat = upp_mat_50,
-                   plotCI = 'circle', diag = FALSE, type = 'upper',
-                   col = pal, tl.col = 'black', tl.cex = 1.4,
-                   na.label = ' ')
+png(filename = paste0('figures/posteriors/', form, '/corr_50CI_insig.png'),
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
+
+corrplot::corrplot(corr_mat, 
+                   lowCI.mat = low_mat_50, 
+                   uppCI.mat = upp_mat_50,
+                   plotCI = 'circle', 
+                   diag = FALSE, 
+                   type = 'upper',
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   na.label = ' ',
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()
 
 # Plot with +/- 1 SD
 # but removing any correlations crossing 0
@@ -1034,7 +1157,20 @@ corr_mat[insig] <- NA
 low_mat_sd[insig] <- NA 
 upp_mat_sd[insig] <- NA
 
-corrplot::corrplot(corr_mat, lowCI.mat = low_mat_sd, uppCI.mat = upp_mat_sd,
-                   plotCI = 'circle', diag = FALSE, type = 'upper',
-                   col = pal, tl.col = 'black', tl.cex = 1.4,
-                   na.label = ' ')
+png(filename = paste0('figures/posteriors/', form, '/corr_SD_insig.png'),
+    width = 8.5, height = 8.5, units = 'cm', res = 600)
+
+corrplot::corrplot(corr_mat, 
+                   lowCI.mat = low_mat_sd, 
+                   uppCI.mat = upp_mat_sd,
+                   plotCI = 'circle', 
+                   diag = FALSE, 
+                   type = 'upper',
+                   col = pal, 
+                   tl.col = 'black', 
+                   tl.cex = 0.7,
+                   na.label = ' ',
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
+
+dev.off()

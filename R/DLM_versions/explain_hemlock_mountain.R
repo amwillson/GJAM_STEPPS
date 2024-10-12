@@ -19,9 +19,12 @@ pred_mean <- pred$sdList$yMu
 # Format
 pred_mean <- as.data.frame(pred_mean)
 
+# Remove NAs from data
+taxon_oos_all <- tidyr::drop_na(taxon_oos_all)
+
 # Add coordinates and time steps
-pred_mean$x <- taxon_oos_all$stepps_x
-pred_mean$y <- taxon_oos_all$stepps_y
+pred_mean$x <- taxon_oos_all$x
+pred_mean$y <- taxon_oos_all$y
 pred_mean$time <- taxon_oos_all$time
 
 # Difference (observed - predicted)
@@ -40,11 +43,9 @@ hemlock_diff <- dplyr::select(diff, hemlock, x, y, time)
 
 # Shift time for previous time step in observation
 hemlock_obs <- taxon_oos_all |>
-  dplyr::select(hemlock, stepps_x,
-                stepps_y, time) |>
-  dplyr::rename(x = stepps_x,
-                y = stepps_y,
-                prev_obs = hemlock) |>
+  dplyr::select(hemlock, x,
+                y, time) |>
+  dplyr::rename(prev_obs = hemlock) |>
   dplyr::mutate(time = time - 1)
 
 # Combine observation and bias
@@ -56,12 +57,10 @@ hemlock_diff_obs <- hemlock_diff |>
 
 # Format environmental data
 env <- taxon_oos_all |>
-  dplyr::select(stepps_x, stepps_y, time,
+  dplyr::select(x, y, time,
                 clay, sand, silt,
                 caco3, awc, aat, tpr,
-                tsd, prsd, prcv) |>
-  dplyr::rename(x = stepps_x,
-                y = stepps_y)
+                tsd, prsd, prcv)
 
 # Combine with environmental data (at the correct time step)
 hemlock <- hemlock_diff_obs |>
@@ -157,13 +156,13 @@ summary(mod3)$r.squared
 
 # Extract hemlock
 hemlock_obs <- dplyr::select(taxon_oos_all,
-                             stepps_x, stepps_y,
+                             x, y,
                              time, hemlock,
                              clay:prcv)
 
 # Shift time for previous time step in observation
 hemlock_prev <- taxon_oos_all |>
-  dplyr::select(hemlock, stepps_x, stepps_y, time) |>
+  dplyr::select(hemlock, x, y, time) |>
   dplyr::rename(prev_obs = hemlock) |>
   dplyr::mutate(time = time - 1)
 
@@ -171,7 +170,7 @@ hemlock_prev <- taxon_oos_all |>
 hemlock <- hemlock_obs |>
   dplyr::rename(obs = hemlock) |>
   dplyr::left_join(y = hemlock_prev,
-                   by = c('stepps_x', 'stepps_y', 'time')) |>
+                   by = c('x', 'y', 'time')) |>
   tidyr::drop_na()
 
 # Plots of all variables over time
@@ -179,7 +178,7 @@ hemlock |>
   tidyr::pivot_longer(obs:prev_obs,
                       names_to = 'var',
                       values_to = 'val') |>
-  dplyr::mutate(loc = paste0(stepps_x, '_', stepps_y)) |>
+  dplyr::mutate(loc = paste0(x, '_', y)) |>
   ggplot2::ggplot() +
   ggplot2::geom_line(ggplot2::aes(x = time, y = val, color = loc),
                      show.legend = FALSE) +
@@ -189,7 +188,7 @@ hemlock |>
 
 # Correlations between current abundance & previous abunadnce & environmental variables
 cors <- cor(x = hemlock$obs,
-            y = dplyr::select(hemlock, -obs, -stepps_x, -stepps_y, -time))
+            y = dplyr::select(hemlock, -obs, -x, -y, -time))
 
 cors <- as.data.frame(t(cors))
 
@@ -263,7 +262,7 @@ coefficients(mod4) # order of magnitude higher
 ## Current and previous time step
 
 # Add "location" column
-hemlock <- dplyr::mutate(hemlock, loc = paste0(stepps_x, '_', stepps_y))
+hemlock <- dplyr::mutate(hemlock, loc = paste0(x, '_', y))
 
 # Unique locations
 locs <- unique(hemlock$loc)

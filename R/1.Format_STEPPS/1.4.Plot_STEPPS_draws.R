@@ -43,11 +43,16 @@ post_df <- post_df |>
 # Map of study region
 states <- map_states()
 
+#### Spatiotemporal plots ####
+
+pdf(file = 'figures/data/estimated_posterior_median_abundances.pdf',
+    width = 8, height = 10.5)
+
 # Order of facets
-time_order <- c('2100 YBP', '2000 YBP', '1900 YBP', '1800 YBP', '1700 YBP',
+time_order <- c('1900 YBP', '1800 YBP', '1700 YBP',
                 '1600 YBP', '1500 YBP', '1400 YBP', '1300 YBP', '1200 YBP',
                 '1100 YBP', '1000 YBP', '900 YBP', '800 YBP', '700 YBP',
-                '600 YBP', '500 YBP', '400 YBP', '300 YBP', '200 YBP')
+                '600 YBP', '500 YBP', '400 YBP', '300 YBP')
 
 ### ASH ###
 
@@ -56,40 +61,286 @@ time_order <- c('2100 YBP', '2000 YBP', '1900 YBP', '1800 YBP', '1700 YBP',
 # This is just to look at median of the posterior draws and see what 
 # the data look like
 post_df |>
+  dplyr::filter(time %in% 3:19) |>
   dplyr::group_by(time, x, y) |>
   dplyr::summarize(ash = median(ASH)) |>
   dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
+                time = paste0(time, '00 YBP')) |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Ash') +
+  ggplot2::ggtitle(expression(paste('Ash (', italic('Fraxinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### BEECH ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(beech = median(BEECH)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = 'grey85',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### BIRCH ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(birch = median(BIRCH)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### ELM ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(elm = median(ELM)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### HEMLOCK ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(hemlock = median(HEMLOCK)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### MAPLE ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(maple = median(MAPLE)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### OAK ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(oak = median(OAK)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### OTHER CONIFER ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(other_conifer = median(OTHER.CONIFER)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens',
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### OTHER HARDWOOD ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(other_hardwood = median(OTHER.HARDWOOD)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### PINE ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(pine = median(PINE)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### SPRUCE ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(spruce = median(SPRUCE)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### TAMARACK ###
+
+# Plot median over time
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(tamarack = median(TAMARACK)) |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
+                                limits = c(0, 1), transform = 'sqrt') +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+dev.off()
+
+#### Spatial uncertainty plots ####
+
+pdf(file = 'figures/data/estimated_posterior_uncertainty.pdf',
+    width = 8, height = 10.5)
+
+### ASH ###
 
 # Plot different quantiles at one time point
 # This is to look at the uncertainty in relative abundance estimates
@@ -106,55 +357,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
-    ggplot2::facet_wrap(~factor(metric)) +
-    ggplot2::theme_void() +
-    ggplot2::ggtitle('Ash') +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::facet_wrap(~factor(metric)) +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Ash (', italic('Fraxinus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### BEECH ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(beech = median(BEECH)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = beech)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -168,55 +384,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### BIRCH ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(birch = median(BIRCH)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = birch)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -230,55 +411,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### ELM ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(elm = median(ELM)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -292,55 +438,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### HEMLOCK ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(hemlock = median(HEMLOCK)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -354,55 +465,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1,
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### MAPLE ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(maple = median(MAPLE)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -416,55 +492,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### OAK ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(oak = median(OAK)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Oak') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -478,55 +519,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Oak') +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### OTHER CONIFER ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(other_conifer = median(OTHER.CONIFER)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_conifer)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -540,55 +546,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
+  ggplot2::ggtitle('Other conifer taxa') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### OTHER HARDWOOD ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(other_hardwood = median(OTHER.HARDWOOD)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = other_hardwood)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -602,55 +573,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::ggtitle('Other hardwood taxa') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### PINE ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(pine = median(PINE)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -664,55 +600,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### SPRUCE ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(spruce = median(SPRUCE)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = spruce)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -726,55 +627,20 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens', 
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### TAMARACK ###
-
-# Plot median over time
-post_df |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(tamarack = median(TAMARACK)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '2', '200 YBP', time),
-                time = dplyr::if_else(time == '3', '300 YBP', time),
-                time = dplyr::if_else(time == '4', '400 YBP', time),
-                time = dplyr::if_else(time == '5', '500 YBP', time),
-                time = dplyr::if_else(time == '6', '600 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time),
-                time = dplyr::if_else(time == '8', '800 YBP', time),
-                time = dplyr::if_else(time == '9', '900 YBP', time),
-                time = dplyr::if_else(time == '10', '1000 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '12', '1200 YBP', time),
-                time = dplyr::if_else(time == '13', '1300 YBP', time),
-                time = dplyr::if_else(time == '14', '1400 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '16', '1600 YBP', time),
-                time = dplyr::if_else(time == '17', '1700 YBP', time),
-                time = dplyr::if_else(time == '18', '1800 YBP', time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '20', '2000 YBP', time),
-                time = dplyr::if_else(time == '21', '2100 YBP', time)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tamarack)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 # Plot minimum, median, maximum at one time point
 post_df |>
@@ -788,13 +654,17 @@ post_df |>
   tidyr::pivot_longer(cols = `2.5%`:`97.5%`,
                       names_to = 'metric', values_to = 'abundance') |>
   ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = abundance)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens', na.value = 'grey50',
-                                direction = 1, name = 'Relative\nabundance',
+  ggplot2::scale_fill_distiller(palette = 'Greens',
+                                na.value = '#00000000',
+                                direction = 1, 
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(metric)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+dev.off()

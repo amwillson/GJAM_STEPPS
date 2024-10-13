@@ -384,7 +384,7 @@ post_oos_all |>
                                 na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus americana'), ')'))) +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 ### HEMLOCK ###

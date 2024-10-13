@@ -161,35 +161,13 @@ pls_density |>
 
 #### Covariates ####
 
-# Load PLS data because that's how we matched the soil grid
-load('data/input/8km.RData')
-
-# Take only coordinates and ID column
-comp_dens <- dplyr::select(comp_dens, x, y, id)
-
-# Add ID column from PLS data to STEPPS data
-# We can then join the soil and STEPPS data by the PLS grid ID
-taxon_melt_id <- taxon_melt |>
-  dplyr::left_join(y = comp_dens, by = c('x', 'y'))
-
 # Load soil data
-load('data/input/gridded_soil.RData')
+load('data/processed/gridded_soil.RData')
 
 # Join STEPPS reconstructions and soil data
-taxon_soil <- taxon_melt_id |>
-  dplyr::rename(grid_id = id,
-                stepps_x = x,
-                stepps_y = y) |>
-  dplyr::left_join(y = soil_grid, by = 'grid_id') |>
-  dplyr::select(-x, -y)
-
-# Clip to domain of interest
-taxon_soil <- sf::st_as_sf(taxon_soil,
-                           coords = c('stepps_x', 'stepps_y'),
-                           crs = 'EPSG:3175')
-taxon_soil <- sf::st_intersection(taxon_soil, states)
-taxon_soil <- sfheaders::sf_to_df(taxon_soil, fill = TRUE)
-taxon_soil <- dplyr::select(taxon_soil, x, y, sand)
+taxon_soil <- taxon_melt |>
+  dplyr::left_join(y = dplyr::filter(soil_grid, time == 2),
+                   by = c('x', 'y'))
 
 # Plot
 taxon_soil |>
@@ -206,12 +184,13 @@ taxon_soil |>
 load('data/processed/gridded_climate.RData')
 
 # Plot
-unbias_grid |>
-  dplyr::group_by(grid_id, grid_x, grid_y) |>
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(x, y) |>
   dplyr::summarize(mean = mean(tpr)) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey50') +
-  ggplot2::geom_tile(ggplot2::aes(x = grid_x, grid_y, fill = mean)) +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y, fill = mean)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_viridis_c(option = 'G',
                                 name = 'Precipitation\n(mm/year)') +
@@ -222,86 +201,115 @@ unbias_grid |>
 # STEPPS figures: selected taxa abundance at 200 YBP
 p1 <- taxon_melt |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = oak)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                na.value = 'white',
-                                name = 'Relative\nabundance',
+                                na.value = '#00000000',
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1)) +
-  ggplot2::ggtitle('Oak: 200 YBP') +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
 p1
 
 p2 <- taxon_melt |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = elm)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                na.value = 'white',
-                                name = 'Relative\nabundance',
+                                na.value = '#00000000',
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1)) +
-  ggplot2::ggtitle('Elm: 200 YBP') +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
 p2
 
 p3 <- taxon_melt |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = pine)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                na.value = 'white',
-                                name = 'Relative\nabundance',
+                                na.value = '#00000000',
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1)) +
-  ggplot2::ggtitle('Pine: 200 YBP') +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
 p3
 
 p4 <- taxon_melt |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = maple)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
-                                na.value = 'white',
-                                name = 'Relative\nabundance',
+                                na.value = '#00000000',
+                                name = 'Fraction total\nstems',
                                 limits = c(0, 1)) +
-  ggplot2::ggtitle('Maple: 200 YBP') +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
 p4
 
+leg <- ggpubr::get_legend(p1)
+
+up <- cowplot::plot_grid(p1 + ggplot2::theme(legend.position = 'none'),
+                         p2 + ggplot2::theme(legend.position = 'none'),
+                         leg,
+                         nrow = 1, rel_widths = c(0.7, 0.7, 0.25))
+down <- cowplot::plot_grid(p3 + ggplot2::theme(legend.position = 'none'),
+                           p4 + ggplot2::theme(legend.position = 'none'),
+                           leg,
+                           nrow = 1, rel_widths = c(0.7, 0.7, 0.25))
+
 # Combine STEPPS figures
-pp1 <- cowplot::plot_grid(p1, p2, p3, p4, nrow = 2)
+pp1 <- cowplot::plot_grid(up, down, nrow = 2)
 pp1
 
 # PLS figures: total stem density and ecosystem classification
 p5 <- pls_density |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = total_density)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller('Blues', direction = 1,
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 name = 'Stems/ha') +
-  ggplot2::ggtitle('Total stem density') +
+  ggplot2::ggtitle('PLSS tree stem density') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
 p5
 
 p6 <- pls_density |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ecosystem)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_viridis_d(option = 'B',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 name = '',
                                 begin = 0.8, end = 0.2,
                                 limits = c('prairie', 'savanna', 'forest'),
                                 labels = c('Prairie', 'Savanna', 'Forest')) +
-  ggplot2::ggtitle('Ecosystem classification') +
+  ggplot2::ggtitle('PLSS ecosystem') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
 p6
 
 # Join PLS figures together
@@ -310,29 +318,35 @@ pp2
 
 # Environment figures: total annual precipitation and soil sand
 # Explain some of the variation but not all
-p7 <- unbias_grid |>
-  dplyr::filter(time == 1750) |>
+p7 <- climate_grid |>
+  dplyr::filter(time == 2) |>
   ggplot2::ggplot() +
-  ggplot2::geom_tile(ggplot2::aes(x = grid_x, y = grid_y, fill = tpr)) +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tpr)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_viridis_c(option = 'G',
-                                na.value = 'white',
-                                name = 'Precipitation\n(mm/year)') +
+                                na.value = '#00000000',
+                                name = 'mm/\nyear') +
   ggplot2::ggtitle('Total annual precipitation') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
 p7
 
 p8 <- taxon_soil |>
   ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = sand)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Oranges',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 name = '% sand') +
   ggplot2::ggtitle('Soil texture') +
   ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 10, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
 p8
 
 # Join environment figures
@@ -340,5 +354,9 @@ pp3 <- cowplot::plot_grid(p7, p8, nrow = 2)
 pp3
 
 # Join all together
-ppp <- cowplot::plot_grid(pp1, pp2, pp3, nrow = 1, rel_widths = c(0.65, 0.35, 0.35))
+ppp <- cowplot::plot_grid(pp1, pp2, pp3, nrow = 1, rel_widths = c(0.65, 0.4, 0.35))
 ppp
+
+ggplot2::ggsave(plot = ppp,
+                filename = 'figures/data/plss_abundance_density.png',
+                width = 11, height = 4.2, units = 'in', dpi = 600)

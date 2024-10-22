@@ -108,7 +108,7 @@ pred_mean_sum |>
 ## predicts the relative abundance of each taxon
 ## to be, given the environment
 
-## Note that we are plotting the median and 95% CrI 
+## Note that we are plotting the median and 75% CrI 
 ## of predictive mean. This is over the 100 posterior
 ## draws of STEPPS
 
@@ -131,10 +131,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -154,10 +154,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -177,10 +177,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -200,10 +200,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -223,10 +223,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -246,10 +246,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Oak') +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -269,12 +269,12 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1),
                                 transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
 ## OTHER HARDWOOD
@@ -293,11 +293,11 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
 ## PINE
@@ -316,10 +316,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -339,10 +339,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -362,10 +362,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -423,9 +423,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -447,9 +447,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -471,9 +471,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -495,9 +495,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -519,9 +519,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -543,9 +543,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Oak') +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -567,10 +567,10 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
 ## OTHER HARDWOOD
@@ -591,10 +591,10 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
 ## PINE
@@ -615,9 +615,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -639,9 +639,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -663,9 +663,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -752,10 +752,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -775,10 +775,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -798,10 +798,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -821,10 +821,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -844,10 +844,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -867,11 +867,11 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
 ## OTHER HARDWOOD
@@ -890,11 +890,11 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
 ## PINE
@@ -913,10 +913,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -936,10 +936,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -959,10 +959,10 @@ pred_mean2 |>
                               labels = c('25%', '50%', '75%'))) +
   ggplot2::scale_fill_distiller(palette = 'Greens', direction = 1,
                                 name = 'Relative\nabundance',
-                                na.value = 'white',
+                                na.value = '#00000000',
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -1021,9 +1021,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -1045,9 +1045,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -1069,9 +1069,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -1093,9 +1093,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -1117,9 +1117,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -1141,10 +1141,10 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
 ## OTHER HARDWOOD
@@ -1165,10 +1165,10 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
 ## PINE
@@ -1189,9 +1189,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -1213,9 +1213,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
@@ -1237,9 +1237,9 @@ diff |>
                                 limits = c(-1, 1),
                                 direction = 1,
                                 name = 'Observed -\nPredicted',
-                                na.value = 'white') +
+                                na.value = '#00000000') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 

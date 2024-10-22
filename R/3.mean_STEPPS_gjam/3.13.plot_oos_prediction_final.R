@@ -68,8 +68,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## BIRCH
@@ -87,8 +87,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## ELM
@@ -106,8 +106,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## HEMLOCK
@@ -125,8 +125,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## MAPLE
@@ -144,8 +144,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## OAK
@@ -163,8 +163,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Oak') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER CONIFER
@@ -182,8 +182,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER HARDWOOD
@@ -201,8 +201,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## PINE
@@ -220,8 +220,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## SPRUCE
@@ -239,8 +239,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## TAMARACK
@@ -258,8 +258,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ### Plot observed vs predicted irrespective of space/time ###
@@ -376,8 +376,8 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## BIRCH
@@ -396,8 +396,8 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## ELM
@@ -416,8 +416,8 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## HEMLOCK
@@ -436,8 +436,8 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 12))
 
 ## MAPLE
@@ -456,8 +456,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')')))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OAK
 
@@ -475,8 +476,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Oak') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER CONIFER
 
@@ -494,8 +496,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Other conifer taxa'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER HARDWOOD
 
@@ -513,8 +516,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## PINE
 
@@ -532,8 +536,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## SPRUCE
 
@@ -551,8 +556,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## TAMARACK
 
@@ -570,8 +576,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 #### Conditional prediction ####
 
@@ -611,8 +618,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## BIRCH
 
@@ -629,8 +637,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## ELM
 
@@ -647,8 +656,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## HEMLOCK
 
@@ -665,8 +675,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## MAPLE
 
@@ -683,8 +694,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OAK
 
@@ -701,8 +713,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Oak') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER CONIFER
 
@@ -719,8 +732,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Other conifer taxa'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER HARDWOOD
 
@@ -737,8 +751,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## PINE
 
@@ -755,8 +770,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## SPRUCE
 
@@ -773,8 +789,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## TAMARACK
 
@@ -791,8 +808,9 @@ pred_cond |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### Plot observed vs predicted irrespective of space/time ###
 
@@ -873,8 +891,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## BIRCH
 
@@ -892,8 +911,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## ELM
 
@@ -911,8 +931,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## HEMLOCK
 
@@ -930,8 +951,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## MAPLE
 
@@ -949,8 +971,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OAK
 
@@ -968,8 +991,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Oak') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER CONIFER
 
@@ -987,8 +1011,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER HARDWOOD
 
@@ -1006,8 +1031,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## PINE
 
@@ -1025,8 +1051,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## SPRUCE
 
@@ -1044,8 +1071,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## TAMARACK
 
@@ -1063,8 +1091,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 #### Conditional on oak ####
 
@@ -1094,8 +1123,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## BIRCH
 
@@ -1112,8 +1142,8 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5))
 
 ## ELM
 
@@ -1130,8 +1160,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## HEMLOCK
 
@@ -1148,8 +1179,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## MAPLE
 
@@ -1166,8 +1198,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER CONIFER
 
@@ -1184,8 +1217,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER HARDWOOD
 
@@ -1202,8 +1236,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Other hardwood taxa'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## PINE
 
@@ -1220,8 +1255,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## SPRUCE
 
@@ -1238,8 +1274,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## TAMARACK
 
@@ -1256,8 +1293,9 @@ pred_mean |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ### Plot observed vs predicted irrespective of space/time ###
 
@@ -1278,6 +1316,7 @@ pred_obs_long <- pred_mean_long |>
                    by = c('x', 'y', 'time', 'taxon'))
 
 pred_obs_long |>
+  dplyr::filter(taxon != 'Oak') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed)) +
   ggplot2::geom_abline(color = 'blue', linetype = 'dashed', linewidth = 1) +
@@ -1294,6 +1333,7 @@ pred_obs_long |>
 pred_obs_long$density <- get_density(pred_obs_long$Predicted, pred_obs_long$Observed, n = 100)
 
 pred_obs_long |>
+  dplyr::filter(taxon != 'Oak') |>
   ggplot2::ggplot() +
   ggplot2::geom_point(ggplot2::aes(x = Predicted, y = Observed, color = density),
                       show.legend = FALSE) +
@@ -1338,8 +1378,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Beech') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## BIRCH
 
@@ -1357,8 +1398,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Birch') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## ELM
 
@@ -1376,8 +1418,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Elm') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## HEMLOCK
 
@@ -1395,8 +1438,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Hemlock') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## MAPLE
 
@@ -1414,8 +1458,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Maple') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER CONIFER
 
@@ -1433,8 +1478,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Conifer') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## OTHER HARDWOOD
 
@@ -1452,8 +1498,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other Hardwood') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## PINE
 
@@ -1471,8 +1518,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Pine') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## SPRUCE
 
@@ -1490,8 +1538,9 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Spruce') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))
 
 ## TAMARACK
 
@@ -1509,5 +1558,6 @@ diff |>
                                 na.value = '#00000000') +
   ggplot2::facet_wrap(~factor(time, levels = time_order)) +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Tamarack') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 12))

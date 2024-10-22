@@ -327,6 +327,9 @@ post_oos_all |>
   ggplot2::ggtitle(expression(paste('Ash (', italic('Fraxinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+pdf(file = 'figures/data/full_oos_posterior_abundances.pdf',
+    width = 8, height = 10.5)
+
 ### BEECH ###
 
 post_oos_all |>
@@ -465,7 +468,7 @@ post_oos_all |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other conifer taxa') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5))
 
 ### OTHER HARDWOOD ###
 
@@ -485,7 +488,7 @@ post_oos_all |>
                                 limits = c(0, 1), transform = 'sqrt') +
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other hardwood taxa') +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5))
 
 ### PINE ###
 
@@ -545,6 +548,8 @@ post_oos_all |>
   ggplot2::theme_void() +
   ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+dev.off()
 
 # Save
 save(post_oos_all,

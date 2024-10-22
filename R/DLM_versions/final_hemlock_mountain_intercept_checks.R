@@ -1,11 +1,6 @@
-#### Model of Hemlock Mountain
+### Checking effect of intercept on Hemlock Mountain
 
-## Explaining the persistent bias in hemlock in north-central Wisconsin
-## Hypothesis: GJAM is unable to capture positive density dependence
-## arising from autogenic feedback to the environment
-## We test this by comparing coefficient estimates relating hemlock abundance to
-## 1. the same environmental covariates used in GJAM and
-## 2. the previous abundance of hemlock at a given location
+## Rerunning final_hemlock_mountain.R but with fixed intercept
 
 ## Input: data/processed/mean_stepps_soil_clim.RData
 ## Original in-sample and out-of-sample data from running the model in steps 3.3-3.7
@@ -114,7 +109,7 @@ OBS[t,s] ~ dbeta(alpha_obs[t,s], beta_obs[t,s]) # Observation is drawn from beta
 for(t in 2:n){
 for(s in 1:ns){
 # Mean hemlock abundance = intercept + alpha * previous relative abundance + beta * environmental covariates
-logit(mu[t,s]) <- beta[5] + alpha * x_stand[t-1,s] + beta[1] * aat[t,s] + beta[2] * tpr[t,s] + beta[3] * prsd[t,s] + beta[4] * sand[s]
+logit(mu[t,s]) <- int + alpha * x_stand[t-1,s] + beta[1] * aat[t,s] + beta[2] * tpr[t,s] + beta[3] * prsd[t,s] + beta[4] * sand[s]
 x[t,s] ~ dnorm(mu[t,s], tau_proc) # Latent relative abundance drawn from normal distribution
 x_stand[t,s] <- x[t,s] / (1/sqrt(tau_proc)) # Expressing in units of standard deviation as above
 }
@@ -304,10 +299,11 @@ data$n <- nrow(data$OBS) # number of time steps
 data$ns <- ncol(data$OBS) # number of grid cells
 data$mu_alpha <- 0 # prior mean for alpha parameter
 data$tau_alpha <- 0.1 # prior precision for alpha parameter
-data$mu_beta <- rep(0, times = 5) # prior means for beta parameters
-data$tau_beta <- diag(x = c(1, 1, 1, 1, 5),
-                      nrow = 5,
-                      ncol = 5) # prior precisions for beta parameters with slightly higher precision for intercept
+data$mu_beta <- rep(0, times = 4) # prior means for beta parameters
+data$tau_beta <- diag(x = c(1, 1, 1, 1),
+                      nrow = 4,
+                      ncol = 4) # prior precisions for beta parameters with slightly higher precision for intercept
+data$int <- 0#rnorm(1, mean = -0.2, sd = 0.1) # fixed intercept term
 data$aat <- dplyr::select(aat_wide, -time) # observation of temperature
 data$tpr <- dplyr::select(tpr_wide, -time) # observation of precipitation
 data$prsd <- dplyr::select(prsd_wide, -time) # observation of precipitation seasonality
@@ -325,7 +321,7 @@ out <- rjags::coda.samples(model = jm,
                                               'beta',
                                               'phi_obs',
                                               'tau_proc'),
-                           n.iter = 10000) # number of iterations to keep
+                           n.iter = 20000) # number of iterations to keep
 
 # Check for convergence
 plot(out)
@@ -333,7 +329,7 @@ coda::gelman.diag(out, confidence = 0.99)
 
 # Save
 save(out, data, regression_model_fixed_alpha,
-     file = 'out/hemlock/out_small_hemlock_mountain.RData')
+     file = 'out/hemlock/out_small_hemlock_mountain_fixedint0.RData')
 
 #### Case 2: 49 cell Hemlock Mountain ####
 
@@ -517,10 +513,11 @@ data$n <- nrow(data$OBS) # number of time steps
 data$ns <- ncol(data$OBS) # number of grid cells
 data$mu_alpha <- 0 # prior mean for alpha parameter
 data$tau_alpha <- 0.1 # prior precision for alpha parameter
-data$mu_beta <- rep(0, times = 5) # prior means for beta parameters
-data$tau_beta <- diag(x = c(1, 1, 1, 1, 5),
-                      nrow = 5,
-                      ncol = 5) # prior precisions for beta parameters with slightly higher precision for intercept
+data$mu_beta <- rep(0, times = 4) # prior means for beta parameters
+data$tau_beta <- diag(x = c(1, 1, 1, 1),
+                      nrow = 4,
+                      ncol = 4) # prior precisions for beta parameters with slightly higher precision for intercept
+data$int <- 0#rnorm(1, mean = -0.2, sd = 0.1) # fixed intercept term
 data$aat <- dplyr::select(aat_wide, -time) # observation of temperature
 data$tpr <- dplyr::select(tpr_wide, -time) # observation of precipitation
 data$prsd <- dplyr::select(prsd_wide, -time) # observation of precipitation seasonality
@@ -546,7 +543,7 @@ coda::gelman.diag(out, confidence = 0.99)
 
 # Save
 save(out, data, regression_model_fixed_alpha,
-     file = 'out/hemlock/out_med_hemlock_mountain.RData')
+     file = 'out/hemlock/out_med_hemlock_mountain_fixedint0.RData')
 
 #### Case 3: 81 cell Hemlock Mountain ####
 
@@ -730,10 +727,11 @@ data$n <- nrow(data$OBS) # number of time steps
 data$ns <- ncol(data$OBS) # number of grid cells
 data$mu_alpha <- 0 # prior mean for alpha parameter
 data$tau_alpha <- 0.1 # prior precision for alpha parameter
-data$mu_beta <- rep(0, times = 5) # prior means for beta parameters
-data$tau_beta <- diag(x = c(1, 1, 1, 1, 5),
-                      nrow = 5,
-                      ncol = 5) # prior precisions for beta parameters with slightly higher precision for intercept
+data$mu_beta <- rep(0, times = 4) # prior means for beta parameters
+data$tau_beta <- diag(x = c(1, 1, 1, 1),
+                      nrow = 4,
+                      ncol = 4) # prior precisions for beta parameters with slightly higher precision for intercept
+data$int <- 0#rnorm(1, mean = -0.2, sd = 0.1) # fixed intercept term
 data$aat <- dplyr::select(aat_wide, -time) # observation of temperature
 data$tpr <- dplyr::select(tpr_wide, -time) # observation of precipitation
 data$prsd <- dplyr::select(prsd_wide, -time) # observation of precipitation seasonality
@@ -759,7 +757,7 @@ coda::gelman.diag(out, confidence = 0.99)
 
 # Save
 save(out, data, regression_model_fixed_alpha,
-     file = 'out/hemlock/out_large_hemlock_mountain.RData')
+     file = 'out/hemlock/out_large_hemlock_mountain_fixedint0.RData')
 
 #### Case 4: Entire domain ####
 
@@ -775,7 +773,7 @@ states <- map_states()
 ydata_hm |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = hemlock)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = hemlock)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::scale_fill_distiller(palette = 'Greens',
                                 direction = 1,
@@ -798,7 +796,7 @@ ydata_hm |>
 xdata_hm |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = sand)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = sand)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~time) +
   ggplot2::scale_fill_distiller(palette = 'Blues',
@@ -812,7 +810,7 @@ xdata_hm |>
 xdata_hm |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = aat)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = aat)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~time) +
   ggplot2::scale_fill_distiller(palette = 'Blues',
@@ -826,7 +824,7 @@ xdata_hm |>
 xdata_hm |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tpr)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = tpr)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~time) +
   ggplot2::scale_fill_distiller(palette = 'Blues',
@@ -840,7 +838,7 @@ xdata_hm |>
 xdata_hm |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = prsd)) +
+  ggplot2::geom_tile(ggplot2::aes(x = stepps_x, y = stepps_y, fill = prsd)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~time) +
   ggplot2::scale_fill_distiller(palette = 'Blues',
@@ -895,31 +893,31 @@ xdata_hm <- xdata_hm |>
 
 # Pivot data for inputting into model
 ydata_wide <- ydata_hm |>
-  dplyr::select(-x, -y) |>
+  dplyr::select(-stepps_x, -stepps_y) |>
   tidyr::pivot_wider(values_from = hemlock,
                      names_from = loc) |>
   dplyr::arrange(time)
 
 sand_wide <- xdata_hm |>
-  dplyr::select(-aat, -tpr, -prsd, -x, -y) |>
+  dplyr::select(-aat, -tpr, -prsd, -stepps_x, -stepps_y) |>
   tidyr::pivot_wider(values_from = sand,
                      names_from = loc) |>
   dplyr::arrange(time)
 
 aat_wide <- xdata_hm |>
-  dplyr::select(-sand, -tpr, -prsd, -x, -y) |>
+  dplyr::select(-sand, -tpr, -prsd, -stepps_x, -stepps_y) |>
   tidyr::pivot_wider(values_from = aat,
                      names_from = loc) |>
   dplyr::arrange(time)
 
 tpr_wide <- xdata_hm |>
-  dplyr::select(-sand, -aat, -prsd, -x, -y) |>
+  dplyr::select(-sand, -aat, -prsd, -stepps_x, -stepps_y) |>
   tidyr::pivot_wider(values_from = tpr,
                      names_from = loc) |>
   dplyr::arrange(time)
 
 prsd_wide <- xdata_hm |>
-  dplyr::select(-sand, -aat, -tpr, -x, -y) |>
+  dplyr::select(-sand, -aat, -tpr, -stepps_x, -stepps_y) |>
   tidyr::pivot_wider(values_from = prsd,
                      names_from = loc) |>
   dplyr::arrange(time)

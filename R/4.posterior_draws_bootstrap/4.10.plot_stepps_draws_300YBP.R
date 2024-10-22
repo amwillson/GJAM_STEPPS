@@ -768,6 +768,7 @@ bFacGibbs_corr <- dplyr::select(bFacGibbs, -iter, -draw)
 
 # Generate summary statistics
 corr_mean <- apply(bFacGibbs_corr, 2, mean, na.rm = TRUE)
+corr_median <- apply(bFacGibbs_corr, 2, median, na.rm = TRUE)
 corr_sd <- apply(bFacGibbs_corr, 2, stats::sd, na.rm = TRUE)
 corr_lower <- apply(bFacGibbs_corr, 2, stats::quantile, probs = 0.025, na.rm = TRUE)
 corr_upper <- apply(bFacGibbs_corr, 2, stats::quantile, probs = 0.975, na.rm = TRUE)
@@ -880,6 +881,7 @@ fSensGibbs_sum <- dplyr::select(fSensGibbs, -iter, -draw)
 
 # Generate summary statistics
 sens_mean <- apply(fSensGibbs_sum, 2, mean, na.rm = TRUE)
+sens_median <- apply(fSensGibbs_sum, 2, median, na.rm = TRUE)
 sens_sd <- apply(fSensGibbs_sum, 2, stats::sd, na.rm = TRUE)
 sens_lower <- apply(fSensGibbs_sum, 2, stats::quantile, probs = 0.025, na.rm = TRUE)
 sens_upper <- apply(fSensGibbs_sum, 2, stats::quantile, probs = 0.975, na.rm = TRUE)
@@ -956,6 +958,7 @@ sgibbs_cor <- dplyr::select(sgibbs, -iter, -draw)
 
 # Get summary statistics
 mean_sgibbs <- apply(sgibbs_cor, 2, mean)
+median_sgibbs <- apply(sgibbs_cor, 2, median)
 sd_sgibbs <- apply(sgibbs_cor, 2, stats::sd)
 sgibbs_0.025 <- apply(sgibbs_cor, 2, stats::quantile, probs = 0.025)
 sgibbs_0.975 <- apply(sgibbs_cor, 2, stats::quantile, probs = 0.975)

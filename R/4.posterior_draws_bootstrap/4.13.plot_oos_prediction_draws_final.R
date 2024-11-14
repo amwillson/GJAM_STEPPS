@@ -1665,33 +1665,336 @@ get_density <- function(x, y, ...) {
   return(dens$z[ii])
 }
 
-# Get density
-pred_obs_long$density <- get_density(pred_obs_long$predicted_mean, pred_obs_long$observed_mean, n = 100)
+# Pivot wider to calculate densities
+pred_obs_wide <- pred_obs_long |>
+  dplyr::select(taxon, predicted_mean, observed_mean) |>
+  tidyr::pivot_wider(names_from = 'taxon',
+                     values_from = c('observed_mean', 'predicted_mean'))
+
+# Get density for each taxon
+pred_obs_wide$density_beech <- get_density(pred_obs_wide$predicted_mean_Beech, pred_obs_wide$observed_mean_Beech, n = 100)
+pred_obs_wide$density_birch <- get_density(pred_obs_wide$predicted_mean_Birch, pred_obs_wide$observed_mean_Birch, n = 100)
+pred_obs_wide$density_elm <- get_density(pred_obs_wide$predicted_mean_Elm, pred_obs_wide$observed_mean_Elm, n = 100)
+pred_obs_wide$density_hemlock <- get_density(pred_obs_wide$predicted_mean_Hemlock, pred_obs_wide$observed_mean_Hemlock, n = 100)
+pred_obs_wide$density_maple <- get_density(pred_obs_wide$predicted_mean_Maple, pred_obs_wide$observed_mean_Maple, n = 100)
+pred_obs_wide$density_oak <- get_density(pred_obs_wide$predicted_mean_Oak, pred_obs_wide$observed_mean_Oak, n = 100)
+pred_obs_wide$density_oc <- get_density(pred_obs_wide$`predicted_mean_Other Conifer`, pred_obs_wide$`observed_mean_Other Conifer`, n = 100)
+pred_obs_wide$density_oh <- get_density(pred_obs_wide$`predicted_mean_Other Hardwood`, pred_obs_wide$`observed_mean_Other Hardwood`, n = 100)
+pred_obs_wide$density_pine <- get_density(pred_obs_wide$predicted_mean_Pine, pred_obs_wide$observed_mean_Pine, n = 100)
+pred_obs_wide$density_spruce <- get_density(pred_obs_wide$predicted_mean_Spruce, pred_obs_wide$observed_mean_Spruce, n = 100)
+pred_obs_wide$density_tamarack <- get_density(pred_obs_wide$predicted_mean_Tamarack, pred_obs_wide$observed_mean_Tamarack, n = 100)
 
 # Plot predicted vs observed with point density colored
 # this helps because there are so many points that it's not
 # possible to see point density with different levels of opacity
-pred_obs_long |>
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
   ggplot2::ggplot() +
-  ggplot2::geom_point(ggplot2::aes(x = predicted_mean, y = observed_mean, color = density),
-                      show.legend = FALSE) +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Beech, y = predicted_mean_Beech, fill = density_beech),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
   ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
-  ggplot2::geom_smooth(ggplot2::aes(x = predicted_mean, y = observed_mean),
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Beech, y = predicted_mean_Beech),
                        se = FALSE, method = 'lm', color = 'red',
                        linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Beech') +
   ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
-  ggplot2::scale_color_distiller(transform = 'sqrt') +
-  ggplot2::xlab('Predicted') + ggplot2::ylab('Observed') +
-  ggplot2::facet_wrap(~taxon) +
   ggplot2::theme_minimal() +
-  ggplot2::theme(panel.border = ggplot2::element_rect(color = 'black', fill = NA),
-                 strip.text = ggplot2::element_text(size = 10),
-                 axis.title = ggplot2::element_text(size = 10),
-                 axis.text = ggplot2::element_blank())
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
 
 ggplot2::ggsave(plot = ggplot2::last_plot(),
-                filename = 'figures/posteriors/oos_prediction/predicted_observed.png',
-                height = 10, width = 14, units = 'cm')
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_beech.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Birch, y = predicted_mean_Birch, fill = density_birch),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Birch, y = predicted_mean_Birch),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Birch') +
+  ggplot2::theme_minimal() +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_birch.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Elm, y = predicted_mean_Elm, fill = density_elm),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Elm, y = predicted_mean_Elm),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Elm') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_elm.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Hemlock, y = predicted_mean_Hemlock, fill = density_hemlock),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Hemlock, y = predicted_mean_Hemlock),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Hemlock') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_hemlock.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Maple, y = predicted_mean_Maple, fill = density_maple),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Maple, y = predicted_mean_Maple),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Maple') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_maple.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Oak, y = predicted_mean_Oak, fill = density_oak),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Oak, y = predicted_mean_Oak),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Oak') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_oak.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = `observed_mean_Other Conifer`, y = `predicted_mean_Other Conifer`, fill = density_oc),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = `observed_mean_Other Conifer`, y = `predicted_mean_Other Conifer`),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Other Conifer') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_oc.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = `observed_mean_Other Hardwood`, y = `predicted_mean_Other Hardwood`, fill = density_oc),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = `observed_mean_Other Hardwood`, y = `predicted_mean_Other Hardwood`),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Other Hardwood') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_oh.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Pine, y = predicted_mean_Pine, fill = density_pine),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Pine, y = predicted_mean_Pine),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Pine') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_pine.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Spruce, y = predicted_mean_Spruce, fill = density_spruce),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Spruce, y = predicted_mean_Spruce),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Spruce') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_spruce.png',
+                width = 10, height = 10, units = 'cm')
+
+pred_obs_wide |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean_Tamarack, y = predicted_mean_Tamarack, fill = density_tamarack),
+                      shape = 21, color = '#00000020', show.legend = FALSE) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed', linewidth = 1) +
+  ggplot2::geom_smooth(ggplot2::aes(x = observed_mean_Tamarack, y = predicted_mean_Tamarack),
+                       se = FALSE, method = 'lm', color = 'red',
+                       linetype = 'solid', linewidth = 1) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                direction = 1) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Tamarack') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_tamarack.png',
+                width = 10, height = 10, units = 'cm')
+
+### Overall correlations between observation and prediction ###
+
+## Calculation correlation coefficient for each taxon
+
+# Beech
+cor_beech <- cor(x = pred_obs_wide$observed_mean_Beech,
+                 y = pred_obs_wide$predicted_mean_Beech)
+# Birch
+cor_birch <- cor(x = pred_obs_wide$observed_mean_Birch,
+                 y = pred_obs_wide$predicted_mean_Birch)
+# Elm
+cor_elm <- cor(x = pred_obs_wide$observed_mean_Elm,
+               y = pred_obs_wide$predicted_mean_Elm)
+# Hemlock
+cor_hemlock <- cor(x = pred_obs_wide$observed_mean_Hemlock,
+                   y = pred_obs_wide$predicted_mean_Hemlock)
+# Maple
+cor_maple <- cor(x = pred_obs_wide$observed_mean_Maple,
+                 y = pred_obs_wide$predicted_mean_Beech)
+# Oak
+cor_oak <- cor(x = pred_obs_wide$observed_mean_Oak,
+               y = pred_obs_wide$predicted_mean_Oak)
+# Other conifer
+cor_oc <- cor(x = pred_obs_wide$`observed_mean_Other Conifer`,
+              y = pred_obs_wide$`predicted_mean_Other Conifer`)
+# Other hardwood
+cor_oh <- cor(x = pred_obs_wide$`observed_mean_Other Hardwood`,
+              y = pred_obs_wide$`predicted_mean_Other Hardwood`)
+# Pine
+cor_pine <- cor(x = pred_obs_wide$observed_mean_Pine,
+                y = pred_obs_wide$predicted_mean_Pine)
+# Spruce
+cor_spruce <- cor(x = pred_obs_wide$observed_mean_Spruce,
+                  y = pred_obs_wide$predicted_mean_Spruce)
+# Tamarack
+cor_tamarack <- cor(x = pred_obs_wide$observed_mean_Tamarack,
+                    y = pred_obs_wide$predicted_mean_Tamarack)
+
+# Combine
+pearson <- c(cor_beech, cor_birch, cor_elm,
+          cor_hemlock, cor_maple, cor_oak,
+          cor_oc, cor_oh, cor_pine,
+          cor_spruce, cor_tamarack)
+# Taxa
+taxon <- unique(pred_obs_long$taxon)
+
+# Make table
+cor_tab <- as.data.frame(cbind(taxon, pearson))
+
+# Convert to numeric
+cor_tab$pearson <- as.numeric(cor_tab$pearson)
+
+tibble::tibble(cor_tab)
+
+median(cor_tab$pearson)
 
 ### Difference between observed and predicted: each draw individually ###
 

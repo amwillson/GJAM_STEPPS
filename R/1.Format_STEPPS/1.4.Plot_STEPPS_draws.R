@@ -45,9 +45,6 @@ states <- map_states()
 
 #### Spatiotemporal plots ####
 
-pdf(file = 'figures/data/estimated_posterior_median_abundances.pdf',
-    width = 8, height = 10.5)
-
 # Order of facets
 time_order <- c('1900 YBP', '1800 YBP', '1700 YBP',
                 '1600 YBP', '1500 YBP', '1400 YBP', '1300 YBP', '1200 YBP',
@@ -80,6 +77,10 @@ post_df |>
   ggplot2::ggtitle(expression(paste('Ash (', italic('Fraxinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_ash.png',
+                width = 7, height = 7, units = 'in')
+
 ### BEECH ###
 
 # Plot median over time
@@ -102,6 +103,10 @@ post_df |>
   ggplot2::theme_void() +
   ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_beech.png',
+                width = 7, height = 7, units = 'in')
 
 ### BIRCH ###
 
@@ -126,6 +131,10 @@ post_df |>
   ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_birch.png',
+                width = 7, height = 7, units = 'in')
+
 ### ELM ###
 
 # Plot median over time
@@ -148,6 +157,10 @@ post_df |>
   ggplot2::theme_void() +
   ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_elm.png',
+                width = 7, height = 7, units = 'in')
 
 ### HEMLOCK ###
 
@@ -172,6 +185,10 @@ post_df |>
   ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_hemlock.png',
+                width = 7, height = 7, units = 'in')
+
 ### MAPLE ###
 
 # Plot median over time
@@ -194,6 +211,10 @@ post_df |>
   ggplot2::theme_void() +
   ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_maple.png',
+                width = 7, height = 7, units = 'in')
 
 ### OAK ###
 
@@ -218,6 +239,10 @@ post_df |>
   ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_oak.png',
+                width = 7, height = 7, units = 'in')
+
 ### OTHER CONIFER ###
 
 # Plot median over time
@@ -240,6 +265,10 @@ post_df |>
   ggplot2::theme_void() +
   ggplot2::ggtitle('Other conifer taxa') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_oc.png',
+                width = 7, height = 7, units = 'in')
 
 ### OTHER HARDWOOD ###
 
@@ -264,6 +293,10 @@ post_df |>
   ggplot2::ggtitle('Other hardwood taxa') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_oh.png',
+                width = 7, height = 7, units = 'in')
+
 ### PINE ###
 
 # Plot median over time
@@ -286,6 +319,10 @@ post_df |>
   ggplot2::theme_void() +
   ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_pine.png',
+                width = 7, height = 7, units = 'in')
 
 ### SPRUCE ###
 
@@ -310,6 +347,10 @@ post_df |>
   ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_spruce.png',
+                width = 7, height = 7, units = 'in')
+
 ### TAMARACK ###
 
 # Plot median over time
@@ -333,7 +374,9 @@ post_df |>
   ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-dev.off()
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/estimated_posterior_median_abundance_tamarack.png',
+                width = 7, height = 7, units = 'in')
 
 #### Spatial uncertainty plots ####
 

@@ -995,7 +995,9 @@ corrplot::corrplot(corr_mat,
                    type = 'upper',
                    col = pal,
                    tl.col = 'black',
-                   tl.cex = 1.4,
-                   na.label = ' ')
+                   tl.cex = 0.7,
+                   na.label = ' ',
+                   cl.cex = 0.7,
+                   cl.ratio = 0.3)
 
 dev.off()

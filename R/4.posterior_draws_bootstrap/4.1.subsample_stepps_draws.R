@@ -807,40 +807,6 @@ post_oos <- post_filter |>
 facet_order <- c('1900 YBP', '1500 YBP',
                  '1100 YBP', '700 YBP')
 
-# Open pdf
-pdf(file = 'figures/data/subsampled_posterior_abundances.pdf',
-    height = 5, width = 5.5)
-
-### ASH ###
-
-# Plot median of each taxon with reduced spatiotemporal domain
-post_insample |>
-  dplyr::group_by(time, x, y) |>
-  dplyr::summarize(ash = median(ASH)) |>
-  dplyr::mutate(time = as.character(time),
-                time = dplyr::if_else(time == '19', '1900 YBP', time),
-                time = dplyr::if_else(time == '15', '1500 YBP', time),
-                time = dplyr::if_else(time == '11', '1100 YBP', time),
-                time = dplyr::if_else(time == '7', '700 YBP', time)) |>
-  dplyr::mutate(data = dplyr::if_else(is.na(ash), FALSE, TRUE)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = ash)) +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, color = data),
-                     show.legend = FALSE, fill = NA) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Greens',
-                                direction = 1,
-                                name = 'Relative\nabundance',
-                                na.value = '#00000000',
-                                limits = c(0, 1), transform = 'sqrt') +
-  ggplot2::scale_color_manual(values = c('#00000000', 'black')) +
-  ggplot2::facet_wrap(~factor(time, levels = facet_order)) +
-  ggplot2::ggtitle(expression(paste('Ash (', italic('Fraxinus spp.'), ')'))) +
-  ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
-                 strip.text = ggplot2::element_text(size = 14))
-
 ### BEECH ###
 
 # Plot median of each taxon with reduced spatiotemporal domain
@@ -870,6 +836,11 @@ post_insample |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_beech.png',
+                height = 6, width = 7, units = 'in')
 
 ### BIRCH ###
 
@@ -901,6 +872,11 @@ post_insample |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_birch.png',
+                height = 6, width = 7, units = 'in')
+
 ### ELM ###
 
 # Plot median of each taxon with reduced spatiotemporal domain
@@ -930,6 +906,11 @@ post_insample |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_elm.png',
+                height = 6, width = 7, units = 'in')
 
 ### HEMLOCK ###
 
@@ -961,6 +942,10 @@ post_insample |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_hemlock.png',
+                height = 6, width = 7, units = 'in')
+
 ### MAPLE ###
 
 # Plot median of each taxon with reduced spatiotemporal domain
@@ -990,6 +975,11 @@ post_insample |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_maple.png',
+                height = 6, width = 7, units = 'in')
 
 ### OAK ###
 
@@ -1021,6 +1011,10 @@ post_insample |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_oak.png',
+                height = 6, width = 7, units = 'in')
+
 ### OTHER CONIFER ###
 
 # Plot median of each taxon with reduced spatiotemporal domain
@@ -1050,6 +1044,11 @@ post_insample |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_oc.png',
+                height = 6, width = 7, units = 'in')
 
 ### OTHER HARDWOOD ###
 
@@ -1081,6 +1080,11 @@ post_insample |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 14))
 
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_oh.png',
+                height = 6, width = 7, units = 'in')
+
 ### PINE ###
 
 # Plot median of each taxon with reduced spatiotemporal domain
@@ -1110,6 +1114,11 @@ post_insample |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_pine.png',
+                height = 6, width = 7, units = 'cm')
 
 ### SPRUCE ###
 
@@ -1141,6 +1150,11 @@ post_insample |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_spruce.png',
+                height = 6, width = 7, units = 'in')
+
 ### TAMARACK ###
 
 # Plot median of each taxon with reduced spatiotemporal domain
@@ -1171,7 +1185,10 @@ post_insample |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'),
                  strip.text = ggplot2::element_text(size = 14))
 
-dev.off()
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/subsampled_posterior_tamarack.png',
+                height = 6, width = 7, units = 'in')
 
 # Save
 save(post_insample, post_oos,

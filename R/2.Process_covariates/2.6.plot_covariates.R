@@ -6,6 +6,14 @@
 ## Plot climate variables to ensure geographical patterns are consistent
 ## with the plots from step 2-3
 
+## Input: data/processed/gridded_climate.RData
+## Processed and formatted climate covariates
+
+## Input: data/processed/gridded_soil.RData
+## Processed and formatted soil covariates
+
+## Output: none
+
 rm(list = ls())
 
 # Helper funs
@@ -25,10 +33,6 @@ states <- map_states()
 # Load climate variables
 load('data/processed/gridded_climate.RData')
 
-# Open pdf
-pdf(file = 'figures/data/spatiotemporal_climate_variables.pdf',
-    width = 8, height = 6)
-
 climate_grid |>
   dplyr::filter(time %in% 3:19) |>
   dplyr::mutate(time = as.character(time),
@@ -44,6 +48,11 @@ climate_grid |>
   ggplot2::ggtitle('Average annual temperature') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/spatiotemporal_aat.png',
+                height = 7, width = 7, units = 'in')
 
 climate_grid |>
   dplyr::filter(time %in% 3:19) |>
@@ -62,6 +71,11 @@ climate_grid |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/spatiotemporal_tpr.png',
+                height = 7, width = 7, units = 'in')
+
 climate_grid |>
   dplyr::filter(time %in% 3:19) |>
   dplyr::mutate(time = as.character(time),
@@ -77,6 +91,11 @@ climate_grid |>
   ggplot2::ggtitle('Temperature seasonality (standard deviation)') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/spatiotemporal_tsd.png',
+                height = 7, width = 7, units = 'in')
 
 climate_grid |>
   dplyr::filter(time %in% 3:19) |>
@@ -94,31 +113,13 @@ climate_grid |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-climate_grid |>
-  dplyr::filter(time %in% 3:19) |>
-  dplyr::mutate(time = as.character(time),
-                time = paste0(time, '00 YBP')) |>
-  dplyr::mutate(prcv = prcv * 100) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = prcv)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_viridis_c(option = 'E',
-                                na.value = '#00000000',
-                                name = '%') +
-  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
-  ggplot2::ggtitle('Precipitation seasonality (coefficient of variation)') +
-  ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
-
-dev.off()
-
-# Open new pdf
-pdf(file = 'figures/data/temporal_climate_variables.pdf',
-    width = 6, height = 4)
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                 filename = 'figures/data/spatiotemporal_prsd.png',
+                 height = 7, width = 7, units = 'in')
 
 # Plot climate variables over time at each location
-climate_grid |>
+p1 <- climate_grid |>
   dplyr::filter(time %in% 3:19) |>
   dplyr::mutate(time = as.character(time),
                 time = paste0(time, '00'),
@@ -135,7 +136,7 @@ climate_grid |>
   ggplot2::xlab('Time (YBP)') + ggplot2::ylab('Average annual temperature (°C)') +
   ggplot2::theme_minimal()
 
-climate_grid |>
+p2 <- climate_grid |>
   dplyr::filter(time %in% 3:19) |>
   dplyr::mutate(time = as.character(time),
                 time = paste0(time, '00'),
@@ -152,7 +153,7 @@ climate_grid |>
   ggplot2::xlab('Time (YBP)') + ggplot2::ylab('Total annual precipitation (mm/year)') +
   ggplot2::theme_minimal()
 
-climate_grid |>
+p3 <- climate_grid |>
   dplyr::filter(time %in% 3:19) |>
   dplyr::mutate(time = as.character(time),
                 time = paste0(time, '00'),
@@ -169,7 +170,7 @@ climate_grid |>
   ggplot2::xlab('Time (YBP)') + ggplot2::ylab('Temperature seasonality (°C)') +
   ggplot2::theme_minimal()
 
-climate_grid |>
+p4 <- climate_grid |>
   dplyr::filter(time %in% 3:19) |>
   dplyr::mutate(time = as.character(time),
                 time = paste0(time, '00'),
@@ -186,24 +187,15 @@ climate_grid |>
   ggplot2::xlab('Time (YBP)') + ggplot2::ylab('Precipitation seasonality (mm/year)') +
   ggplot2::theme_minimal()
 
-climate_grid |>
-  dplyr::filter(time %in% 3:19) |>
-  dplyr::mutate(time = as.character(time),
-                time = paste0(time, '00'),
-                time = as.numeric(time)) |>
-  dplyr::group_by(time) |>
-  dplyr::summarize(med = median(prcv, na.rm = TRUE),
-                   low = min(prcv, na.rm = TRUE),
-                   high = max(prcv, na.rm = TRUE)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_line(ggplot2::aes(x = time, y = med), linewidth = 1) +
-  ggplot2::geom_ribbon(ggplot2::aes(x = time, ymin = low, ymax = high),
-                       alpha = 0.2) +
-  ggplot2::scale_x_reverse() +
-  ggplot2::xlab('Time (YBP)') + ggplot2::ylab('Precipitation seasonality (%)') +
-  ggplot2::theme_minimal()
+# Plot together
+cowplot::plot_grid(p1, p2,
+                   p3, p4, 
+                   nrow = 2)
 
-dev.off()
+# Sav3
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/temporal_climate_variables.png',
+                height = 10, width = 7, units = 'in')
 
 #### Soil variables ####
 
@@ -214,24 +206,7 @@ load('data/processed/gridded_soil.RData')
 ## with what was found at finer grid in amwillson/historic-modern-environment
 ## Since soil is the same at all times, just randomly subsetting one
 
-pdf(file = 'figures/data/spatial_soil_variables.pdf',
-    width = 5, height = 4)
-
-soil_grid |>
-  dplyr::filter(time == 10) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = clay)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Oranges',
-                                na.value = '#00000000',
-                                name = '% clay',
-                                limits = c(0, 100)) +
-  ggplot2::ggtitle('Soil % clay') +
-  ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
-
-soil_grid |>
+p1 <- soil_grid |>
   dplyr::filter(time == 10) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -245,7 +220,7 @@ soil_grid |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-soil_grid |>
+p2 <- soil_grid |>
   dplyr::filter(time == 10) |>
   ggplot2::ggplot() +
   ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
@@ -259,30 +234,11 @@ soil_grid |>
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
-soil_grid |>
-  dplyr::filter(time == 10) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = caco3)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Oranges',
-                                na.value = '#00000000',
-                                name = expression(paste('% CaC', O[3]))) +
-  ggplot2::ggtitle('Soil calcium carbonate concentration') +
-  ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+# Plot together
+cowplot::plot_grid(p1, p2,
+                   nrow = 2)
 
-soil_grid |>
-  dplyr::filter(time == 10) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = awc)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::scale_fill_distiller(palette = 'Oranges',
-                                na.value = '#00000000',
-                                name = 'cm/cm') +
-  ggplot2::ggtitle('Soil available water content') +
-  ggplot2::theme_void() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
-
-dev.off()
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/spatial_soil_variables.png',
+                height = 10, width = 7, units = 'in')

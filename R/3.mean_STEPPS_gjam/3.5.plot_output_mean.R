@@ -893,7 +893,8 @@ fSensGibbs |>
                                        'tpr' = 'Total precipitation',
                                        'sand' = 'Soil % sand',
                                        'silt' = 'Soil % silt',
-                                       'tsd' = 'Temperature seasonality')) +
+                                       'tsd' = 'Temperature seasonality',
+                                       'sand:tpr' = 'Soil % sand x precipitation')) +
   ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
                  axis.text = ggplot2::element_text(size = 8))
 

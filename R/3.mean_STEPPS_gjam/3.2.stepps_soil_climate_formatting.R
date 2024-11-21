@@ -105,6 +105,9 @@ taxon_oos_all <- taxon_oos_all |>
 # Order of facets
 time_order <- c('1900 YBP', '1500 YBP', '1100 YBP', '700 YBP')
 
+# Outline of states
+states <- map_states()
+
 ### Relative abundance ###
 
 ## ASH 

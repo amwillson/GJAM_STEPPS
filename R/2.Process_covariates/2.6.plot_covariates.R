@@ -195,7 +195,7 @@ cowplot::plot_grid(p1, p2,
 # Sav3
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/data/temporal_climate_variables.png',
-                height = 10, width = 7, units = 'in')
+                height = 6, width = 7, units = 'in')
 
 #### Soil variables ####
 

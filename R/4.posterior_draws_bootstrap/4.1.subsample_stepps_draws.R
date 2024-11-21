@@ -1118,7 +1118,7 @@ post_insample |>
 # Save
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/data/subsampled_posterior_pine.png',
-                height = 6, width = 7, units = 'cm')
+                height = 6, width = 7, units = 'in')
 
 ### SPRUCE ###
 

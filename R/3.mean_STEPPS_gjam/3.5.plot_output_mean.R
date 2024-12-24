@@ -800,7 +800,7 @@ bFacGibbs_long |>
 
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = paste0('figures/mean/', form, '/coefficients_violin.png'),
-                height = 12, width = 18, units = 'cm')
+                height = 12, width = 20, units = 'cm')
 
 # Box plots of coefficient estimates using coefficient summary statistics
 for_plotting |>

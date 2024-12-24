@@ -1,3 +1,5 @@
+# Need to organize these files
+
 rm(list = ls())
 
 source('R/funs.R')

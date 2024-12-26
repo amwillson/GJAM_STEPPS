@@ -1,11 +1,40 @@
-## Sensitivity of relative abundances to climate variables
-## using regression
+#### STEP 6-1
 
-## Source: https://www.nature.com/articles/s41586-024-08232-z
+## Sensitivity of relative abundances to climate variables
+## using multiple linear regression
+
+## Fitting linear models to relative abundance of each taxon
+## individually and environmental
+## covariates over time in each grid cell separately using
+## each STEPPS posterior draw at each time period
+
+## Regression coefficients from standardized covariates can
+## be used as a relative metric of sensitivity of the 
+## response variable to each covariate in the linear model
+
+## Fitting the models at each grid cell separately allows
+## me to look at the sensitivity of each taxon's relative
+## abundance to environmental change over time and across space
+
+## Source of method: https://www.nature.com/articles/s41586-024-08232-z
+
+## Input: data/processed/post_stepps_soil_clim.RData
+## Dataframe of posterior draws of STEPPS relative abundance
+## and environmental covariates at in-sample grid cells
+
+## Input: data/processed/post_stepps_full_oos.RData
+## Dataframe of posterior draws of STEPPS relative abundance
+## and environmental covariates at out-of-sample grid cells
+
+## Output: out/sensitivity/taxon_lm_sensitivity.RData
+## Dataframe of coefficient estimates for each taxon
+## at each grid cell estimating sensitivity of temporal
+## changes in relative abundances to temporal changes in
+## environmental conditions
 
 rm(list = ls())
 
-#### 1. Load reconstructions ####
+#### Load reconstructions ####
 
 # Load in-sample reconstructions from section 4
 load('data/processed/post_stepps_soil_clim.RData')
@@ -19,7 +48,7 @@ load('data/processed/post_stepps_full_oos.RData')
 # Combine all
 dat <- rbind(data1, post_oos_all)
 
-#### 2. Format reconstructions ####
+#### Format reconstructions ####
 
 # Drop NAs representing empty grid cells
 dat_format <- dat |>
@@ -35,7 +64,7 @@ grid_cells <- dat_format |>
   dplyr::select(x, y) |>
   dplyr::distinct()
 
-#### 3. Calculate sensitivity ####
+#### Calculate sensitivity ####
 
 # Initialize matrices
 beech_sens <- matrix(, nrow = nrow(grid_cells), ncol = 8)
@@ -199,7 +228,7 @@ for(i in 1:nrow(grid_cells)){
   print(i/nrow(grid_cells))
 }
 
-#### 4. Save ####
+#### Save ####
 
 # Save taxon sensitivity matrices
 save(beech_sens, birch_sens,

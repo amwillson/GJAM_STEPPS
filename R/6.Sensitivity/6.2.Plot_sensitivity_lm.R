@@ -1,5 +1,16 @@
+#### STEP 6-2
+
 ## Plot sensitivites based on linear models in each grid cell
 
+## Shows where taxon relative abundances are most sensitive
+## to temporal changes in each climate condition
+
+## Input: out/sensitivity/taxon_lm_sensitivity.RData
+## Dataframe of linear model coefficient estimates
+## relating the relationship between taxon relative abundance
+## and environmental conditions over time at each grid cell
+
+## Output: none, except figures saved at figures/sensitivity/
 rm(list = ls())
 
 # Helper funs

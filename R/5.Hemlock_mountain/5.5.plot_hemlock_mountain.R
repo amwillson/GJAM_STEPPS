@@ -1,8 +1,24 @@
+#### STEP 5-5
+
 ## Plotting hemlock mountain output
+## Plotting coefficient estimates for relatinoship
+## between previous and current relative abundance
+## and environmental covariates and current relative abundance
 
-## How does fixing the intercept change things?
-## Define intercept from drawing from a tighter distribution
+## Input: out/hemlock/out_small_hemlock_mountain.RData
+## Model output of model fit to small hemlock mountain area
 
+## Input: out/hemlock/out_med_hemlock_mountain.RData
+## Model output of model fit to larger hemlock mountain area
+
+## Input: out/hemlock/out_large_hemlock_mountain.RData
+## Model output of model fit to largest hemlock mountain area
+
+## Input: out/hemlock/out_full_domain.RData
+## Model output of model fit to the entire geographic
+## domain in our study
+
+## Output: none, except figures saved to figures/hemlock/
 rm(list = ls())
 
 #### Case 1: Hemlock Mountain region only ####
@@ -39,7 +55,13 @@ out |>
   ggplot2::xlab('') + ggplot2::ylab('Coefficient estimate') +
   ggplot2::ggtitle('Small Hemlock Mountain area') +
   ggplot2::theme_minimal() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 axis.text = ggplot2::element_text(size = 10),
+                 axis.title = ggplot2::element_text(size = 10))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/hemlock/small_coefficient_estimates.png')
 
 #### Case 2: 49 cell Hemlock Mountain ####
 
@@ -75,7 +97,13 @@ out |>
   ggplot2::xlab('') + ggplot2::ylab('Coefficient estimate') +
   ggplot2::ggtitle('Medium Hemlock Mountain area') +
   ggplot2::theme_minimal() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 axis.text = ggplot2::element_text(size = 10),
+                 axis.title = ggplot2::element_text(size = 10))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/hemlock/medium_coefficient_estimates.png')
 
 #### Case 3: 81 cell Hemlock Mountain ####
 
@@ -113,7 +141,13 @@ out |>
   ggplot2::xlab('') + ggplot2::ylab('Coefficient estimate') +
   ggplot2::ggtitle('Large Hemlock Mountain area') +
   ggplot2::theme_minimal() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 10))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/hemlock/large_coefficient_estimates.png')
 
 #### Case 4: Entire domain ####
 
@@ -147,50 +181,12 @@ out |>
   ggplot2::geom_violin(ggplot2::aes(x = factor(var, levels = x_order), y = val)) +
   ggplot2::geom_hline(ggplot2::aes(yintercept = 0), linetype = 'dashed') +
   ggplot2::xlab('') + ggplot2::ylab('Coefficient estimate') +
-  ggplot2::ggtitle('Entire geographical domain') +
+  ggplot2::ggtitle('Entire geographic domain') +
   ggplot2::theme_minimal() +
-  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 axis.text = ggplot2::element_text(size = 10),
+                 axis.title = ggplot2::element_text(size = 10))
 
-#### Case 5: Allowing and alpha to vary at Hemlock Mountain ####
-
-# Load output from case 5
-load('out/hemlock/out_large_hemlock_mountain_variable.RData')
-
-# Convert output to matrix
-out <- as.matrix(out)
-out_alpha <- as.matrix(out_alpha)
-
-# Take location order from data
-loc_order <- colnames(data$OBS)
-
-# Apply location names to alpha column names
-colnames(out_alpha) <- loc_order
-
-# Make dataframe
-out_alpha <- as.data.frame(out_alpha)
-
-# Format
-out_alpha_df <- out_alpha |>
-  tidyr::pivot_longer(cols = dplyr::everything(),
-                      names_to = 'x_y',
-                      values_to = 'val') |>
-  dplyr::mutate(x = sub(pattern = '_.*', replacement = '', x = x_y),
-                y = sub(pattern = '.*_', replacement = '', x = x_y),
-                x = as.numeric(x),
-                y = as.numeric(y))
-
-# Helper funs
-source('R/funs.R')
-
-# Map of study region
-states <- map_states()
-
-# Plot alpha over space
-out_alpha_df |>
-  dplyr::group_by(x, y) |>
-  dplyr::summarize(val = mean(val)) |>
-  ggplot2::ggplot() +
-  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
-  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = val)) +
-  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
-  ggplot2::theme_void()
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/hemlock/full_coefficient_estimates.png')

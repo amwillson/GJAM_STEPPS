@@ -19,7 +19,12 @@
 ## domain in our study
 
 ## Output: none, except figures saved to figures/hemlock/
+
 rm(list = ls())
+
+# Load coda package
+# Needs to be loaded to mask base::as.matrix()
+library(coda)
 
 #### Case 1: Hemlock Mountain region only ####
 

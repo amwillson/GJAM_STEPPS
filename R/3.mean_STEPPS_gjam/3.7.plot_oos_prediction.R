@@ -54,6 +54,9 @@ pred_mean2 <- taxon_oos_all |>
 ## predicts the relative abundance of each taxon
 ## to be, given the environment
 
+pdf(file = 'figures/mean/oos_prediction/non_conditional_prediction.pdf',
+    width = 8.5, height = 4.5)
+
 ## BEECH
 
 pred_mean2 |>
@@ -263,6 +266,8 @@ pred_mean2 |>
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
+dev.off()
+
 ### Difference between observed and predicted ###
 
 ## How far off are our predictions from the observations of 
@@ -278,6 +283,9 @@ diff$y <- pred_mean2$y
 # Plot
 
 ## BEECH
+
+pdf(file = 'figures/mean/oos_prediction/non_conditional_difference.pdf',
+    width = 8.5, height = 4.5)
 
 diff |>
   dplyr::mutate(data = dplyr::if_else(is.na(beech), FALSE, TRUE)) |>
@@ -496,6 +504,83 @@ diff |>
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+dev.off()
+
+### Plot observed vs predicted irrespective of space/time ###
+
+## If the model is doing a good job predicting relative abundances,
+## then we would expect that the points would generally fall around
+## the 1:1 line. If the model produces biased predictions,
+## then we would see that the points generally fall either above
+## or below the 1:1 line
+
+pred_mean_long <- pred_mean2 |>
+  # pivot predictions longer
+  tidyr::pivot_longer(cols = beech:tamarack,
+                      names_to = 'taxon',
+                      values_to = 'Predicted') |>
+  # rename other conifer and other hardwood
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'oc', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'oh', 'other hardwood', taxon)) |>
+  # format
+  dplyr::mutate(taxon = stringr::str_to_title(taxon))
+
+obs_long <- taxon_oos_all |>
+  # select relevant columns
+  dplyr::select(x:tamarack) |>
+  # remove ash taxon
+  dplyr::select(-ash) |>
+  # pivot observations longer
+  tidyr::pivot_longer(cols = beech:tamarack,
+                      names_to = 'taxon',
+                      values_to = 'Observed') |>
+  # format
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'other_conifer', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'other_hardwood', 'other hardwood', taxon)) |>
+  dplyr::mutate(taxon = stringr::str_to_title(taxon))
+
+# Combine
+pred_obs_long <- pred_mean_long |>
+  dplyr::full_join(y = obs_long,
+                   by = c('x', 'y', 'taxon'))
+
+pred_obs_long |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = Observed, y = Predicted)) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/mean/oos_prediction/predicted_observed_nonconditional.png',
+                width = 20, height = 10, units = 'cm')
+
+### Correlations between observed and predicted ###
+
+# Pivot wider to calculate densities
+pred_obs_wide <- pred_obs_long |>
+  dplyr::select(taxon, Predicted, Observed, x, y) |>
+  tidyr::drop_na() |>
+  tidyr::pivot_wider(names_from = 'taxon',
+                     values_from = c('Predicted', 'Observed'))
+
+cor_beech <- cor(pred_obs_wide$Predicted_Beech, pred_obs_wide$Observed_Beech)
+cor_birch <- cor(pred_obs_wide$Predicted_Birch, pred_obs_wide$Observed_Birch)
+cor_elm <- cor(pred_obs_wide$Predicted_Elm, pred_obs_wide$Observed_Elm)
+cor_hemlock <- cor(pred_obs_wide$Predicted_Hemlock, pred_obs_wide$Observed_Hemlock)
+cor_maple <- cor(pred_obs_wide$Predicted_Maple, pred_obs_wide$Observed_Maple)
+cor_oak <- cor(pred_obs_wide$Predicted_Oak, pred_obs_wide$Observed_Oak)
+cor_oc <- cor(pred_obs_wide$`Predicted_Other Conifer`, pred_obs_wide$`Observed_Other Conifer`)
+cor_oh <- cor(pred_obs_wide$`Predicted_Other Hardwood`, pred_obs_wide$`Observed_Other Hardwood`)
+cor_pine <- cor(pred_obs_wide$Predicted_Pine, pred_obs_wide$Observed_Pine)
+cor_spruce <- cor(pred_obs_wide$Predicted_Spruce, pred_obs_wide$Observed_Spruce)
+cor_tamarack <- cor(pred_obs_wide$Predicted_Tamarack, pred_obs_wide$Observed_Tamarack)
 
 #### Conditional prediction ####
 
@@ -964,6 +1049,40 @@ diff |>
   ggplot2::theme_void() +
   ggplot2::ggtitle('Tamarack') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+### Plot observed vs predicted irrespective of space/time ###
+
+pred_cond_long <- pred_cond2 |>
+  # pivot predictions longer
+  tidyr::pivot_longer(cols = beech:tamarack,
+                      names_to = 'taxon',
+                      values_to = 'Predicted') |>
+  # rename other conifer and other hardwood
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'oc', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'oh', 'other hardwood', taxon)) |>
+  # format
+  dplyr::mutate(taxon = stringr::str_to_title(taxon))
+
+# Combine
+pred_obs_cond_long <- pred_cond_long |>
+  dplyr::full_join(y = obs_long,
+                   by = c('x', 'y', 'taxon'))
+
+pred_obs_cond_long |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = Observed, y = Predicted)) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/mean/oos_prediction/predicted_observed_conditional.png',
+                width = 20, height = 10, units = 'cm')
 
 #### Conditional on oak ####
 

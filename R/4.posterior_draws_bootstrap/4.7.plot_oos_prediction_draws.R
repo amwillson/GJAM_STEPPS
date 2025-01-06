@@ -671,6 +671,151 @@ diff |>
 
 dev.off()
 
+### Plot observed vs predicted irrespective of space/time ###
+
+## If the model is doing a good job predicting relative abundances,
+## then we would expect that the points would generally fall around
+## the 1:1 line. If the model produces biased predictions,
+## then we would see that the points generally fall either above
+## or below the 1:1 line
+
+pred_mean_long <- pred_mean2 |>
+  tidyr::drop_na() |>
+  # pivot predictions longer
+  tidyr::pivot_longer(cols = BEECH:TAMARACK,
+                      names_to = 'taxon',
+                      values_to = 'Predicted') |>
+  # rename other conifer and other hardwood
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'OC', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'OH', 'other hardwood', taxon)) |>
+  # format
+  dplyr::mutate(taxon = stringr::str_to_title(taxon)) |>
+  # group for summarizing
+  dplyr::group_by(x, y, taxon) |>
+  # summarize over draws
+  dplyr::summarize(predicted_mean = mean(Predicted),
+                   predicted_sd = sd(Predicted),
+                   predicted_quant_2.5 = quantile(Predicted, probs = 0.025),
+                   predicted_quant_25 = quantile(Predicted, probs = 0.25),
+                   predicted_quant_75 = quantile(Predicted, probs = 0.75),
+                   predicted_quant_975 = quantile(Predicted, probs = 0.975))
+
+obs_long <- post_oos_all |>
+  tidyr::drop_na() |>
+  # select relevant columns
+  dplyr::select(draw:y) |>
+  # remove ash taxon
+  dplyr::select(-ASH) |>
+  # pivot observations longer
+  tidyr::pivot_longer(cols = BEECH:TAMARACK,
+                      names_to = 'taxon',
+                      values_to = 'Observed') |>
+  # format
+  dplyr::mutate(taxon = dplyr::if_else(taxon == 'OTHER.CONIFER', 'other conifer', taxon),
+                taxon = dplyr::if_else(taxon == 'OTHER.HARDWOOD', 'other hardwood', taxon)) |>
+  dplyr::mutate(taxon = stringr::str_to_title(taxon)) |>
+  # group for summarizing
+  dplyr::group_by(x, y, taxon) |>
+  # summarize over draws
+  dplyr::summarize(observed_mean = mean(Observed),
+                   observed_sd = sd(Observed),
+                   observed_quant_2.5 = quantile(Observed, probs = 0.025),
+                   observed_quant_25 = quantile(Observed, probs = 0.25),
+                   observed_quant_75 = quantile(Observed, probs = 0.75),
+                   observed_quant_975 = quantile(Observed, probs = 0.975))
+
+# Combine
+pred_obs_long <- pred_mean_long |>
+  dplyr::full_join(y = obs_long,
+                   by = c('x', 'y', 'taxon'))
+
+pred_obs_long |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean, y = predicted_mean)) +
+  ggplot2::geom_errorbar(ggplot2::aes(x = observed_mean,
+                                      ymin = predicted_quant_2.5,
+                                      ymax = predicted_quant_975)) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::facet_wrap(~taxon) +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8),
+                 plot.title = ggplot2::element_text(size = 12, hjust = 0.5))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/predicted_observed_300YBP.png',
+                width = 20, height = 10, units = 'cm')
+
+### Correlations between observed and predicted ###
+
+# Drop NAs
+pred_mean3 <- tidyr::drop_na(pred_mean2)
+obs_3 <- post_oos_all |>
+  dplyr::select(draw, BEECH:y) |>
+  tidyr::drop_na()
+
+# Change column names
+colnames(pred_mean3) <- c('x', 'y', 'beech_pred',
+                          'birch_pred', 'elm_pred',
+                          'hemlock_pred', 'maple_pred',
+                          'oak_pred', 'oc_pred', 'oh_pred',
+                          'pine_pred', 'spruce_pred',
+                          'tamarack_pred', 'draw')
+colnames(obs_3) <- c('draw', 'beech_obs',
+                     'birch_obs', 'elm_obs', 'hemlock_obs',
+                     'maple_obs', 'oak_obs', 'oc_obs', 'oh_obs',
+                     'pine_obs', 'spruce_obs',
+                     'tamarack_obs', 'x', 'y')
+
+# Combine
+pred_obs <- pred_mean3 |>
+  dplyr::left_join(y = obs_3,
+                   by = c('x', 'y', 'draw'))
+
+# Initialization
+beech_cors <- c()
+birch_cors <- c()
+elm_cors <- c()
+hemlock_cors <- c()
+maple_cors <- c()
+oak_cors <- c()
+oc_cors <- c()
+oh_cors <- c()
+pine_cors <- c()
+spruce_cors <- c()
+tamarack_cors <- c()
+
+# Loop over all draws
+for(i in 1:100){
+  temp <- dplyr::filter(pred_obs, draw == i)
+  beech_cors[i] <- cor(temp$beech_obs, temp$beech_pred)
+  birch_cors[i] <- cor(temp$birch_obs, temp$birch_pred)
+  elm_cors[i] <- cor(temp$elm_obs, temp$elm_pred)
+  hemlock_cors[i] <- cor(temp$hemlock_obs, temp$hemlock_pred)
+  maple_cors[i] <- cor(temp$maple_obs, temp$maple_pred)
+  oak_cors[i] <- cor(temp$oak_obs, temp$oak_pred)
+  oc_cors[i] <- cor(temp$oc_obs, temp$oc_pred)
+  oh_cors[i] <- cor(temp$oh_obs, temp$oh_pred)
+  pine_cors[i] <- cor(temp$pine_obs, temp$pine_pred)
+  spruce_cors[i] <- cor(temp$spruce_obs, temp$spruce_pred)
+  tamarack_cors[i] <- cor(temp$tamarack_obs, temp$tamarack_pred)
+}
+
+# Calculate summary statistics
+beech_cor_quant <- quantile(beech_cors, probs = c(0.025, 0.5, 0.975))
+birch_cor_quant <- quantile(birch_cors, probs = c(0.025, 0.5, 0.975))
+elm_cor_quant <- quantile(elm_cors, probs = c(0.025, 0.5, 0.975))
+hemlock_cor_quant <- quantile(hemlock_cors, probs = c(0.025, 0.5, 0.975))
+maple_cor_quant <- quantile(maple_cors, probs = c(0.025, 0.5, 0.975))
+oak_cor_quant <- quantile(oak_cors, probs = c(0.025, 0.5, 0.975))
+oc_cor_quant <- quantile(oc_cors, probs = c(0.025, 0.5, 0.975))
+oh_cor_quant <- quantile(oh_cors, probs = c(0.025, 0.5, 0.975))
+pine_cor_quant <- quantile(pine_cors, probs = c(0.025, 0.5, 0.975))
+spruce_cor_quant <- quantile(spruce_cors, probs = c(0.025, 0.5, 0.975))
+tamarack_cor_quant <- quantile(tamarack_cors, probs = c(0.025, 0.5, 0.975))
+
 #### Conditional on oak ####
 
 rm(pred)

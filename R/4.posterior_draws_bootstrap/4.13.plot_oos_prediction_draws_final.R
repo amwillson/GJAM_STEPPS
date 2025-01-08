@@ -1942,59 +1942,90 @@ ggplot2::ggsave(plot = ggplot2::last_plot(),
 
 ### Overall correlations between observation and prediction ###
 
-## Calculation correlation coefficient for each taxon
+# Make copies of dataframes
+pred_mean3 <- pred_mean2
+obs_3 <- dplyr::select(post_oos_all,
+                       x:TAMARACK) |>
+  dplyr::select(-ASH)
 
-# Beech
-cor_beech <- cor(x = pred_obs_wide$observed_mean_Beech,
-                 y = pred_obs_wide$predicted_mean_Beech)
-# Birch
-cor_birch <- cor(x = pred_obs_wide$observed_mean_Birch,
-                 y = pred_obs_wide$predicted_mean_Birch)
-# Elm
-cor_elm <- cor(x = pred_obs_wide$observed_mean_Elm,
-               y = pred_obs_wide$predicted_mean_Elm)
-# Hemlock
-cor_hemlock <- cor(x = pred_obs_wide$observed_mean_Hemlock,
-                   y = pred_obs_wide$predicted_mean_Hemlock)
-# Maple
-cor_maple <- cor(x = pred_obs_wide$observed_mean_Maple,
-                 y = pred_obs_wide$predicted_mean_Beech)
-# Oak
-cor_oak <- cor(x = pred_obs_wide$observed_mean_Oak,
-               y = pred_obs_wide$predicted_mean_Oak)
-# Other conifer
-cor_oc <- cor(x = pred_obs_wide$`observed_mean_Other Conifer`,
-              y = pred_obs_wide$`predicted_mean_Other Conifer`)
-# Other hardwood
-cor_oh <- cor(x = pred_obs_wide$`observed_mean_Other Hardwood`,
-              y = pred_obs_wide$`predicted_mean_Other Hardwood`)
-# Pine
-cor_pine <- cor(x = pred_obs_wide$observed_mean_Pine,
-                y = pred_obs_wide$predicted_mean_Pine)
-# Spruce
-cor_spruce <- cor(x = pred_obs_wide$observed_mean_Spruce,
-                  y = pred_obs_wide$predicted_mean_Spruce)
-# Tamarack
-cor_tamarack <- cor(x = pred_obs_wide$observed_mean_Tamarack,
-                    y = pred_obs_wide$predicted_mean_Tamarack)
+# Change column names
+colnames(pred_mean3) <- c('x', 'y', 'time', 'beech_pred',
+                          'birch_pred', 'elm_pred',
+                          'hemlock_pred', 'maple_pred',
+                          'oak_pred', 'oc_pred', 'oh_pred',
+                          'pine_pred', 'spruce_pred',
+                          'tamarack_pred', 'draw')
+colnames(obs_3) <- c('x', 'y', 'time', 'draw',
+                     'beech_obs', 'birch_obs',
+                     'elm_obs', 'hemlock_obs',
+                     'maple_obs', 'oak_obs',
+                     'oc_obs', 'oh_obs', 'pine_obs',
+                     'spruce_obs', 'tamarack_obs')
 
 # Combine
-pearson <- c(cor_beech, cor_birch, cor_elm,
-          cor_hemlock, cor_maple, cor_oak,
-          cor_oc, cor_oh, cor_pine,
-          cor_spruce, cor_tamarack)
-# Taxa
-taxon <- unique(pred_obs_long$taxon)
+pred_obs <- pred_mean3 |>
+  dplyr::left_join(y = obs_3,
+                   by = c('x', 'y', 'time', 'draw'))
 
-# Make table
-cor_tab <- as.data.frame(cbind(taxon, pearson))
+# Initialization
+beech_cors <- c()
+birch_cors <- c()
+elm_cors <- c()
+hemlock_cors <- c()
+maple_cors <- c()
+oak_cors <- c()
+oc_cors <- c()
+oh_cors <- c()
+pine_cors <- c()
+spruce_cors <- c()
+tamarack_cors <- c()
 
-# Convert to numeric
-cor_tab$pearson <- as.numeric(cor_tab$pearson)
+# Loop over all draws
+for(i in 1:100){
+  temp <- dplyr::filter(pred_obs, draw == i)
+  beech_cors[i] <- cor(temp$beech_obs, temp$beech_pred)
+  birch_cors[i] <- cor(temp$birch_obs, temp$birch_pred)
+  elm_cors[i] <- cor(temp$elm_obs, temp$elm_pred)
+  hemlock_cors[i] <- cor(temp$hemlock_obs, temp$hemlock_pred)
+  maple_cors[i] <- cor(temp$maple_obs, temp$maple_pred)
+  oak_cors[i] <- cor(temp$oak_obs, temp$oak_pred)
+  oc_cors[i] <- cor(temp$oc_obs, temp$oc_pred)
+  oh_cors[i] <- cor(temp$oh_obs, temp$oh_pred)
+  pine_cors[i] <- cor(temp$pine_obs, temp$pine_pred)
+  spruce_cors[i] <- cor(temp$spruce_obs, temp$spruce_pred)
+  tamarack_cors[i] <- cor(temp$tamarack_obs, temp$tamarack_pred)
+}
 
-tibble::tibble(cor_tab)
+# Calculate summary statistics
+beech_cor_quant <- quantile(beech_cors, probs = c(0.025, 0.5, 0.975))
+birch_cor_quant <- quantile(birch_cors, probs = c(0.025, 0.5, 0.975))
+elm_cor_quant <- quantile(elm_cors, probs = c(0.025, 0.5, 0.975))
+hemlock_cor_quant <- quantile(hemlock_cors, probs = c(0.025, 0.5, 0.975))
+maple_cor_quant <- quantile(maple_cors, probs = c(0.025, 0.5, 0.975))
+oak_cor_quant <- quantile(oak_cors, probs = c(0.025, 0.5, 0.975))
+oc_cor_quant <- quantile(oc_cors, probs = c(0.025, 0.5, 0.975))
+oh_cor_quant <- quantile(oh_cors, probs = c(0.025, 0.5, 0.975))
+pine_cor_quant <- quantile(pine_cors, probs = c(0.025, 0.5, 0.975))
+spruce_cor_quant <- quantile(spruce_cors, probs = c(0.025, 0.5, 0.975))
+tamarack_cor_quant <- quantile(tamarack_cors, probs = c(0.025, 0.5, 0.975))
 
-median(cor_tab$pearson)
+cor_quants <- rbind(beech_cor_quant,
+                    birch_cor_quant,
+                    elm_cor_quant,
+                    hemlock_cor_quant,
+                    maple_cor_quant,
+                    oak_cor_quant,
+                    oc_cor_quant,
+                    oh_cor_quant,
+                    pine_cor_quant,
+                    spruce_cor_quant,
+                    tamarack_cor_quant)
+
+cor_quants <- as.data.frame(cor_quants)
+
+cor_quants <- tibble::rownames_to_column(cor_quants)
+
+tibble::tibble(cor_quants)
 
 ### Difference between observed and predicted: each draw individually ###
 
@@ -2795,7 +2826,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -2823,7 +2854,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -2851,7 +2882,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -2879,7 +2910,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -2907,7 +2938,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -2935,14 +2966,16 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
                  legend.text = ggplot2::element_text(size = 8))
 
 ggplot2::ggsave(plot = ggplot2::last_plot(),
-                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_oak.png')
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_oak.png',
+                height = 12, width = 18, units = 'cm')
+
 ## OTHER CONIFER
 
 diff |>
@@ -2961,7 +2994,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Other conifer taxa median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Other conifer taxa median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -2989,7 +3022,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle('Other hardwood taxa median prediction accuracy') +
+  ggplot2::ggtitle('Other hardwood taxa median prediction bias') +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -3017,7 +3050,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -3045,7 +3078,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -3073,7 +3106,7 @@ diff |>
                                 na.value = '#00000000',
                                 name = 'Observed -\nPredicted') +
   ggplot2::theme_void() +
-  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ') median prediction accuracy'))) +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ') median prediction bias'))) +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
                  strip.text = ggplot2::element_text(size = 10),
                  legend.title = ggplot2::element_text(size = 10),
@@ -3082,6 +3115,841 @@ diff |>
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_tamarack.png',
                 height = 12, width = 18, units = 'cm')
+
+## Median plots with bias overlapping zero set to zero
+
+## BEECH
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(BEECH),
+                   low = quantile(BEECH, probs = 0.025),
+                   high = quantile(BEECH, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_beech_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## BIRCH
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(BIRCH),
+                   low = quantile(BIRCH, probs = 0.025),
+                   high = quantile(BIRCH, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_birch_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## ELM
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(ELM),
+                   low = quantile(ELM, probs = 0.025),
+                   high = quantile(ELM, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_elm_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## HEMLOCK
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(HEMLOCK),
+                   low = quantile(HEMLOCK, probs = 0.025),
+                   high = quantile(HEMLOCK, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_hemlock_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## MAPLE
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(MAPLE),
+                   low = quantile(MAPLE, probs = 0.025),
+                   high = quantile(MAPLE, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_maple_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## OAK
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(OAK),
+                   low = quantile(OAK, probs = 0.025),
+                   high = quantile(OAK, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_oak_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## OTHER CONIFER
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(OTHER.CONIFER),
+                   low = quantile(OTHER.CONIFER, probs = 0.025),
+                   high = quantile(OTHER.CONIFER, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Other conifer taxa median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_oc_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## OTHER HARDWOOD
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(OTHER.HARDWOOD),
+                   low = quantile(OTHER.HARDWOOD, probs = 0.025),
+                   high = quantile(OTHER.HARDWOOD, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle('Other hardwood taxa median prediction bias') +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_oh_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## PINE
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(PINE),
+                   low = quantile(PINE, probs = 0.025),
+                   high = quantile(PINE, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_pine_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## SPRUCE
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(SPRUCE),
+                   low = quantile(SPRUCE, probs = 0.025),
+                   high = quantile(SPRUCE, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_spruce_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+## TAMARACK
+
+diff |>
+  dplyr::mutate(time = as.character(time),
+                time = paste0(time, '00 YBP')) |>
+  dplyr::group_by(x, y, time) |>
+  dplyr::summarize(median = median(TAMARACK),
+                   low = quantile(TAMARACK, probs = 0.025),
+                   high = quantile(TAMARACK, probs = 0.975)) |>
+  dplyr::mutate(median = dplyr::if_else(low < 0 & high > 0, 0, median)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = median)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-1, 1),
+                                direction = 1,
+                                na.value = '#00000000',
+                                name = 'Observed -\nPredicted') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ') median prediction bias'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 strip.text = ggplot2::element_text(size = 10),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_diff_tamarack_CI.png',
+                height = 12, width = 18, units = 'cm')
+
+### New section with observed vs predicted plots ###
+### and bias density plots together ###
+
+## BEECH
+
+p1_beech <- pred_obs_long |>
+  dplyr::filter(taxon == 'Beech') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Beech (', italic('Fagus grandifolia'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_beech  
+
+p2_beech <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = BEECH)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_beech
+
+p1_beech + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_beech),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_beech.png',
+                height = 12, width = 18, units = 'cm')
+
+## BIRCH
+
+p1_birch <- pred_obs_long |>
+  dplyr::filter(taxon == 'Birch') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Birch (', italic('Betula spp.'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_birch 
+
+p2_birch <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = BIRCH)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_birch
+
+p1_birch + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_birch),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_birch.png',
+                height = 12, width = 18, units = 'cm')
+
+## ELM
+p1_elm <- pred_obs_long |>
+  dplyr::filter(taxon == 'Elm') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Elm (', italic('Ulmus spp.'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_elm  
+
+p2_elm <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = ELM)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_elm
+
+p1_elm + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_elm),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_elm.png',
+                height = 12, width = 18, units = 'cm')
+
+## HEMLOCK
+p1_hemlock <- pred_obs_long |>
+  dplyr::filter(taxon == 'Hemlock') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_hemlock
+
+p2_hemlock <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = HEMLOCK)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_hemlock
+
+p1_hemlock + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_hemlock),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_hemlock.png',
+                height = 12, width = 18, units = 'cm')
+
+## MAPLE
+p1_maple <- pred_obs_long |>
+  dplyr::filter(taxon == 'Maple') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Maple (', italic('Acer spp.'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_maple
+
+p2_maple <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = MAPLE)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_maple
+
+p1_maple + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_maple),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_maple.png',
+                height = 12, width = 18, units = 'cm')
+
+## OAK
+p1_oak <- pred_obs_long |>
+  dplyr::filter(taxon == 'Oak') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_oak
+
+p2_oak <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = OAK)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_oak
+
+p1_oak + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_oak),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_oak.png',
+                height = 12, width = 18, units = 'cm')
+
+## OTHER CONIFER
+p1_oc <- pred_obs_long |>
+  dplyr::filter(taxon == 'Other Conifer') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Other conifer taxa') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_oc
+
+p2_oc <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = OTHER.CONIFER)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_oc
+
+p1_oc + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_oc),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_oc.png',
+                height = 12, width = 18, units = 'cm')
+
+## OTHER HARDWOOD
+p1_oh <- pred_obs_long |>
+  dplyr::filter(taxon == 'Other Hardwood') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle('Other hardwood taxa') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_oh
+
+p2_oh <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = OTHER.HARDWOOD)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_oh
+
+p1_oh + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_oh),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_oh.png',
+                height = 12, width = 18, units = 'cm')
+
+## PINE
+p1_pine <- pred_obs_long |>
+  dplyr::filter(taxon == 'Pine') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Pine (', italic('Pinus spp.'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_pine
+
+p2_pine <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = PINE)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_pine
+
+p1_pine + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_pine),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_pine.png',
+                height = 12, width = 18, units = 'cm')
+
+## SPRUCE
+p1_spruce <- pred_obs_long |>
+  dplyr::filter(taxon == 'Spruce') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Spruce (', italic('Picea spp.'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_spruce
+
+p2_spruce <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = SPRUCE)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_spruce
+
+p1_spruce + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_spruce),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_spruce.png',
+                height = 12, width = 18, units = 'cm')
+
+## TAMARACK
+p1_tamarack <- pred_obs_long |>
+  dplyr::filter(taxon == 'Tamarack') |>
+  ggplot2::ggplot() +
+  ggplot2::geom_point(ggplot2::aes(x = observed_mean,
+                                   y = predicted_mean),
+                      alpha = 0.5) +
+  ggplot2::geom_abline(color = 'black', linetype = 'dashed') +
+  ggplot2::xlim(c(0, 1)) + ggplot2::ylim(c(0, 1)) +
+  ggplot2::xlab('Observed') + ggplot2::ylab('Predicted') +
+  ggplot2::ggtitle(expression(paste('Tamarack (', italic('Larix laricina'), ')'))) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 panel.grid = ggplot2::element_blank(),
+                 panel.background = ggplot2::element_rect(),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+p1_tamarack
+
+p2_tamarack <- diff |>
+  ggplot2::ggplot() +
+  ggplot2::geom_density(ggplot2::aes(x = TAMARACK)) +
+  ggplot2::geom_vline(ggplot2::aes(xintercept = 0), color = 'maroon') +
+  ggplot2::xlim(c(-1, 1)) +
+  ggplot2::xlab('Prediction bias') +
+  ggplot2::ylab('Density') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.background = ggplot2::element_rect(fill = 'white'),
+                 panel.grid = ggplot2::element_blank(),
+                 axis.title = ggplot2::element_text(size = 8),
+                 axis.text = ggplot2::element_text(size = 8))
+p2_tamarack
+
+p1_tamarack + 
+  ggplot2::annotation_custom(ggplot2::ggplotGrob(p2_tamarack),
+                             xmin = -0.05, xmax = 0.4,
+                             ymin = 0.57, ymax = 1.05)
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/oos_prediction/full_non_conditional_predvobs_inset_tamarack.png',
+                height = 12, width = 18, units = 'cm')
+
+## Proportion of grid cells with bias > |0.1| (> 10% difference)
+beech_prop <- length(which(abs(diff$BEECH) > 0.1)) / nrow(diff)
+birch_prop <- length(which(abs(diff$BIRCH) > 0.1)) / nrow(diff)
+elm_prop <- length(which(abs(diff$ELM) > 0.1)) / nrow(diff)
+hemlock_prop <- length(which(abs(diff$HEMLOCK) > 0.1)) / nrow(diff)
+maple_prop <- length(which(abs(diff$MAPLE) > 0.1)) / nrow(diff)
+oak_prop <- length(which(abs(diff$OAK) > 0.1)) / nrow(diff)
+oc_prop <- length(which(abs(diff$OTHER.CONIFER) > 0.1)) / nrow(diff)
+oh_prop <- length(which(abs(diff$OTHER.HARDWOOD) > 0.1)) / nrow(diff)
+pine_prop <- length(which(abs(diff$PINE) > 0.1)) / nrow(diff)
+spruce_prop <- length(which(abs(diff$SPRUCE) > 0.1)) / nrow(diff)
+tamarack_prop <- length(which(abs(diff$TAMARACK) > 0.1)) / nrow(diff)
+
+props <- c(beech_prop, birch_prop, elm_prop,
+           hemlock_prop, maple_prop, oak_prop,
+           oc_prop, oh_prop, pine_prop,
+           spruce_prop, tamarack_prop)
+taxa <- c('Beech', 'Birch', 'Elm', 'Hemlock',
+          'Maple', 'Oak', 'Other conifer',
+          'Other hardwood', 'Pine', 'Spruce',
+          'Tamarack')
+
+props <- as.data.frame(cbind(taxa, props))
+tibble::tibble(props)
 
 #### Conditional on oak ####
 

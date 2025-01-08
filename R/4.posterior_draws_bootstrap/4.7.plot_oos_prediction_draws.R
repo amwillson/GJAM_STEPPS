@@ -816,6 +816,24 @@ pine_cor_quant <- quantile(pine_cors, probs = c(0.025, 0.5, 0.975))
 spruce_cor_quant <- quantile(spruce_cors, probs = c(0.025, 0.5, 0.975))
 tamarack_cor_quant <- quantile(tamarack_cors, probs = c(0.025, 0.5, 0.975))
 
+cor_quants <- rbind(beech_cor_quant,
+                    birch_cor_quant,
+                    elm_cor_quant,
+                    hemlock_cor_quant,
+                    maple_cor_quant,
+                    oak_cor_quant,
+                    oc_cor_quant,
+                    oh_cor_quant,
+                    pine_cor_quant,
+                    spruce_cor_quant,
+                    tamarack_cor_quant)
+
+cor_quants <- as.data.frame(cor_quants)
+
+cor_quants <- tibble::rownames_to_column(cor_quants)
+
+tibble::tibble(cor_quants)
+
 #### Conditional on oak ####
 
 rm(pred)

@@ -845,6 +845,9 @@ bFacGibbs_long |>
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/posteriors/sand_aat_tpr_prsd_300YBP/coefficients_violin.png',
                 height = 12, width = 18, units = 'cm')
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/posteriors/sand_aat_tpr_prsd_300YBP/coefficients_violin.svg',
+                height = 12, width = 18, units = 'cm')
 
 # Box plots of coefficient estimates using coefficient summary statistics
 for_plotting |>
@@ -946,6 +949,9 @@ fSensGibbs |>
 
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 file = 'figures/posteriors/sand_aat_tpr_prsd_300YBP/sensivity_violin.png',
+                height = 8.5, width = 8.5, units = 'cm')
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                file = 'figures/posteriors/sand_aat_tpr_prsd_300YBP/sensitivity_violin.svg',
                 height = 8.5, width = 8.5, units = 'cm')
 
 #### Correlations between taxa ####

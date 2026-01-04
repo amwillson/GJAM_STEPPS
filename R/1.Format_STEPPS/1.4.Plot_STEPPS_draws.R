@@ -711,3 +711,68 @@ post_df |>
   ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
 
 dev.off()
+
+#### Most abundant taxon ####
+
+# Find median abundance of each taxon over space and time
+sub <- post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(ash = median(ASH),
+                   beech = median(BEECH),
+                   birch = median(BIRCH),
+                   elm = median(ELM),
+                   hemlock = median(HEMLOCK),
+                   maple = median(MAPLE),
+                   oak = median(OAK),
+                   oc = median(OTHER.CONIFER),
+                   oh = median(OTHER.HARDWOOD),
+                   pine = median(PINE),
+                   spruce = median(SPRUCE),
+                   tamarack = median(TAMARACK))
+
+# Which taxon was most abundant at each grid cell
+col_max <- apply(sub[,4:15], 1, which.max)
+
+# Taxon names
+col_nam <- colnames(sub[,4:15])
+
+# Taxon name and number (number corresponds to
+# number in col_max)
+col_map <- as.data.frame(as.matrix(cbind(1:12,
+                                         col_nam)))
+
+# Formatting mapping of taxon name and number
+colnames(col_map) <- c('number', 'taxon')
+col_map$number <- as.numeric(col_map$number)
+
+# Add number of taxon that was most abundant to
+# full dataframe
+sub$number <- col_max
+
+# Match taxon to number in full dataframe
+sub2 <- sub |>
+  dplyr::left_join(y = col_map,
+                   by = 'number')
+
+# Color palette for plots
+pal <- scales::viridis_pal(option = 'H')(11)
+pal <- pal[-10]
+
+# Plot most abundant taxon at 300 YBP
+sub2 |>
+  dplyr::filter(time == 3) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = taxon)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_manual(values = pal,
+                             name = 'Taxon') +
+  ggplot2::theme_void()
+
+# Save plot
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/most_abundant_taxon.png',
+                width = 7, height = 7, units = 'in')
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/most_abundant_taxon.svg',
+                width = 7, height = 7, units = 'in')

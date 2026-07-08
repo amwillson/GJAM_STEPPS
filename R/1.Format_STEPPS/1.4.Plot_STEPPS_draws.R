@@ -378,6 +378,102 @@ ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/data/estimated_posterior_median_abundance_tamarack.png',
                 width = 7, height = 7, units = 'in')
 
+#### Change in relative abundance over time ####
+
+# Hemlock
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(hemlock = median(HEMLOCK)) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'hemlock') |>
+  dplyr::mutate(diff_18 = `18` - `19`,
+                diff_17 = `17` - `18`,
+                diff_16 = `16` - `17`,
+                diff_15 = `15` - `16`,
+                diff_14 = `14` - `15`,
+                diff_13 = `13` - `14`,
+                diff_12 = `12` - `13`,
+                diff_11 = `11` - `12`,
+                diff_10 = `10` - `11`,
+                diff_9 = `9` - `10`,
+                diff_8 = `8` - `9`,
+                diff_7 = `7` - `8`,
+                diff_6 = `6` - `7`,
+                diff_5 = `5` - `6`,
+                diff_4 = `4` - `5`,
+                diff_3 = `3` - `4`) |>
+  dplyr::select(x, y, diff_18:diff_3) |>
+  tidyr::pivot_longer(cols = diff_18:diff_3,
+                      names_to = 'time',
+                      values_to = 'diff') |>
+  dplyr::mutate(time = sub(pattern = 'diff_', 
+                           replacement = '',
+                           x = time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  khroma::scale_fill_vik(na.value = '#0000000',
+                         name = 'Fraction\ntotal stems') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Hemlock (', italic('Tsuga canadensis'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_hemlock.png',
+                height = 7, width = 7, units = 'in')
+
+# Oak
+post_df |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time, x, y) |>
+  dplyr::summarize(oak = median(OAK)) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'oak') |>
+  dplyr::mutate(diff_18 = `18` - `19`,
+                diff_17 = `17` - `18`,
+                diff_16 = `16` - `17`,
+                diff_15 = `15` - `16`,
+                diff_14 = `14` - `15`,
+                diff_13 = `13` - `14`,
+                diff_12 = `12` - `13`,
+                diff_11 = `11` - `12`,
+                diff_10 = `10` - `11`,
+                diff_9 = `9` - `10`,
+                diff_8 = `8` - `9`,
+                diff_7 = `7` - `8`,
+                diff_6 = `6` - `7`,
+                diff_5 = `5` - `6`,
+                diff_4 = `4` - `5`,
+                diff_3 = `3` - `4`) |>
+  dplyr::select(x, y, diff_18:diff_3) |>
+  tidyr::pivot_longer(cols = diff_18:diff_3,
+                      names_to = 'time',
+                      values_to = 'diff') |>
+  dplyr::mutate(time = sub(pattern = 'diff_', 
+                           replacement = '',
+                           x = time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey85') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  khroma::scale_fill_vik(na.value = '#0000000',
+                         name = 'Fraction\ntotal stems') +
+  ggplot2::theme_void() +
+  ggplot2::ggtitle(expression(paste('Oak (', italic('Quercus spp.'), ')'))) +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 16, hjust = 0.5, face = 'bold'))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_oak.png',
+                height = 7, width = 7, units = 'in')
+
 #### Spatial uncertainty plots ####
 
 pdf(file = 'figures/data/estimated_posterior_uncertainty.pdf',

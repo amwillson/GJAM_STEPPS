@@ -1,7 +1,7 @@
 #### STEP 5-5
 
 ## Plotting hemlock mountain output
-## Plotting coefficient estimates for relatinoship
+## Plotting coefficient estimates for relationship
 ## between previous and current relative abundance
 ## and environmental covariates and current relative abundance
 
@@ -111,8 +111,6 @@ ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/hemlock/medium_coefficient_estimates.png')
 
 #### Case 3: 81 cell Hemlock Mountain ####
-
-#### Case 1: Hemlock Mountain region only ####
 
 # Load output from case 3
 load('out/hemlock/out_large_hemlock_mountain.RData')

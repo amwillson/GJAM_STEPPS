@@ -197,6 +197,350 @@ ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/data/temporal_climate_variables.png',
                 height = 6, width = 7, units = 'in')
 
+## Plot difference between each time step for each climate variable
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::select(x, y, time, aat) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'aat') |>
+  dplyr::mutate(diff_18 = `18` - `19`,
+                diff_17 = `17` - `18`,
+                diff_16 = `16` - `17`,
+                diff_15 = `15` - `16`,
+                diff_14 = `14` - `15`,
+                diff_13 = `13` - `14`,
+                diff_12 = `12` - `13`,
+                diff_11 = `11` - `12`,
+                diff_10 = `10` - `11`,
+                diff_9 = `9` - `10`,
+                diff_8 = `8` - `9`,
+                diff_7 = `7` - `8`,
+                diff_6 = `6` - `7`,
+                diff_5 = `5` - `6`,
+                diff_4 = `4` - `5`,
+                diff_3 = `3` - `4`) |>
+  dplyr::select(x, y, diff_18:diff_3) |>
+  tidyr::pivot_longer(cols = diff_18:diff_3,
+                      names_to = 'time',
+                      values_to = 'diff') |>
+  dplyr::mutate(time = sub(pattern = 'diff_', 
+                           replacement = '',
+                           x = time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey75') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  ggplot2::scale_fill_distiller(palette = 'RdBu',
+                                limits = c(-0.62, 0.62),
+                                direction = -1,
+                                na.value = '#00000000',
+                                name = 'Δ°C') +
+  ggplot2::ggtitle('Change in average annual temperature between 100-year time intervals') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+  
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_aat.png',
+                height = 7, width = 7, units = 'in')
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::select(x, y, time, aat) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'aat') |>
+  dplyr::mutate(diff = `3` - `19`) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey75') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::scale_fill_distiller(palette = 'Blues',
+                                #limits = c(-0.62, 0.62),
+                                direction = -1,
+                                na.value = '#00000000',
+                                name = 'Δ°C') +
+  ggplot2::ggtitle('Change in average annual temperature:\n1900 to 300 YBP') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 8, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 8),
+                 legend.text = ggplot2::element_text(size = 6))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_aat_1900_300.png',
+                height = 3, width = 3, units = 'in')
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::select(x, y, time, tpr) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'tpr') |>
+  dplyr::mutate(diff_18 = `18` - `19`,
+                diff_17 = `17` - `18`,
+                diff_16 = `16` - `17`,
+                diff_15 = `15` - `16`,
+                diff_14 = `14` - `15`,
+                diff_13 = `13` - `14`,
+                diff_12 = `12` - `13`,
+                diff_11 = `11` - `12`,
+                diff_10 = `10` - `11`,
+                diff_9 = `9` - `10`,
+                diff_8 = `8` - `9`,
+                diff_7 = `7` - `8`,
+                diff_6 = `6` - `7`,
+                diff_5 = `5` - `6`,
+                diff_4 = `4` - `5`,
+                diff_3 = `3` - `4`) |>
+  dplyr::select(x, y, diff_18:diff_3) |>
+  tidyr::pivot_longer(cols = diff_18:diff_3,
+                      names_to = 'time',
+                      values_to = 'diff') |>
+  dplyr::mutate(time = sub(pattern = 'diff_', 
+                           replacement = '',
+                           x = time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey75') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  khroma::scale_fill_broc(limits = c(-1.78, 1.78),
+                          na.value = '#00000000',
+                          reverse = TRUE,
+                          name = 'Δmm/year') +
+  ggplot2::ggtitle('Change in total annual precipitation between 100-year time intervals') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_tpr.png',
+                height = 7, width = 7, units = 'in')
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::select(x, y, time, tpr) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'tpr') |>
+  dplyr::mutate(diff = `3` - `19`) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey75') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  khroma::scale_fill_broc(#limits = c(-1.78, 1.78),
+                          na.value = '#00000000',
+                          reverse = TRUE,
+                          name = 'Δmm/year') +
+  ggplot2::ggtitle('Change in total annual precipitation:\n1900 to 300 YBP') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 8, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 8),
+                 legend.text = ggplot2::element_text(size = 6))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_tpr_1900_300.png',
+                height = 3, width = 3, units = 'in')
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::select(x, y, time, tsd) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'tsd') |>
+  dplyr::mutate(diff_18 = `18` - `19`,
+                diff_17 = `17` - `18`,
+                diff_16 = `16` - `17`,
+                diff_15 = `15` - `16`,
+                diff_14 = `14` - `15`,
+                diff_13 = `13` - `14`,
+                diff_12 = `12` - `13`,
+                diff_11 = `11` - `12`,
+                diff_10 = `10` - `11`,
+                diff_9 = `9` - `10`,
+                diff_8 = `8` - `9`,
+                diff_7 = `7` - `8`,
+                diff_6 = `6` - `7`,
+                diff_5 = `5` - `6`,
+                diff_4 = `4` - `5`,
+                diff_3 = `3` - `4`) |>
+  dplyr::select(x, y, diff_18:diff_3) |>
+  tidyr::pivot_longer(cols = diff_18:diff_3,
+                      names_to = 'time',
+                      values_to = 'diff') |>
+  dplyr::mutate(time = sub(pattern = 'diff_', 
+                           replacement = '',
+                           x = time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey75') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  khroma::scale_fill_bam(limits = c(-0.32, 0.32),
+                         na.value = '#00000000',
+                         reverse = TRUE,
+                         name = '°C') +
+  ggplot2::ggtitle('Change in temperature seasonality between 100-year time intervals') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_tsd.png',
+                height = 7, width = 7, units = 'in')
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::select(x, y, time, tsd) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'tsd') |>
+  dplyr::mutate(diff = `3` - `19`) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey75') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  khroma::scale_fill_bam(#limits = c(-0.32, 0.32),
+                         na.value = '#00000000',
+                         reverse = TRUE,
+                         name = '°C') +
+  ggplot2::ggtitle('Change in temperature seasonality:\n1900 to 300 YBP') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 8, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 8),
+                 legend.text = ggplot2::element_text(size = 6))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_tsd_1900_300.png',
+                height = 3, width = 3, units = 'in')
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::select(x, y, time, prsd) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'prsd') |>
+  dplyr::mutate(diff_18 = `18` - `19`,
+                diff_17 = `17` - `18`,
+                diff_16 = `16` - `17`,
+                diff_15 = `15` - `16`,
+                diff_14 = `14` - `15`,
+                diff_13 = `13` - `14`,
+                diff_12 = `12` - `13`,
+                diff_11 = `11` - `12`,
+                diff_10 = `10` - `11`,
+                diff_9 = `9` - `10`,
+                diff_8 = `8` - `9`,
+                diff_7 = `7` - `8`,
+                diff_6 = `6` - `7`,
+                diff_5 = `5` - `6`,
+                diff_4 = `4` - `5`,
+                diff_3 = `3` - `4`) |>
+  dplyr::select(x, y, diff_18:diff_3) |>
+  tidyr::pivot_longer(cols = diff_18:diff_3,
+                      names_to = 'time',
+                      values_to = 'diff') |>
+  dplyr::mutate(time = sub(pattern = 'diff_', 
+                           replacement = '',
+                           x = time),
+                time = paste0(time, '00 YBP')) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey75') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  ggplot2::facet_wrap(~factor(time, levels = time_order)) +
+  khroma::scale_fill_roma(limits = c(-0.13, 0.13),
+                          na.value = '#00000000',
+                          reverse = TRUE,
+                          name = 'mm/year') +
+  ggplot2::ggtitle('Change in precipitation seasonality between 100-year time intervals') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 10),
+                 legend.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_prsd.png',
+                height = 7, width = 7, units = 'in')
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::select(x, y, time, prsd) |>
+  tidyr::pivot_wider(names_from = 'time',
+                     values_from = 'prsd') |>
+  dplyr::mutate(diff = `3` - `19`) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_sf(data = states, color = NA, fill = 'grey75') +
+  ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = diff)) +
+  ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
+  khroma::scale_fill_roma(limits = c(-0.13, 0.13),
+                          na.value = '#00000000',
+                          reverse = TRUE,
+                          name = 'mm/year') +
+  ggplot2::ggtitle('Change in precipitation seasonality:\n1900 to 300 YBP') +
+  ggplot2::theme_void() +
+  ggplot2::theme(plot.title = ggplot2::element_text(size = 8, hjust = 0.5),
+                 legend.title = ggplot2::element_text(size = 8),
+                 legend.text = ggplot2::element_text(size = 6))
+
+# Save
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/difference_prsd_1900_300.png',
+                height = 3, width = 3, units = 'in')
+
+## Plot general trend over time
+
+set.seed(2)
+climate_grid |>
+  dplyr::select(x, y, time, aat) |>
+  tidyr::pivot_wider(names_from = time,
+                     values_from = aat) |>
+  dplyr::select(x, y, `3`:`19`) |>
+  tidyr::drop_na() |>
+  dplyr::slice_sample(n = 20) |>
+  tidyr::pivot_longer(cols = `3`:`19`,
+                      names_to = 'time',
+                      values_to = 'aat') |>
+  dplyr::mutate(time = as.numeric(time),
+                time = time * 100,
+                loc = paste0(x, '_', y)) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = time, y = aat,
+                                  color = loc),
+                     show.legend = FALSE) +
+  ggplot2::scale_x_reverse()
+
+climate_grid |>
+  dplyr::filter(time %in% 3:19) |>
+  dplyr::group_by(time) |>
+  dplyr::summarize(`Average annual temperature` = mean(aat, na.rm = TRUE),
+                   `Total annual precipitation` = mean(tpr, na.rm = TRUE),
+                   `Temperature seasonality` = mean(tsd, na.rm = TRUE),
+                   `Precipitation seasonality` = mean(prsd, na.rm = TRUE)) |>
+  tidyr::pivot_longer(cols = `Average annual temperature`:`Precipitation seasonality`,
+                      names_to = 'var',
+                      values_to = 'mean') |>
+  dplyr::mutate(time = time * 100) |>
+  ggplot2::ggplot() +
+  ggplot2::geom_line(ggplot2::aes(x = time,
+                                  y = mean)) +
+  ggplot2::scale_x_reverse() +
+  ggplot2::facet_wrap(~var, scales = 'free') +
+  ggplot2::xlab('Time (YBP)') + ggplot2::ylab('') +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(strip.text = ggplot2::element_text(size = 12, hjust = 0.5),
+                 axis.title = ggplot2::element_text(size = 10),
+                 axis.text = ggplot2::element_text(size = 8))
+
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/data/temporal_climate_variables.png',
+                height = 7, width = 7, units = 'in')
+
 #### Soil variables ####
 
 # Load soil estimates

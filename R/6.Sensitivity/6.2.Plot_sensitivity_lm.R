@@ -78,11 +78,12 @@ sens |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = aat)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~taxon) +
-  ggplot2::scale_fill_gradient2(name = 'Sensitivity',
-                                na.value = '#00000000',
-                                low = '#a0a2fe',
-                                mid = '#ffffff',
-                                high = '#baae02') +
+  khroma::scale_fill_bam(name = 'Sensitivity') +
+  #ggplot2::scale_fill_gradient2(name = 'Sensitivity',
+  #                              na.value = '#00000000',
+  #                              low = '#a0a2fe',
+  #                              mid = '#ffffff',
+  #                              high = '#baae02') +
   ggplot2::ggtitle('Sensitivity to mean annual temperature') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
@@ -94,6 +95,9 @@ sens |>
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/sensitivity/aat_sens_taxon_facets.png',
                 height = 15, width = 20, units = 'cm')
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/sensitivity/aat_sens_taxon_facets.svg',
+                height = 15, width = 20, units = 'cm')
 
 # Total annual precipitation
 sens |>
@@ -102,11 +106,12 @@ sens |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = tpr)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~taxon) +
-  ggplot2::scale_fill_gradient2(name = 'Sensitivity',
-                                na.value = '#00000000',
-                                low = '#a0a2fe',
-                                mid = '#ffffff',
-                                high = '#baae02') +
+  khroma::scale_fill_bam(name = 'Sensitivity') +
+  #ggplot2::scale_fill_gradient2(name = 'Sensitivity',
+  #                              na.value = '#00000000',
+  #                              low = '#a0a2fe',
+  #                              mid = '#ffffff',
+  #                              high = '#baae02') +
   ggplot2::ggtitle('Sensitivity to total annual precipitation') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
@@ -118,6 +123,9 @@ sens |>
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/sensitivity/tpr_sens_taxon_facets.png',
                 height = 15, width = 20, units = 'cm')
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/sensitivity/tpr_sens_taxon_facets.svg',
+                height = 15, width = 20, units = 'cm')
 
 # Precipitation seasonality
 sens |>
@@ -126,11 +134,12 @@ sens |>
   ggplot2::geom_tile(ggplot2::aes(x = x, y = y, fill = prsd)) +
   ggplot2::geom_sf(data = states, color = 'black', fill = NA) +
   ggplot2::facet_wrap(~taxon) +
-  ggplot2::scale_fill_gradient2(name = 'Sensitivity',
-                                na.value = '#00000000',
-                                low = '#a0a2fe',
-                                mid = '#ffffff',
-                                high = '#baae02') +
+  khroma::scale_fill_bam(name = 'Sensitivity') +
+  #ggplot2::scale_fill_gradient2(name = 'Sensitivity',
+  #                              na.value = '#00000000',
+  #                              low = '#a0a2fe',
+  #                              mid = '#ffffff',
+  #                              high = '#baae02') +
   ggplot2::ggtitle('Sensitivity to precipitation seasonality') +
   ggplot2::theme_void() +
   ggplot2::theme(plot.title = ggplot2::element_text(size = 12, hjust = 0.5),
@@ -141,4 +150,7 @@ sens |>
 # Save
 ggplot2::ggsave(plot = ggplot2::last_plot(),
                 filename = 'figures/sensitivity/prsd_sens_taxon_facets.png',
+                height = 15, width = 20, units = 'cm')
+ggplot2::ggsave(plot = ggplot2::last_plot(),
+                filename = 'figures/sensitivity/prsd_sens_taxon_facets.svg',
                 height = 15, width = 20, units = 'cm')

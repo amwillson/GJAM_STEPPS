@@ -1112,8 +1112,10 @@ corr_mat[insig] <- NA
 low_mat_95[insig] <- NA
 upp_mat_95[insig] <- NA
 
-png(filename = 'figures/posteriors/sand_aat_tpr_prsd_300YBP/cor_95CI_insig.png',
-    width = 8.5, height = 8.5, units = 'cm', res = 600)
+#png(filename = 'figures/posteriors/sand_aat_tpr_prsd_300YBP/cor_95CI_insig.png',
+#    width = 8.5, height = 8.5, units = 'cm', res = 600)
+svg(filename = 'figures/posteriors/sand_aat_tpr_prsd_300YBP/cor_95CI_insig_formatting.svg',
+    width = 3.35, height = 3.35)
 
 corrplot::corrplot(corr_mat, 
                    lowCI.mat = low_mat_95, 
